@@ -11,9 +11,14 @@
     "https",
     "http"
   ],
+  "tags": [
+    {
+      "name": "extensions"
+    }
+  ],
   "paths": {
     "/company/{companyNumber}/extensions/requests": {
-      "parameters": [
+       "parameters": [
         {
           "name": "companyNumber",
           "type": "string",
@@ -22,6 +27,7 @@
         }
       ],
       "post": {
+        "tags": ["extensions"],
         "summary": "create a new extension request resource",
         "produces": [
           "application/json"
@@ -36,19 +42,51 @@
         }
       },
       "get": {
+        "tags": ["extensions"],
         "summary": "get a list of extension requests made against a company",
-        "produces":[
+        "produces": [
           "application/json"
         ],
         "responses": {
           "200": {
             "description": "a list of extension requests",
             "schema": {
-               "$ref":"#/definitions/ExtensionRequestList"
+              "$ref": "#/definitions/ExtensionRequestList"
             }
           },
           "404": {
             "description": "no extension requests were found for this company"
+          }
+        }
+      }
+    },
+    "/company/{companyNumber}/extensions/requests/{requestId}": {
+      "parameters": [
+        {
+          "in": "path",
+          "name": "companyNumber",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "in": "path",
+          "name": "requestId",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "get": {
+        "tags": ["extensions"],
+        "summary": "return a list of extension requests",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/ExtensionRequest"
+            }
           }
         }
       }
