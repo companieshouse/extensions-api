@@ -1,0 +1,129 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "A suite of service to support applying for an extension on a filing deadline",
+    "version": "1.0.0",
+    "title": "Companies House extensions API"
+  },
+  "host": "api.companieshouse.gov.uk",
+  "basePath": "/",
+  "schemes": [
+    "https",
+    "http"
+  ],
+  "paths": {
+    "/company/{companyNumber}/extensions/requests": {
+      "parameters": [
+        {
+          "name": "companyNumber",
+          "type": "string",
+          "in": "path",
+          "required": true
+        }
+      ],
+      "post": {
+        "summary": "create a new extension request resource",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "201": {
+            "description": "request created",
+            "schema": {
+              "$ref": "#/definitions/CreateExtensionRequest"
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "get a list of extension requests made against a company",
+        "produces":[
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "a list of extension requests",
+            "schema": {
+               "$ref":"#/definitions/ExtensionRequestList"
+            }
+          },
+          "404": {
+            "description": "no extension requests were found for this company"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "ExtensionRequestList": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ExtensionRequest"
+          }
+        }
+      }
+    },
+    "ExtensionRequest": {
+      "type": "object",
+      "properties": {
+        "request_date": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "account_period_start_date": {
+          "type": "string",
+          "format": "date"
+        },
+        "accounting_period_end_date": {
+          "type": "string",
+          "format": "date"
+        },
+        "href": {
+          "type": "string",
+          "format": "uri"
+        }
+      }
+    },
+    "CreateExtensionRequest": {
+      "type": "object",
+      "properties": {
+        "account_period_start_date": {
+          "type": "string",
+          "format": "date"
+        },
+        "accounting_period_end_date": {
+          "type": "string",
+          "format": "date"
+        },
+        "reasons": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ExtensionReason"
+          }
+        }
+      }
+    },
+    "ExtensionReason": {
+      "type": "object",
+      "properties": {
+        "reason": {
+          "type": "string"
+        },
+        "additional_text": {
+          "type": "string"
+        },
+        "date_start": {
+          "type": "string",
+          "format": "date"
+        },
+        "date_end": {
+          "type": "string",
+          "format": "date"
+        }
+      }
+    }
+  }
+}
