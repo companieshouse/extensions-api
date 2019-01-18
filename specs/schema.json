@@ -6,7 +6,7 @@
     "title": "Companies House extensions API"
   },
   "host": "api.companieshouse.gov.uk",
-  "basePath": "/",
+  "basePath": "/company/{companyNumber}",
   "schemes": [
     "https",
     "http"
@@ -21,6 +21,7 @@
   ],
   "paths": {
     "/extensions/requests": {
+      "post": {
       "parameters": [
         {
           "in": "body",
@@ -30,7 +31,6 @@
           }
         }
       ],
-      "post": {
         "tags": [
           "Extension Request"
         ],
@@ -42,7 +42,7 @@
           "201": {
             "description": "request created",
             "schema": {
-              "$ref": "#/definitions/CreateExtensionRequest"
+              "$ref": "#/definitions/ExtensionRequestFullResource"
             }
           }
         }
@@ -195,7 +195,7 @@
         "reasons": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/ExtensionReason"
+            "$ref": "#/definitions/CreateExtensionReason"
           }
         }
       }
