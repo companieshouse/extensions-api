@@ -20,14 +20,8 @@
     }
   ],
   "paths": {
-    "/company/{companyNumber}/extensions/requests": {
+    "/extensions/requests": {
       "parameters": [
-        {
-          "name": "companyNumber",
-          "type": "string",
-          "in": "path",
-          "required": true
-        },
         {
           "in": "body",
           "name": "extension request",
@@ -74,14 +68,8 @@
         }
       }
     },
-    "/company/{companyNumber}/extensions/requests/{requestId}": {
+    "/extensions/requests/{requestId}": {
       "parameters": [
-        {
-          "in": "path",
-          "name": "companyNumber",
-          "required": true,
-          "type": "string"
-        },
         {
           "in": "path",
           "name": "requestId",
@@ -107,14 +95,8 @@
         }
       }
     },
-    "/company/{companyNumber}/extensions/requests/{requestId}/reasons": {
+    "/extensions/requests/{requestId}/reasons": {
       "parameters": [
-        {
-          "in": "path",
-          "name": "companyNumber",
-          "required": true,
-          "type": "string"
-        },
         {
           "in": "path",
           "name": "requestId",
