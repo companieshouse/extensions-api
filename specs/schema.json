@@ -13,21 +13,33 @@
   ],
   "tags": [
     {
-      "name": "extensions"
+      "name": "Extension Request"
+    },
+    {
+      "name": "Extension Request Reasons"
     }
   ],
   "paths": {
     "/company/{companyNumber}/extensions/requests": {
-       "parameters": [
+      "parameters": [
         {
           "name": "companyNumber",
           "type": "string",
           "in": "path",
           "required": true
+        },
+        {
+          "in": "body",
+          "name": "extension request",
+          "schema": {
+            "$ref": "#/definitions/CreateExtensionRequest"
+          }
         }
       ],
       "post": {
-        "tags": ["extensions"],
+        "tags": [
+          "Extension Request"
+        ],
         "summary": "create a new extension request resource",
         "produces": [
           "application/json"
@@ -42,7 +54,9 @@
         }
       },
       "get": {
-        "tags": ["extensions"],
+        "tags": [
+          "Extension Request"
+        ],
         "summary": "get a list of extension requests made against a company",
         "produces": [
           "application/json"
@@ -76,16 +90,51 @@
         }
       ],
       "get": {
-        "tags": ["extensions"],
+        "tags": [
+          "Extension Request"
+        ],
         "summary": "return a list of extension requests",
         "produces": [
           "application/json"
         ],
         "responses": {
           "200": {
-            "description": "",
+            "description": "the extension request resource",
             "schema": {
-              "$ref": "#/definitions/ExtensionRequest"
+              "$ref": "#/definitions/ExtensionRequestFullResource"
+            }
+          }
+        }
+      }
+    },
+    "/company/{companyNumber}/extensions/requests/{requestId}/reasons": {
+      "parameters": [
+        {
+          "in": "path",
+          "name": "companyNumber",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "in": "path",
+          "name": "requestId",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "post": {
+        "tags": [
+          "Extension Request Reasons"
+        ],
+        "summary": "Add a reason for supporting the extension",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "201": {
+            "description": "reason added to extension",
+            "schema": {
+              "$ref": "#/definitions/ExtensionReason"
             }
           }
         }
@@ -119,9 +168,34 @@
           "type": "string",
           "format": "date"
         },
-        "href": {
+        "links": {
+          "$ref": "#/definitions/Links"
+        }
+      }
+    },
+    "ExtensionRequestFullResource": {
+      "type": "object",
+      "properties": {
+        "request_date": {
           "type": "string",
-          "format": "uri"
+          "format": "date-time"
+        },
+        "account_period_start_date": {
+          "type": "string",
+          "format": "date"
+        },
+        "accounting_period_end_date": {
+          "type": "string",
+          "format": "date"
+        },
+        "reasons": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ExtensionReason"
+          }
+        },
+        "links": {
+          "$ref": "#/definitions/Links"
         }
       }
     },
@@ -147,6 +221,9 @@
     "ExtensionReason": {
       "type": "object",
       "properties": {
+        "id": {
+          "type": "string"
+        },
         "reason": {
           "type": "string"
         },
@@ -160,6 +237,34 @@
         "date_end": {
           "type": "string",
           "format": "date"
+        }
+      }
+    },
+    "CreateExtensionReason": {
+      "type": "object",
+      "properties": {
+        "reason": {
+          "type": "string"
+        },
+        "additional_text": {
+          "type": "string"
+        },
+        "date_start": {
+          "type": "string",
+          "format": "date"
+        },
+        "date_end": {
+          "type": "string",
+          "format": "date"
+        }
+      }
+    },
+    "Links": {
+      "type": "object",
+      "properties": {
+        "self": {
+          "type": "string",
+          "format": "uri"
         }
       }
     }
