@@ -1,0 +1,231 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "A suite of service to support applying for an extension on a filing deadline",
+    "version": "1.0.0",
+    "title": "Companies House extensions API"
+  },
+  "host": "api.companieshouse.gov.uk",
+  "basePath": "/company/{companyNumber}",
+  "schemes": [
+    "https",
+    "http"
+  ],
+  "tags": [
+    {
+      "name": "Input API"
+    },
+    {
+      "name": "Processor API"
+    }
+  ],
+  "paths": {
+    "/extensions/requests": {
+      "post": {
+        "parameters": [
+          {
+            "in": "body",
+            "name": "extension request",
+            "schema": {
+              "$ref": "#/definitions/ExtensionRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Input API"
+        ],
+        "summary": "create a new extension request resource",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "201": {
+            "description": "request created",
+            "schema": {
+              "$ref": "#/definitions/ExtensionRequestFull"
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Input API"
+        ],
+        "summary": "get a list of extension requests made against a company",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "a list of extension requests",
+            "schema": {
+              "$ref": "#/definitions/ExtensionRequestList"
+            }
+          },
+          "404": {
+            "description": "no extension requests were found for this company"
+          }
+        }
+      }
+    },
+    "/extensions/requests/{requestId}": {
+      "parameters": [
+        {
+          "in": "path",
+          "name": "requestId",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "get": {
+        "tags": [
+          "Input API"
+        ],
+        "summary": "Get a single extension request",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "the extension request resource",
+            "schema": {
+              "$ref": "#/definitions/ExtensionRequestFull"
+            }
+          }
+        }
+      }
+    },
+    "/extensions/requests/{requestId}/reasons": {
+      "parameters": [
+        {
+          "in": "path",
+          "name": "requestId",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "post": {
+        "tags": [
+          "Input API"
+        ],
+        "summary": "Add a reason for supporting the extension",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "201": {
+            "description": "reason added to extension",
+            "schema": {
+              "$ref": "#/definitions/ExtensionReason"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "ExtensionRequestList": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ExtensionRequestFull"
+          }
+        }
+      }
+    },
+    "ExtensionRequest": {
+      "type": "object",
+      "properties": {
+        "request_date": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "user": {
+          "type": "string"
+        },
+        "account_period_start_date": {
+          "type": "string",
+          "format": "date"
+        },
+        "accounting_period_end_date": {
+          "type": "string",
+          "format": "date"
+        },
+        "reasons": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ExtensionReason"
+          }
+        }
+      }
+    },
+    "ExtensionRequestFull": {
+      "allOf": [
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "links": {
+              "$ref": "#/definitions/Links"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "properties": {
+            "reasons": {
+              "type": "array",
+              "items": {
+                "allOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "links": {
+                        "$ref": "#/definitions/Links"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "$ref": "#/definitions/ExtensionRequest"
+        }
+      ]
+    },
+    "ExtensionReason": {
+      "type": "object",
+      "properties": {
+        "reason": {
+          "type": "string"
+        },
+        "additional_text": {
+          "type": "string"
+        },
+        "date_start": {
+          "type": "string",
+          "format": "date"
+        },
+        "date_end": {
+          "type": "string",
+          "format": "date"
+        }
+      }
+    },
+    "Links": {
+      "type": "object",
+      "properties": {
+        "self": {
+          "type": "string",
+          "format": "uri"
+        }
+      }
+    }
+  }
+}
