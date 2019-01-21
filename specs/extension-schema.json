@@ -112,6 +112,39 @@
         }
       }
     },
+    "/{requestId}/status": {
+      "parameters": [
+        {
+          "in": "path",
+          "name": "requestId",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "post": {
+        "parameters": [
+          {
+            "in": "body",
+            "name": "status",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        ],
+        "tags": [
+          "Processor API"
+        ],
+        "summary": "Update the status of this extension request",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "The status has been updated. If the status is set to 'submitted', then downstream processing will execute and the status can no longer be reverted."
+          }
+        }
+      }
+    },
     "/{requestId}/reasons": {
       "parameters": [
         {
@@ -210,10 +243,6 @@
     "ExtensionRequest": {
       "type": "object",
       "properties": {
-        "request_date": {
-          "type": "string",
-          "format": "date-time"
-        },
         "user": {
           "type": "string"
         },
@@ -224,10 +253,6 @@
         "accounting_period_end_date": {
           "type": "string",
           "format": "date"
-        },
-        "submitted": {
-          "type": "boolean",
-          "default": false
         },
         "reasons": {
           "type": "array",
@@ -247,6 +272,17 @@
             },
             "links": {
               "$ref": "#/definitions/Links"
+            },
+            "request_date": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "open",
+                "submitted"
+              ]
             }
           }
         },
@@ -274,6 +310,18 @@
           "$ref": "#/definitions/ExtensionRequest"
         }
       ]
+    },
+    "Status": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "open",
+            "submitted"
+          ]
+        }
+      }
     },
     "ExtensionReason": {
       "type": "object",
