@@ -1,12 +1,12 @@
 {
   "swagger": "2.0",
   "info": {
-    "description": "A suite of service to support applying for an extension on a filing deadline",
+    "description": "An API's to support applying for an extension of a filing deadline",
     "version": "1.0.0",
     "title": "Companies House extensions API"
   },
   "host": "api.companieshouse.gov.uk",
-  "basePath": "/company/{companyNumber}",
+  "basePath": "/company/{companyNumber}/extensions/requests",
   "schemes": [
     "https",
     "http"
@@ -20,7 +20,7 @@
     }
   ],
   "paths": {
-    "/extensions/requests": {
+    "/": {
       "post": {
         "parameters": [
           {
@@ -68,7 +68,7 @@
         }
       }
     },
-    "/extensions/requests/{requestId}": {
+    "/{requestId}": {
       "parameters": [
         {
           "in": "path",
@@ -93,9 +93,26 @@
             }
           }
         }
+      },
+      "delete": {
+        "tags": [
+          "Input API"
+        ],
+        "summary": "Delete an extension request",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "204": {
+            "description": "The extension request was deleted. No body is returned."
+          },
+          "404": {
+            "description": "The extension request was not found"
+          }
+        }
       }
     },
-    "/extensions/requests/{requestId}/reasons": {
+    "/{requestId}/reasons": {
       "parameters": [
         {
           "in": "path",
@@ -115,6 +132,61 @@
         "responses": {
           "201": {
             "description": "reason added to extension",
+            "schema": {
+              "$ref": "#/definitions/ExtensionReason"
+            }
+          }
+        }
+      }
+    },
+    "/{requestId}/reasons/{reasonId}": {
+      "parameters": [
+        {
+          "in": "path",
+          "name": "requestId",
+          "required": true,
+          "type": "string",
+          "description": "The ID representing the extension request"
+        },
+        {
+          "in": "path",
+          "name": "reasonId",
+          "required": true,
+          "type": "string",
+          "description": "The ID representing the extension reason"
+        }
+      ],
+      "delete": {
+        "tags": [
+          "Input API"
+        ],
+        "summary": "Delete a reason from this extension request",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "204": {
+            "description": "The reason was removed"
+          }
+        }
+      },
+      "put": {
+        "parameters": [
+          {
+            "in": "body",
+            "name": "Extension reason",
+            "schema": {
+              "$ref": "#/definitions/ExtensionReason"
+            }
+          }
+        ],
+        "tags": [
+          "Input API"
+        ],
+        "summary": "Update the extension reason by replacing it with another",
+        "responses": {
+          "200": {
+            "description": "The reason was updated",
             "schema": {
               "$ref": "#/definitions/ExtensionReason"
             }
@@ -152,6 +224,10 @@
         "accounting_period_end_date": {
           "type": "string",
           "format": "date"
+        },
+        "submitted": {
+          "type": "boolean",
+          "default": false
         },
         "reasons": {
           "type": "array",
