@@ -13,7 +13,13 @@
   ],
   "tags": [
     {
-      "name": "Input API"
+      "name": "Input API - Requests"
+    },
+    {
+      "name": "Input API - Attachments"
+    },
+    {
+      "name": "Input API - Reasons"
     },
     {
       "name": "Processor API"
@@ -32,7 +38,7 @@
           }
         ],
         "tags": [
-          "Input API"
+          "Input API - Requests"
         ],
         "summary": "create a new extension request resource",
         "produces": [
@@ -49,7 +55,7 @@
       },
       "get": {
         "tags": [
-          "Input API"
+          "Input API - Requests"
         ],
         "summary": "get a list of extension requests made against a company",
         "produces": [
@@ -79,7 +85,7 @@
       ],
       "get": {
         "tags": [
-          "Input API"
+          "Input API - Requests"
         ],
         "summary": "Get a single extension request",
         "produces": [
@@ -96,7 +102,7 @@
       },
       "delete": {
         "tags": [
-          "Input API"
+          "Input API - Requests"
         ],
         "summary": "Delete an extension request",
         "produces": [
@@ -110,6 +116,76 @@
             "description": "The extension request was not found"
           }
         }
+      }
+    },
+    "/{requestId}/attachments": {
+      "parameters": [
+        {
+          "in": "path",
+          "name": "requestId",
+          "type": "string",
+          "description": "the extension request id",
+          "required": true
+        }
+      ],
+      "post": {
+        "tags": ["Input API - Attachments"],
+        "summary": "upload supporting evidence",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "formData",
+            "name": "upfile",
+            "type": "file",
+            "description": "the file content",
+            "required": true
+          }
+        ],
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "responses": {
+          "201": {
+            "description": "the file was uploaded succesfully",
+            "schema": {
+              "$ref": "#/definitions/Links"
+            }
+          },
+          "404": {
+            "description": "the request does not exist"
+          },
+          "400": {
+            "description": "there was an error processing the request"
+          }
+        }
+      }
+    },
+    "/{requestId}/attachments/{attachmentId}": {
+      "parameters": [
+        {
+          "in": "path",
+          "name": "requestId",
+          "type": "string",
+          "required": true,
+          "description": "the extension request id"
+        },
+        {
+          "in": "path",
+          "name": "attachmentId",
+          "type": "string",
+          "required": true,
+          "description": "the attachment id"
+        }
+      ],
+      "delete": {
+        "tags": ["Input API - Attachments"],
+        "summary": "delete the attachment"
+      },
+      "get": {
+        "tags": ["Input API - Attachments"],
+        "summary": "download the attachment"
       }
     },
     "/{requestId}/status": {
@@ -156,7 +232,7 @@
       ],
       "post": {
         "tags": [
-          "Input API"
+          "Input API - Reasons"
         ],
         "summary": "Add a reason for supporting the extension",
         "produces": [
@@ -191,7 +267,7 @@
       ],
       "delete": {
         "tags": [
-          "Input API"
+          "Input API - Reasons"
         ],
         "summary": "Delete a reason from this extension request",
         "produces": [
@@ -214,7 +290,7 @@
           }
         ],
         "tags": [
-          "Input API"
+          "Input API - Reasons"
         ],
         "summary": "Update the extension reason by replacing it with another",
         "responses": {
@@ -348,6 +424,33 @@
         "self": {
           "type": "string",
           "format": "uri"
+        }
+      }
+    },
+    "Attachment": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "name": {
+          "type": "string"
+        },
+        "content_type": {
+          "type": "string"
+        },
+        "size": {
+          "type": "number"
+        },
+        "links": {
+          "type": "object",
+          "properties": {
+            "download": {
+              "type": "string",
+              "format": "uri"
+            }
+          }
         }
       }
     }
