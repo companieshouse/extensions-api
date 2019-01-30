@@ -27,4 +27,4 @@ else
 
 fi
 
-exec java ${JAVA_MEM_ARGS} -jar -Dserver.port="${PORT}" "${APP_DIR}/restoration-calculator-service.jar"
+exec java ${JAVA_MEM_ARGS} -jar -Dserver.port="${PORT}" "${APP_DIR}/extensions-api.jar"
