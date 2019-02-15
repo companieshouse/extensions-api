@@ -6,5 +6,5 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Status {
-	StatusEnum status = StatusEnum.OPEN;
+    StatusEnum status = StatusEnum.OPEN;
 }
