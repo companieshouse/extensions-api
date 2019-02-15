@@ -65,7 +65,7 @@
   </dependencies>
 
   <build>
-    <finalName>restoration-calculator-service</finalName>
+    <finalName>extensions-api</finalName>
     <plugins>
       <plugin>
         <groupId>org.springframework.boot</groupId>
