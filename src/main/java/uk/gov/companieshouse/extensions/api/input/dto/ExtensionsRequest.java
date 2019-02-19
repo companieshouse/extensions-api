@@ -1,6 +1,6 @@
 package uk.gov.companieshouse.extensions.api.input.dto;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -14,9 +14,9 @@ public class ExtensionsRequest {
 
     private String user;
     @JsonProperty("accounting_period_start_date")
-    private Date accountingPeriodStartDate;
+    private LocalDate accountingPeriodStartDate;
     @JsonProperty("accounting_period_end_date")
-    private Date accountingPeriodEndDate;
+    private LocalDate accountingPeriodEndDate;
     private List<Reason> reasons;
 
 

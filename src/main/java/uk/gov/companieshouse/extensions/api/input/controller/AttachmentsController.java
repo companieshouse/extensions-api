@@ -1,5 +1,7 @@
 package uk.gov.companieshouse.extensions.api.input.controller;
 
+import java.io.IOException;
+
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,7 +17,13 @@ public class AttachmentsController {
 
     @PostMapping("/{requestId}/attachments")
     public String uploadAttachmentToRequest(@RequestParam("file") MultipartFile file, @PathVariable String requestId) {
-      return "Attachment added";
+      try {
+        return "Attachment added " + new String(file.getBytes(), "UTF-8");
+      } catch (IOException e) {
+       // TODO Auto-generated catch block
+       e.printStackTrace();
+      }
+      return requestId;
     }
 
     @DeleteMapping("/{requestId}/attachments/{attachmentId}")
