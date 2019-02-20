@@ -57,7 +57,7 @@ public class AttachmentsControllerTests {
          MvcResult result = mockMvc.perform(requestBuilder).andReturn();
          assertEquals("false", result.getResponse().getContentAsString());
     }
-    
+
     @Test
     public void testDownloadAttachmentFromRequest() throws Exception {
        RequestBuilder requestBuilder = MockMvcRequestBuilders.get(

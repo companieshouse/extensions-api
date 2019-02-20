@@ -48,24 +48,8 @@ public class RequestControllerTests {
       MvcResult result = mockMvc.perform(requestBuilder).andReturn();
       assertEquals("Request received: User Micky Mock Acc period start: 2019-02-15  Acc period end: 2019-02-15", result.getResponse().getContentAsString());
     }
-    
-    private String buildMockRequest() {
-      return "{\n" + 
-            "  \"user\": \"Micky Mock\",\n" + 
-            "  \"accounting_period_start_date\": \"2019-02-15\",\n" + 
-            "  \"accounting_period_end_date\": \"2019-02-15\",\n" + 
-            "  \"reasons\": [\n" + 
-            "    {\n" + 
-            "      \"reason\": \"string\",\n" + 
-            "      \"additional_text\": \"string\",\n" + 
-            "      \"date_start\": \"2019-02-15\",\n" + 
-            "      \"date_end\": \"2019-02-15\"\n" + 
-            "    }\n" + 
-            "  ]\n" + 
-            "}"; 
-    }
 
-	@Test
+   @Test
     public void testGetExtensionRequestsList() throws Exception {
       RequestBuilder requestBuilder = MockMvcRequestBuilders.get(
              ROOT_URL).accept(
@@ -108,9 +92,25 @@ public class RequestControllerTests {
 
     private ExtensionsRequest buildMockExtensionsRequest() {
          ExtensionsRequest extensionsRequest =  new ExtensionsRequest();
-         extensionsRequest.setUser("Micky Mock");     
-         extensionsRequest.setAccountingPeriodStartDate(LocalDate.of(2017, Month.JULY, 1));     
+         extensionsRequest.setUser("Micky Mock");
+         extensionsRequest.setAccountingPeriodStartDate(LocalDate.of(2017, Month.JULY, 1));
          extensionsRequest.setAccountingPeriodEndDate(LocalDate.of(2018, Month.JUNE, 30));
-         return extensionsRequest;		
+         return extensionsRequest;
     }
+
+    private String buildMockRequest() {
+        return "{\n" + 
+              "  \"user\": \"Micky Mock\",\n" + 
+              "  \"accounting_period_start_date\": \"2019-02-15\",\n" + 
+              "  \"accounting_period_end_date\": \"2019-02-15\",\n" + 
+              "  \"reasons\": [\n" + 
+              "    {\n" + 
+              "      \"reason\": \"string\",\n" + 
+              "      \"additional_text\": \"string\",\n" + 
+              "      \"date_start\": \"2019-02-15\",\n" + 
+              "      \"date_end\": \"2019-02-15\"\n" + 
+              "    }\n" + 
+              "  ]\n" + 
+              "}"; 
+      }
 }

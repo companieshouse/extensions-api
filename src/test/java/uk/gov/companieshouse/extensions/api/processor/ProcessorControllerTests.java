@@ -23,8 +23,7 @@ public class ProcessorControllerTests {
 
     @Autowired
     private MockMvc mockMvc;
- 
-    
+
     @Test
     public void testCreateExtensionRequestResource() throws Exception {
       RequestBuilder requestBuilder = MockMvcRequestBuilders.post(

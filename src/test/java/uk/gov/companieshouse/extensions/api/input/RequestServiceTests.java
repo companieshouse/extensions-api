@@ -15,9 +15,9 @@ import uk.gov.companieshouse.extensions.api.input.service.RequestsService;
 @SpringBootTest
 public class RequestServiceTests {
 
-	@Autowired
+    @Autowired
     private RequestsService requestsService;
-    
+
     @Test
     public void testGetSingleRequest() {
       ExtensionsRequest request = requestsService.getExtensionsRequestById("a1");
