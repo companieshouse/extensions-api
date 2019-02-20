@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+ <modelVersion>4.0.0</modelVersion>
+
+ <groupId>uk.gov.companieshouse</groupId>
+ <artifactId>extensions-api</artifactId>
+ <packaging>jar</packaging>
+ <version>unversioned</version>
+
+ <properties>
+   <maven.compiler.source>1.8</maven.compiler.source>
+   <maven.compiler.target>1.8</maven.compiler.target>
+   <spring-boot.version>2.1.2.RELEASE</spring-boot.version>
+   <structured-logging.version>1.2.0-rc1</structured-logging.version>
+   <junit.version>4.12</junit.version>
+   <project-lombok.version>1.18.2</project-lombok.version>
+
+   <jacoco-maven-plugin.version>0.7.7.201606060606</jacoco-maven-plugin.version>
+   <sonar-maven-plugin.version>3.4.0.905</sonar-maven-plugin.version>
+   <sonar.host.url>${CODE_ANALYSIS_HOST_URL}</sonar.host.url>
+   <sonar.login>${CODE_ANALYSIS_LOGIN}</sonar.login>
+   <sonar.password>${CODE_ANALYSIS_PASSWORD}</sonar.password>
+ </properties>
+
+ <dependencies>
+   <dependency>
+     <groupId>org.springframework.boot</groupId>
+     <artifactId>spring-boot-starter-web</artifactId>
+     <version>${spring-boot.version}</version>
+   </dependency>
+   <dependency>
+     <groupId>junit</groupId>
+     <artifactId>junit</artifactId>
+     <version>${junit.version}</version>
+     <scope>test</scope>
+   </dependency>
+   <dependency>
+     <groupId>org.springframework.boot</groupId>
+     <artifactId>spring-boot-starter-test</artifactId>
+     <version>${spring-boot.version}</version>
+     <scope>test</scope>
+   </dependency>
+   <dependency>
+     <groupId>org.springframework.boot</groupId>
+     <artifactId>spring-boot-starter-data-mongodb</artifactId>
+     <version>${spring-boot.version}</version>
+   </dependency>
+   <dependency>
+     <groupId>org.projectlombok</groupId>
+     <artifactId>lombok</artifactId>
+     <version>${project-lombok.version}</version>
+   </dependency>
+   <dependency>
+     <groupId>org.sonarsource.scanner.maven</groupId>
+     <artifactId>sonar-maven-plugin</artifactId>
+     <version>${sonar-maven-plugin.version}</version>
+   </dependency>
+   <dependency>
+     <groupId>uk.gov.companieshouse</groupId>
+     <artifactId>structured-logging</artifactId>
+     <version>${structured-logging.version}</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <finalName>extensions-api</finalName>
+    <plugins>
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+        <version>${spring-boot.version}</version>
+        <configuration>
+          <mainClass>${start-class}</mainClass>
+          <layout>ZIP</layout>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>repackage</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <version>${jacoco-maven-plugin.version}</version>
+        <executions>
+          <execution>
+            <id>default-prepare-agent</id>
+            <goals>
+              <goal>prepare-agent</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>default-report</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>report</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+  <repositories>
+    <repository>
+      <id>ch-artifactory</id>
+      <url>http://ch-jenkins-2k8.internal.ch:8081/artifactory/libs-release</url>
+    </repository>
+    <repository>
+      <id>ch-artifactory-snapshots</id>
+      <url>http://ch-jenkins-2k8.internal.ch:8081/artifactory/libs-snapshot</url>
+    </repository>
+    <repository>
+      <id>ch-artifactory-ext-rel</id>
+      <url>http://ch-jenkins-2k8.internal.ch:8081/artifactory/ext-release</url>
+    </repository>
+  </repositories>
+
+</project>
