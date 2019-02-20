@@ -1,0 +1,502 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "An API's to support applying for an extension of a filing deadline",
+    "version": "1.0.0",
+    "title": "Companies House extensions API"
+  },
+  "host": "api.companieshouse.gov.uk",
+  "basePath": "/company/{companyNumber}/extensions/requests",
+  "schemes": [
+    "https",
+    "http"
+  ],
+  "tags": [
+    {
+      "name": "Input API - Requests"
+    },
+    {
+      "name": "Input API - Attachments"
+    },
+    {
+      "name": "Input API - Reasons"
+    },
+    {
+      "name": "Processor API"
+    }
+  ],
+  "paths": {
+    "/": {
+      "post": {
+        "parameters": [
+          {
+            "in": "body",
+            "name": "extension request",
+            "schema": {
+              "$ref": "#/definitions/ExtensionRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Input API - Requests"
+        ],
+        "summary": "create a new extension request resource",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "201": {
+            "description": "request created",
+            "schema": {
+              "$ref": "#/definitions/ExtensionRequestFull"
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Input API - Requests"
+        ],
+        "summary": "get a list of extension requests made against a company",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "a list of extension requests",
+            "schema": {
+              "$ref": "#/definitions/ExtensionRequestList"
+            }
+          },
+          "404": {
+            "description": "no extension requests were found for this company"
+          }
+        }
+      }
+    },
+    "/{requestId}": {
+      "parameters": [
+        {
+          "in": "path",
+          "name": "requestId",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "get": {
+        "tags": [
+          "Input API - Requests"
+        ],
+        "summary": "Get a single extension request",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "the extension request resource",
+            "schema": {
+              "$ref": "#/definitions/ExtensionRequestFull"
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Input API - Requests"
+        ],
+        "summary": "Delete an extension request",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "204": {
+            "description": "The extension request was deleted. No body is returned."
+          },
+          "404": {
+            "description": "The extension request was not found"
+          }
+        }
+      }
+    },
+    "/{requestId}/attachments": {
+      "parameters": [
+        {
+          "in": "path",
+          "name": "requestId",
+          "type": "string",
+          "description": "the extension request id",
+          "required": true
+        }
+      ],
+      "post": {
+        "tags": ["Input API - Attachments"],
+        "summary": "upload supporting evidence",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "formData",
+            "name": "upfile",
+            "type": "file",
+            "description": "the file content",
+            "required": true
+          }
+        ],
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "responses": {
+          "201": {
+            "description": "the file was uploaded succesfully",
+            "schema": {
+              "$ref": "#/definitions/Links"
+            }
+          },
+          "404": {
+            "description": "the request does not exist"
+          },
+          "400": {
+            "description": "there was an error processing the request"
+          }
+        }
+      }
+    },
+    "/{requestId}/attachments/{attachmentId}": {
+      "parameters": [
+        {
+          "in": "path",
+          "name": "requestId",
+          "type": "string",
+          "required": true,
+          "description": "the extension request id"
+        },
+        {
+          "in": "path",
+          "name": "attachmentId",
+          "type": "string",
+          "required": true,
+          "description": "the attachment id"
+        }
+      ],
+      "delete": {
+        "tags": ["Input API - Attachments"],
+        "summary": "delete the attachment",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "the attachment was deleted"
+          },
+          "404": {
+            "description": "the attachment does not exist"
+          }
+        }
+      },
+      "get": {
+        "tags": ["Input API - Attachments"],
+        "summary": "download the attachment",
+        "produces": [
+          "application/json",
+          "application/octet-stream",
+          "image/png",
+          "image/jpg",
+          "other..."
+        ],
+        "responses": {
+          "200": {
+            "description": "the file will begin to download",
+            "schema": {
+              "type": "file"
+            }
+          },
+          "404": {
+            "description": "the attachment does not exist"
+          }
+        }
+      }
+    },
+    "/{requestId}/status": {
+      "parameters": [
+        {
+          "in": "path",
+          "name": "requestId",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "post": {
+        "parameters": [
+          {
+            "in": "body",
+            "name": "status",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        ],
+        "tags": [
+          "Processor API"
+        ],
+        "summary": "Update the status of this extension request",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "The status has been updated. If the status is set to 'submitted', then downstream processing will execute and the status can no longer be reverted."
+          }
+        }
+      }
+    },
+    "/{requestId}/reasons": {
+      "parameters": [
+        {
+          "in": "path",
+          "name": "requestId",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "post": {
+        "tags": [
+          "Input API - Reasons"
+        ],
+        "summary": "Add a reason for supporting the extension",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "201": {
+            "description": "reason added to extension",
+            "schema": {
+              "$ref": "#/definitions/ExtensionReason"
+            }
+          }
+        }
+      }
+    },
+    "/{requestId}/reasons/{reasonId}": {
+      "parameters": [
+        {
+          "in": "path",
+          "name": "requestId",
+          "required": true,
+          "type": "string",
+          "description": "The ID representing the extension request"
+        },
+        {
+          "in": "path",
+          "name": "reasonId",
+          "required": true,
+          "type": "string",
+          "description": "The ID representing the extension reason"
+        }
+      ],
+      "delete": {
+        "tags": [
+          "Input API - Reasons"
+        ],
+        "summary": "Delete a reason from this extension request",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "204": {
+            "description": "The reason was removed"
+          }
+        }
+      },
+      "put": {
+        "parameters": [
+          {
+            "in": "body",
+            "name": "Extension reason",
+            "schema": {
+              "$ref": "#/definitions/ExtensionReason"
+            }
+          }
+        ],
+        "tags": [
+          "Input API - Reasons"
+        ],
+        "summary": "Update the extension reason by replacing it with another",
+        "responses": {
+          "200": {
+            "description": "The reason was updated",
+            "schema": {
+              "$ref": "#/definitions/ExtensionReason"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "ExtensionRequestList": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ExtensionRequestFull"
+          }
+        }
+      }
+    },
+    "ExtensionRequest": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "type": "string"
+        },
+        "account_period_start_date": {
+          "type": "string",
+          "format": "date"
+        },
+        "accounting_period_end_date": {
+          "type": "string",
+          "format": "date"
+        },
+        "reasons": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ExtensionReason"
+          }
+        }
+      }
+    },
+    "ExtensionRequestFull": {
+      "allOf": [
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "links": {
+              "$ref": "#/definitions/Links"
+            },
+            "request_date": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "open",
+                "submitted"
+              ]
+            }
+          }
+        },
+        {
+          "type": "object",
+          "properties": {
+            "reasons": {
+              "type": "array",
+              "items": {
+                "allOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "links": {
+                        "$ref": "#/definitions/Links"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "$ref": "#/definitions/ExtensionRequest"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "attachments": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Attachment"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "Status": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "open",
+            "submitted"
+          ]
+        }
+      }
+    },
+    "ExtensionReason": {
+      "type": "object",
+      "properties": {
+        "reason": {
+          "type": "string"
+        },
+        "additional_text": {
+          "type": "string"
+        },
+        "date_start": {
+          "type": "string",
+          "format": "date"
+        },
+        "date_end": {
+          "type": "string",
+          "format": "date"
+        }
+      }
+    },
+    "Links": {
+      "type": "object",
+      "properties": {
+        "self": {
+          "type": "string",
+          "format": "uri"
+        }
+      }
+    },
+    "Attachment": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "name": {
+          "type": "string"
+        },
+        "content_type": {
+          "type": "string"
+        },
+        "size": {
+          "type": "number"
+        },
+        "links": {
+          "type": "object",
+          "properties": {
+            "download": {
+              "type": "string",
+              "format": "uri"
+            },
+            "self": {
+              "type": "string",
+              "format": "uri"
+            }
+          }
+        }
+      }
+    }
+  }
+}
