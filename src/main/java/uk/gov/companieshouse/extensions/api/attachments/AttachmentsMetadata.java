@@ -15,9 +15,9 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class AttachmentsMetadata implements Serializable {
-	
-	private static final long serialVersionUID = -6411409736141740990L;
-	
-	private String accessUrl;
-	private String scanResult;
+
+    private static final long serialVersionUID = -6411409736141740990L;
+
+    private String accessUrl;
+    private String scanResult;
 }

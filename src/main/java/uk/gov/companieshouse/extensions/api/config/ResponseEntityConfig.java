@@ -8,13 +8,13 @@ import uk.gov.companieshouse.service.rest.response.PluggableResponseEntityFactor
 
 @Configuration
 public class ResponseEntityConfig {
-	
+
     @Bean
     public PluggableResponseEntityFactory createResponseFactory() {
         return PluggableResponseEntityFactory
-        		.builder()
-        		.addStandardFactories()
-        		.add(new FileUploadedResponseFactory())
-        		.build();
+                .builder()
+                .addStandardFactories()
+                .add(new FileUploadedResponseFactory())
+                .build();
     }
 }

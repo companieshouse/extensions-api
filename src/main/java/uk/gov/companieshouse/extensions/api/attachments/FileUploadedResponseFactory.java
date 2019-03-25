@@ -11,7 +11,7 @@ public class FileUploadedResponseFactory implements ResponseEntityFactory {
 	
     @Override
     public <T> ResponseEntity<ChResponseBody<T>> createResponseEntity(
-    		ServiceResult<T> serviceResult) {
+            ServiceResult<T> serviceResult) {
         ChResponseBody<T> body = ChResponseBody.createNormalBody(serviceResult.getData());
         return ResponseEntity.accepted().body(body);
     }
@@ -20,5 +20,4 @@ public class FileUploadedResponseFactory implements ResponseEntityFactory {
     public ServiceResultStatus getStatusToMatch() {
         return ServiceResultStatus.ACCEPTED;
     }
-
 }

@@ -47,8 +47,8 @@ public class AttachmentsControllerTests {
 
          MvcResult result = mockMvc.perform(requestBuilder).andReturn();
          String expectedJsonResponse = new ObjectMapper()
-        		 .writer()
-        		 .writeValueAsString(new AttachmentsMetadata("/dummy.url", "scanned"));
+                 .writer()
+                 .writeValueAsString(new AttachmentsMetadata("/dummy.url", "scanned"));
          assertEquals(expectedJsonResponse, result.getResponse().getContentAsString());
     }
 

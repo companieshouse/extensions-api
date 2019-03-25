@@ -19,18 +19,18 @@ import uk.gov.companieshouse.service.rest.response.PluggableResponseEntityFactor
 @RequestMapping("/api/extensions/requests")
 public class AttachmentsController {
 
-	private PluggableResponseEntityFactory responseEntityFactory;
-	
-	@Autowired
-	public AttachmentsController(PluggableResponseEntityFactory responseEntityFactory) {
-		this.responseEntityFactory = responseEntityFactory;
-	}
-	
+    private PluggableResponseEntityFactory responseEntityFactory;
+
+    @Autowired
+    public AttachmentsController(PluggableResponseEntityFactory responseEntityFactory) {
+        this.responseEntityFactory = responseEntityFactory;
+    }
+
     @PostMapping("/{requestId}/attachments")
     public ResponseEntity<ChResponseBody<AttachmentsMetadata>> uploadAttachmentToRequest(
-    		@RequestParam("file") MultipartFile file, @PathVariable String requestId) {
-      return responseEntityFactory.createResponse(
-    		  ServiceResult.accepted(new AttachmentsMetadata("/dummy.url", "scanned")));
+            @RequestParam("file") MultipartFile file, @PathVariable String requestId) {
+        return responseEntityFactory.createResponse(
+                ServiceResult.accepted(new AttachmentsMetadata("/dummy.url", "scanned")));
     }
 
     @DeleteMapping("/{requestId}/attachments/{attachmentId}")
