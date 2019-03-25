@@ -1,4 +1,4 @@
-package uk.gov.companieshouse.extensions.api.input.dto;
+package uk.gov.companieshouse.extensions.api.requests;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Getter;
 import lombok.Setter;
+import uk.gov.companieshouse.extensions.api.reasons.Reason;
 
 @Getter
 @Setter

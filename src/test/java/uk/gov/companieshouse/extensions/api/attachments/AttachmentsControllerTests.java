@@ -1,4 +1,4 @@
-package uk.gov.companieshouse.extensions.api.input;
+package uk.gov.companieshouse.extensions.api.attachments;
 
 import static org.junit.Assert.assertEquals;
 
@@ -9,7 +9,8 @@ import java.util.HashMap;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -18,10 +19,11 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import uk.gov.companieshouse.extensions.api.input.controller.AttachmentsController;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RunWith(SpringRunner.class)
-@WebMvcTest(value = AttachmentsController.class)
+@SpringBootTest
+@AutoConfigureMockMvc 
 public class AttachmentsControllerTests {
 
     private static final String ROOT_URL = "/api/extensions/requests/a1/attachments";
@@ -44,8 +46,10 @@ public class AttachmentsControllerTests {
                  .accept(MediaType.APPLICATION_JSON);
 
          MvcResult result = mockMvc.perform(requestBuilder).andReturn();
-         String expected = "Attachment added Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.";
-         assertEquals(expected, result.getResponse().getContentAsString());
+         String expectedJsonResponse = new ObjectMapper()
+        		 .writer()
+        		 .writeValueAsString(new AttachmentsMetadata("/dummy.url", "scanned"));
+         assertEquals(expectedJsonResponse, result.getResponse().getContentAsString());
     }
 
     @Test

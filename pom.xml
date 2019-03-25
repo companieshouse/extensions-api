@@ -16,6 +16,7 @@
    <structured-logging.version>1.2.0-rc1</structured-logging.version>
    <junit.version>4.12</junit.version>
    <project-lombok.version>1.18.2</project-lombok.version>
+   <rest-service-common-library.version>0.0.3</rest-service-common-library.version>
 
    <jacoco-maven-plugin.version>0.7.7.201606060606</jacoco-maven-plugin.version>
    <sonar-maven-plugin.version>3.4.0.905</sonar-maven-plugin.version>
@@ -24,6 +25,12 @@
    <sonar.password>${CODE_ANALYSIS_PASSWORD}</sonar.password>
  </properties>
 
+ <parent>
+   <groupId>uk.gov.companieshouse</groupId>
+   <artifactId>companies-house-parent</artifactId>
+   <version>1.0.0-rc2</version>
+ </parent>
+ 
  <dependencies>
    <dependency>
      <groupId>org.springframework.boot</groupId>
@@ -61,8 +68,13 @@
      <groupId>uk.gov.companieshouse</groupId>
      <artifactId>structured-logging</artifactId>
      <version>${structured-logging.version}</version>
-    </dependency>
-  </dependencies>
+   </dependency>
+   <dependency>
+     <groupId>uk.gov.companieshouse</groupId>
+     <artifactId>rest-service-common-library</artifactId>
+     <version>${rest-service-common-library.version}</version>
+   </dependency>
+ </dependencies>
 
   <build>
     <finalName>extensions-api</finalName>
@@ -106,20 +118,5 @@
       </plugin>
     </plugins>
   </build>
-
-  <repositories>
-    <repository>
-      <id>ch-artifactory</id>
-      <url>http://ch-jenkins-2k8.internal.ch:8081/artifactory/libs-release</url>
-    </repository>
-    <repository>
-      <id>ch-artifactory-snapshots</id>
-      <url>http://ch-jenkins-2k8.internal.ch:8081/artifactory/libs-snapshot</url>
-    </repository>
-    <repository>
-      <id>ch-artifactory-ext-rel</id>
-      <url>http://ch-jenkins-2k8.internal.ch:8081/artifactory/ext-release</url>
-    </repository>
-  </repositories>
 
 </project>

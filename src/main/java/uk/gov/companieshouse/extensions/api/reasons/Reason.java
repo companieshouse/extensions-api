@@ -1,4 +1,4 @@
-package uk.gov.companieshouse.extensions.api.input.dto;
+package uk.gov.companieshouse.extensions.api.reasons;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
