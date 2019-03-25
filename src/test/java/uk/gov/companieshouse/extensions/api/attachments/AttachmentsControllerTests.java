@@ -11,6 +11,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -50,6 +51,7 @@ public class AttachmentsControllerTests {
                  .writer()
                  .writeValueAsString(new AttachmentsMetadata("/dummy.url", "scanned"));
          assertEquals(expectedJsonResponse, result.getResponse().getContentAsString());
+         assertEquals(HttpStatus.ACCEPTED.value(), result.getResponse().getStatus());
     }
 
     @Test
