@@ -1,11 +1,9 @@
-package uk.gov.companieshouse.extensions.api.input.service;
+package uk.gov.companieshouse.extensions.api.requests;
 
 import java.time.LocalDate;
 import java.time.Month;
 
 import org.springframework.stereotype.Component;
-
-import uk.gov.companieshouse.extensions.api.input.dto.ExtensionsRequest;
 
 @Component
 public class RequestsService {

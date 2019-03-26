@@ -1,4 +1,4 @@
-package uk.gov.companieshouse.extensions.api.input;
+package uk.gov.companieshouse.extensions.api.requests;
 
 import static org.junit.Assert.assertEquals;
 
@@ -8,8 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import uk.gov.companieshouse.extensions.api.input.dto.ExtensionsRequest;
-import uk.gov.companieshouse.extensions.api.input.service.RequestsService;
+import uk.gov.companieshouse.extensions.api.requests.ExtensionsRequest;
+import uk.gov.companieshouse.extensions.api.requests.RequestsService;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest

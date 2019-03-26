@@ -13,7 +13,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import uk.gov.companieshouse.extensions.api.processor.controller.ProcessorController;
+import uk.gov.companieshouse.extensions.api.processor.ProcessorController;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(value = ProcessorController.class)

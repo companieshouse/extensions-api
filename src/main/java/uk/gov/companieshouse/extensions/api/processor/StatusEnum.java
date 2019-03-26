@@ -1,4 +1,4 @@
-package uk.gov.companieshouse.extensions.api.processor.dto;
+package uk.gov.companieshouse.extensions.api.processor;
 
 public enum StatusEnum {
     OPEN("Open");

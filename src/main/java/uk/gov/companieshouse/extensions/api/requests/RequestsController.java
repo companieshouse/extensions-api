@@ -1,4 +1,4 @@
-package uk.gov.companieshouse.extensions.api.input.controller;
+package uk.gov.companieshouse.extensions.api.requests;
 
 import java.util.List;
 
@@ -10,9 +10,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import uk.gov.companieshouse.extensions.api.input.dto.ExtensionsRequest;
-import uk.gov.companieshouse.extensions.api.input.service.RequestsService;
 
 @RestController
 @RequestMapping("/api/extensions/requests")

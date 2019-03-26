@@ -1,4 +1,4 @@
-package uk.gov.companieshouse.extensions.api.input;
+package uk.gov.companieshouse.extensions.api.reasons;
 
 import static org.junit.Assert.assertEquals;
 
@@ -13,7 +13,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import uk.gov.companieshouse.extensions.api.input.controller.ReasonsController;
+import uk.gov.companieshouse.extensions.api.reasons.ReasonsController;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(value = ReasonsController.class)
