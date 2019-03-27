@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/company/{companyNumber}/extensions/requests")
+@RequestMapping("${api.endpoint.extensions}")
 public class RequestsController {
 
     @Autowired

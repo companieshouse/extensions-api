@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/extensions/processor")
+@RequestMapping("${api.endpoint.extensions}")
 public class ProcessorController {
 
     @PostMapping("/{requestId}/status")
