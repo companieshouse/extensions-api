@@ -1,5 +1,6 @@
 package uk.gov.companieshouse.extensions.api.requests;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/extensions/requests")
+@RequestMapping("${api.endpoint.extensions}")
 public class RequestsController {
 
     @Autowired
@@ -25,7 +26,9 @@ public class RequestsController {
 
     @GetMapping("/")
     public List<ExtensionsRequest> getExtensionRequestsList() {
-      return null;
+        ExtensionsRequest er = new ExtensionsRequest();
+        er.setUser("user one");
+      return Arrays.asList(er);
     }
 
     @GetMapping("/{requestId}")

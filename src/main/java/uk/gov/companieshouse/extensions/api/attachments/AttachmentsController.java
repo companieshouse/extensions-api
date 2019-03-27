@@ -16,7 +16,7 @@ import uk.gov.companieshouse.service.rest.response.ChResponseBody;
 import uk.gov.companieshouse.service.rest.response.PluggableResponseEntityFactory;
 
 @RestController
-@RequestMapping("/api/extensions/requests")
+@RequestMapping("${api.endpoint.extensions}")
 public class AttachmentsController {
 
     private PluggableResponseEntityFactory responseEntityFactory;
