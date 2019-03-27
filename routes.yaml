@@ -1,0 +1,6 @@
+app_name: extensions-api
+group: api 
+weight: 900
+routes:
+  1: ^/company/(.*)/extensions/requests/.*
+
