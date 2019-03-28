@@ -31,6 +31,7 @@ package:
 	@test -s ./$(final_name).jar || { echo "ERROR: Service JAR not found"; exit 1; }
 	$(eval tmpdir:=$(shell mktemp -d build-XXXXXXXXXX))
 	cp ./start.sh $(tmpdir)
+	cp ./routes.yaml $(tmpdir)
 	cp ./$(artifact_name).jar $(tmpdir)/$(final_name).jar
 	cd $(tmpdir); zip -r ../$(final_name)-$(version).zip *
 	rm -rf $(tmpdir)
