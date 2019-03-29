@@ -1,0 +1,33 @@
+{
+  "id": "/extensions-api",
+  "cmd": "bash ./start.sh $PORT http://config-server1-{{environment}}.dev.aws.internal:8080 {{environment}} extensions-api",
+  "cpus": 0.25,
+  "mem": 128,
+  "disk": 0,
+  "instances": 1,
+  "labels": {
+    "RELEASE": "{{release}}",
+    "HAPROXY_0_BACKEND_WEIGHT": "999000",
+    "HAPROXY_0_MODE": "http",
+    "HAPROXY_GROUP": "api",
+    "HAPROXY_0_BALANCE": "roundrobin",
+    "HAPROXY_0_PORT": "18405",
+    "HAPROXY_0_PATH": "^/company/(.*)/extensions/requests/.*",
+    "HAPROXY_0_VHOST": "notused"
+  },
+  "portDefinitions": [
+    {
+      "port": 18405,
+      "protocol": "tcp",
+      "labels": {}
+    }
+  ],
+  "fetch": [
+    {
+      "uri": "http://release-server1-{{environment}}.dev.aws.internal:8080/extensions-api-{{release}}.zip",
+      "extract": true,
+      "executable": false,
+      "cache": false
+    }
+  ]
+}
