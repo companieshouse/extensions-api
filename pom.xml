@@ -77,7 +77,7 @@
  </dependencies>
 
   <build>
-    <finalName>extensions-api</finalName>
+    <finalName>${artifactId}-${version}</finalName>
     <plugins>
       <plugin>
         <groupId>org.springframework.boot</groupId>
