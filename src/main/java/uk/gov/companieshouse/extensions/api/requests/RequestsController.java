@@ -33,8 +33,7 @@ public class RequestsController {
 
     @GetMapping("/{requestId}")
     public ExtensionsRequest getSingleExtensionRequestById(@PathVariable String requestId) {
-      ExtensionsRequest extensionsRequest = requestsService.getExtensionsRequestById(requestId);
-      return extensionsRequest;
+        return requestsService.getExtensionsRequestById(requestId);
     }
 
     @DeleteMapping("/{requestId}")
