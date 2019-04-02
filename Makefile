@@ -35,6 +35,7 @@ endif
 	cp ./routes.yaml $(tmpdir)
 	cp ./target/$(artifact_name)-$(version).jar $(tmpdir)/$(artifact_name).jar
 	cd $(tmpdir); zip -r ../$(artifact_name)-$(version).zip *
+	rm -rf $(tmpdir)
 
 .PHONY: dist
 dist: clean build package
