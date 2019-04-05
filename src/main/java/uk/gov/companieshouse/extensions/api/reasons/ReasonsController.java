@@ -12,18 +12,18 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("${api.endpoint.extensions}")
 public class ReasonsController {
 
-    @PostMapping("/{requestId}/reasons")
-    public String addReasonToRequest(@RequestBody Reason reason, @PathVariable String requestId) {
-      return "Reason added: " + reason.toString();
+    @PostMapping("/{requestId}/extensionReasons")
+    public String addReasonToRequest(@RequestBody ExtensionReason extensionReason, @PathVariable String requestId) {
+      return "ExtensionReason added: " + extensionReason.toString();
     }
 
-    @DeleteMapping("/{requestId}/reasons/{reasonId}")
+    @DeleteMapping("/{requestId}/extensionReasons/{reasonId}")
     public boolean deleteReasonFromRequest(@PathVariable String requestId, @PathVariable String reasonId) {
       return false;
     }
 
-    @PutMapping("/{requestId}/reasons/{reasonId}")
-    public String updateReasonOnRequest(@RequestBody Reason reason, @PathVariable String requestId, @PathVariable String reasonId) {
-      return "Reason updated: " + reason.toString();
+    @PutMapping("/{requestId}/extensionReasons/{reasonId}")
+    public String updateReasonOnRequest(@RequestBody ExtensionReason extensionReason, @PathVariable String requestId, @PathVariable String reasonId) {
+      return "ExtensionReason updated: " + extensionReason.toString();
     }	
 }

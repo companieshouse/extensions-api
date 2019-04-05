@@ -1,9 +1,9 @@
-package uk.gov.companieshouse.extensions.api;
+package uk.gov.companieshouse.extensions.api.config;
 
 import org.springframework.stereotype.Component;
 
 @Component
-public class MongoDbConnectionPoolProperties {
+public class MongoDBConnectionPoolProperties {
 
     private static String MONGO_CONNECTION_POOL_MIN_SIZE_KEY = "MONGO_CONNECTION_POOL_MIN_SIZE";
     private static String MONGO_CONNECTION_MAX_IDLE_KEY = "MONGO_CONNECTION_MAX_IDLE_TIME";
@@ -20,7 +20,7 @@ public class MongoDbConnectionPoolProperties {
      * Mongo Connection Pool settings. Sets default values in case
      * the environment variables are not supplied.
      */
-    public MongoDbConnectionPoolProperties() {
+    public MongoDBConnectionPoolProperties() {
         this.minSize = System.getenv(MONGO_CONNECTION_POOL_MIN_SIZE_KEY) != null ?
                 Integer.valueOf(System.getenv(MONGO_CONNECTION_POOL_MIN_SIZE_KEY)) : 1;
         this.maxConnectionIdleTimeMS = System.getenv(MONGO_CONNECTION_MAX_IDLE_KEY) != null ?
