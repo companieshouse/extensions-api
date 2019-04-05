@@ -7,17 +7,22 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.mongodb.core.mapping.Document;
 import uk.gov.companieshouse.extensions.api.reasons.Reason;
 
 @Getter
 @Setter
-public class ExtensionsRequest {
+@Document(collection = "extension_requests")
+public class ExtensionRequest {
 
     private String user;
+
     @JsonProperty("accounting_period_start_date")
     private LocalDate accountingPeriodStartDate;
+
     @JsonProperty("accounting_period_end_date")
     private LocalDate accountingPeriodEndDate;
+
     private List<Reason> reasons;
 
 
