@@ -19,10 +19,6 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import uk.gov.companieshouse.extensions.api.requests.ExtensionsRequest;
-import uk.gov.companieshouse.extensions.api.requests.RequestsController;
-import uk.gov.companieshouse.extensions.api.requests.RequestsService;
-
 @RunWith(SpringRunner.class)
 @WebMvcTest(value = RequestsController.class)
 public class RequestControllerTests {
@@ -61,10 +57,10 @@ public class RequestControllerTests {
     
     @Test
     public void testGetSingleExtentionRequest() throws Exception {
-      ExtensionsRequest mockExtensionsRequest = buildMockExtensionsRequest();
+      ExtensionRequest mockExtensionRequest = buildMockExtensionsRequest();
       Mockito.when(
         requestsService.getExtensionsRequestById(Mockito.anyString()))
-           .thenReturn(mockExtensionsRequest);
+           .thenReturn(mockExtensionRequest);
 
       RequestBuilder requestBuilder = MockMvcRequestBuilders.get(
              REQUEST_BY_ID_URL).accept(
@@ -90,12 +86,12 @@ public class RequestControllerTests {
       assertEquals("false", result.getResponse().getContentAsString());
     }
 
-    private ExtensionsRequest buildMockExtensionsRequest() {
-         ExtensionsRequest extensionsRequest =  new ExtensionsRequest();
-         extensionsRequest.setUser("Micky Mock");
-         extensionsRequest.setAccountingPeriodStartDate(LocalDate.of(2017, Month.JULY, 1));
-         extensionsRequest.setAccountingPeriodEndDate(LocalDate.of(2018, Month.JUNE, 30));
-         return extensionsRequest;
+    private ExtensionRequest buildMockExtensionsRequest() {
+         ExtensionRequest extensionRequest =  new ExtensionRequest();
+         extensionRequest.setUser("Micky Mock");
+         extensionRequest.setAccountingPeriodStartDate(LocalDate.of(2017, Month.JULY, 1));
+         extensionRequest.setAccountingPeriodEndDate(LocalDate.of(2018, Month.JUNE, 30));
+         return extensionRequest;
     }
 
     private String buildMockRequest() {

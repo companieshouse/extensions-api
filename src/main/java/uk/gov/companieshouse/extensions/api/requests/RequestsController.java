@@ -19,20 +19,26 @@ public class RequestsController {
     @Autowired
     private RequestsService requestsService;
 
+    @Autowired
+    private ExtensionRequestsRepository extensionRequestsRepository;
+
     @PostMapping("/")
-    public String createExtensionRequestResource(@RequestBody ExtensionsRequest request) {
-      return "Request received: " + request.toString();
+    public String createExtensionRequestResource(@RequestBody ExtensionRequest request) {
+
+        extensionRequestsRepository.insert(request);
+
+        return "Request received: " + request.toString();
     }
 
     @GetMapping("/")
-    public List<ExtensionsRequest> getExtensionRequestsList() {
-        ExtensionsRequest er = new ExtensionsRequest();
+    public List<ExtensionRequest> getExtensionRequestsList() {
+        ExtensionRequest er = new ExtensionRequest();
         er.setUser("user one");
       return Arrays.asList(er);
     }
 
     @GetMapping("/{requestId}")
-    public ExtensionsRequest getSingleExtensionRequestById(@PathVariable String requestId) {
+    public ExtensionRequest getSingleExtensionRequestById(@PathVariable String requestId) {
         return requestsService.getExtensionsRequestById(requestId);
     }
 
