@@ -1,18 +1,12 @@
 package uk.gov.companieshouse.extensions.api.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import uk.gov.companieshouse.environment.EnvironmentReader;
 
-@Component
 public class MongoDBConnectionPoolProperties {
 
     private static String MONGO_CONNECTION_POOL_MIN_SIZE_KEY = "MONGO_CONNECTION_POOL_MIN_SIZE";
     private static String MONGO_CONNECTION_MAX_IDLE_KEY = "MONGO_CONNECTION_MAX_IDLE_TIME";
     private static String MONGO_CONNECTION_MAX_LIFE_KEY = "MONGO_CONNECTION_MAX_LIFE_TIME";
-
-    @Autowired
-    private EnvironmentReader environmentReader;
 
     private int minSize;
 
@@ -25,7 +19,7 @@ public class MongoDBConnectionPoolProperties {
      * Mongo Connection Pool settings. Sets default values in case
      * the environment variables are not supplied.
      */
-    public MongoDBConnectionPoolProperties() {
+    public MongoDBConnectionPoolProperties(EnvironmentReader environmentReader) {
         Integer optionalMinSize = environmentReader.getOptionalInteger(MONGO_CONNECTION_POOL_MIN_SIZE_KEY);
         Integer optionalMaxConnectionIdleTimeMS = environmentReader.getOptionalInteger(MONGO_CONNECTION_MAX_IDLE_KEY);
         Integer optionalMaxConnectionLifeTimeMS = environmentReader.getOptionalInteger(MONGO_CONNECTION_MAX_LIFE_KEY);
