@@ -27,14 +27,13 @@ public class RequestsController {
     @PostMapping("/")
     public ExtensionRequest createExtensionRequestResource(@RequestBody ExtensionCreateRequest extensionCreateRequest) {
 
-        ExtensionRequest extensionRequest = ExtensionRequest.builder()
-            .id(UUID.randomUUID())
-            .user(extensionCreateRequest.getUser())
-            .status(RequestStatus.OPEN)
-            .requestDate(LocalDateTime.now())
-            .accountingPeriodStartDate(extensionCreateRequest.getAccountingPeriodStartDate())
-            .accountingPeriodEndDate(extensionCreateRequest.getAccountingPeriodEndDate())
-            .build();
+        ExtensionRequest extensionRequest = new ExtensionRequest();
+        extensionRequest.setId(UUID.randomUUID());
+        extensionRequest.setUser(extensionCreateRequest.getUser());
+        extensionRequest.setStatus(RequestStatus.OPEN);
+        extensionRequest.setRequestDate(LocalDateTime.now());
+        extensionRequest.setAccountingPeriodStartDate(extensionCreateRequest.getAccountingPeriodStartDate());
+        extensionRequest.setAccountingPeriodEndDate(extensionCreateRequest.getAccountingPeriodEndDate());
 
         extensionRequestsRepository.insert(extensionRequest);
 
@@ -43,7 +42,7 @@ public class RequestsController {
 
     @GetMapping("/")
     public List<ExtensionRequest> getExtensionRequestsList() {
-        ExtensionRequest er = ExtensionRequest.builder().build();
+        ExtensionRequest er = new ExtensionRequest();
         er.setUser("user one");
       return Arrays.asList(er);
     }

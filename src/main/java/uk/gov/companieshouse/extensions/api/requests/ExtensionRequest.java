@@ -7,7 +7,6 @@ import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -16,7 +15,6 @@ import uk.gov.companieshouse.service.links.Links;
 
 @Getter
 @Setter
-@Builder
 @Document(collection = "extension_requests")
 public class ExtensionRequest {
 

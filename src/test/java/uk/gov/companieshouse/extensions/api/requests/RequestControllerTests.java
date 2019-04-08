@@ -93,11 +93,11 @@ public class RequestControllerTests {
     }
 
     private ExtensionRequest buildMockExtensionsRequest() {
-         return ExtensionRequest.builder()
-             .user("Micky Mock")
-             .accountingPeriodStartDate(LocalDate.of(2017, Month.JULY, 1))
-             .accountingPeriodEndDate(LocalDate.of(2018, Month.JUNE, 30))
-             .build();
+         ExtensionRequest extensionRequest =  new ExtensionRequest();
+         extensionRequest.setUser("Micky Mock");
+         extensionRequest.setAccountingPeriodStartDate(LocalDate.of(2017, Month.JULY, 1));
+         extensionRequest.setAccountingPeriodEndDate(LocalDate.of(2018, Month.JUNE, 30));
+         return extensionRequest;
     }
 
     private String buildMockRequest() {
