@@ -9,11 +9,11 @@ import org.springframework.stereotype.Component;
 public class RequestsService {
 
     public ExtensionRequest getExtensionsRequestById(String id){
-        ExtensionRequest extensionRequest =  new ExtensionRequest();
-        extensionRequest.setUser("Joe Bloggs");
-        extensionRequest.setAccountingPeriodStartDate(LocalDate.of(2018, Month.APRIL, 1));
-        extensionRequest.setAccountingPeriodEndDate(LocalDate.of(2019, Month.MARCH, 31));
-        return extensionRequest;
+        return ExtensionRequest.builder()
+            .user("Joe Bloggs")
+            .accountingPeriodStartDate(LocalDate.of(2018, Month.APRIL, 1))
+            .accountingPeriodEndDate(LocalDate.of(2019, Month.MARCH, 31))
+            .build();
     }
 
 }

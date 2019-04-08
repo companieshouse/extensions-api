@@ -7,15 +7,16 @@ import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.mongodb.core.mapping.Document;
-import uk.gov.companieshouse.extensions.api.attachments.Attachment;
 import uk.gov.companieshouse.extensions.api.reasons.ExtensionReason;
 import uk.gov.companieshouse.service.links.Links;
 
 @Getter
 @Setter
+@Builder
 @Document(collection = "extension_requests")
 public class ExtensionRequest {
 
@@ -37,8 +38,6 @@ public class ExtensionRequest {
     private LocalDate accountingPeriodEndDate;
 
     private List<ExtensionReason> reasons;
-
-    private List<Attachment> attachments;
 
 
     public String toString() {
