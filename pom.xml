@@ -17,6 +17,7 @@
    <junit.version>4.12</junit.version>
    <project-lombok.version>1.18.2</project-lombok.version>
    <rest-service-common-library.version>0.0.3</rest-service-common-library.version>
+   <environment-reader-library.version>1.3.2</environment-reader-library.version>
 
    <jacoco-maven-plugin.version>0.7.7.201606060606</jacoco-maven-plugin.version>
    <sonar-maven-plugin.version>3.4.0.905</sonar-maven-plugin.version>
@@ -73,6 +74,11 @@
      <groupId>uk.gov.companieshouse</groupId>
      <artifactId>rest-service-common-library</artifactId>
      <version>${rest-service-common-library.version}</version>
+   </dependency>
+   <dependency>
+     <groupId>uk.gov.companieshouse</groupId>
+     <artifactId>environment-reader-library</artifactId>
+     <version>${environment-reader-library.version}</version>
    </dependency>
  </dependencies>
 

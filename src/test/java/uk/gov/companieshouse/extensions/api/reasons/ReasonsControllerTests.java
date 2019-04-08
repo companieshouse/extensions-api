@@ -19,8 +19,8 @@ import uk.gov.companieshouse.extensions.api.reasons.ReasonsController;
 @WebMvcTest(value = ReasonsController.class)
 public class ReasonsControllerTests {
 
-    private static final String ROOT_URL = "/api/extensions/requests/a1/reasons/";
-    private static final String SPECIFIC_URL = "/api/extensions/requests/a1/reasons/b2";
+    private static final String ROOT_URL = "/api/extensions/requests/a1/extensionReasons/";
+    private static final String SPECIFIC_URL = "/api/extensions/requests/a1/extensionReasons/b2";
 
     @Autowired
     private MockMvc mockMvc;
@@ -34,7 +34,7 @@ public class ReasonsControllerTests {
                   .accept(MediaType.APPLICATION_JSON);
 
           MvcResult result = mockMvc.perform(requestBuilder).andReturn();
-          assertEquals("Reason added: Reason illness Additional text: string  Date start: 2019-02-15  Date end: 2019-02-15", result.getResponse().getContentAsString());
+          assertEquals("ExtensionReason added: ExtensionReason illness Additional text: string  Date start: 2019-02-15  Date end: 2019-02-15", result.getResponse().getContentAsString());
     }
 
     @Test
@@ -56,7 +56,7 @@ public class ReasonsControllerTests {
                 .accept(MediaType.APPLICATION_JSON);
 
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
-        assertEquals("Reason updated: Reason illness Additional text: string  Date start: 2019-02-15  Date end: 2019-02-15", result.getResponse().getContentAsString());
+        assertEquals("ExtensionReason updated: ExtensionReason illness Additional text: string  Date start: 2019-02-15  Date end: 2019-02-15", result.getResponse().getContentAsString());
     }
 
     private String buildMockReason() {

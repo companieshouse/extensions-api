@@ -5,13 +5,16 @@ import static org.junit.Assert.assertEquals;
 import java.time.LocalDate;
 import java.time.Month;
 
+import com.mongodb.MongoClientOptions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -31,6 +34,9 @@ public class RequestControllerTests {
  
     @MockBean
     private RequestsService requestsService;
+
+    @MockBean
+    private ExtensionRequestsRepository extensionRequestsRepository;
 
     @Test
     public void testCreateExtensionRequestResource() throws Exception {
@@ -68,7 +74,7 @@ public class RequestControllerTests {
       
       MvcResult result = mockMvc.perform(requestBuilder).andReturn();
       String expected = 
-          "{\"user\":\"Micky Mock\",\"reasons"
+          "{\"user\":\"Micky Mock\",\"extensionReasons"
           + "\":null,\"accounting_period_start_date\":\"2017-07-01\","
           + "\"accounting_period_end_date\":\"2018-06-30\"}";
 
@@ -99,7 +105,7 @@ public class RequestControllerTests {
               "  \"user\": \"Micky Mock\",\n" + 
               "  \"accounting_period_start_date\": \"2019-02-15\",\n" + 
               "  \"accounting_period_end_date\": \"2019-02-15\",\n" + 
-              "  \"reasons\": [\n" + 
+              "  \"extensionReasons\": [\n" +
               "    {\n" + 
               "      \"reason\": \"string\",\n" + 
               "      \"additional_text\": \"string\",\n" + 

@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class ReasonsController {
 
     @PostMapping("/{requestId}/reasons")
-    public String addReasonToRequest(@RequestBody Reason reason, @PathVariable String requestId) {
-      return "Reason added: " + reason.toString();
+    public String addReasonToRequest(@RequestBody ExtensionReason extensionReason, @PathVariable String requestId) {
+      return "ExtensionReason added: " + extensionReason.toString();
     }
 
     @DeleteMapping("/{requestId}/reasons/{reasonId}")
@@ -23,7 +23,7 @@ public class ReasonsController {
     }
 
     @PutMapping("/{requestId}/reasons/{reasonId}")
-    public String updateReasonOnRequest(@RequestBody Reason reason, @PathVariable String requestId, @PathVariable String reasonId) {
-      return "Reason updated: " + reason.toString();
+    public String updateReasonOnRequest(@RequestBody ExtensionReason extensionReason, @PathVariable String requestId, @PathVariable String reasonId) {
+      return "ExtensionReason updated: " + extensionReason.toString();
     }	
 }
