@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * MongoDB connectionPoolProperties .
+ * MongoDB Properties .
  */
 @Configuration
 public class MongoDBConfiguration {
