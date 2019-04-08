@@ -12,6 +12,7 @@ import lombok.Setter;
 import org.springframework.data.mongodb.core.mapping.Document;
 import uk.gov.companieshouse.extensions.api.attachments.Attachment;
 import uk.gov.companieshouse.extensions.api.reasons.ExtensionReason;
+import uk.gov.companieshouse.service.links.Links;
 
 @Getter
 @Setter
@@ -22,7 +23,7 @@ public class ExtensionRequest {
 
     private String user;
 
-    // TODO - links
+    private Links links;
 
     @JsonProperty("request_date")
     private LocalDateTime requestDate;

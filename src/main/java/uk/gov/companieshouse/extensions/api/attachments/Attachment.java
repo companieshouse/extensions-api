@@ -3,8 +3,7 @@ package uk.gov.companieshouse.extensions.api.attachments;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.Map;
+import uk.gov.companieshouse.service.links.Links;
 import java.util.UUID;
 
 @Getter
@@ -20,6 +19,5 @@ public class Attachment {
 
     private long size;
 
-    // TODO - should these be just 2 class fields - download + self?
-    private Map<String, String> links;
+    private Links links;
 }
