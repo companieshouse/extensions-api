@@ -32,6 +32,7 @@ public class RequestControllerUnitTest {
         ResponseEntity<ExtensionRequest> response =
             controller.createExtensionRequestResource(dummyRequest());
         assertEquals("Micky Mock", response.getBody().getUser());
+        assertEquals("//placeholder-uri", response.getHeaders().getLocation().toString());
     }
 
     @Test
