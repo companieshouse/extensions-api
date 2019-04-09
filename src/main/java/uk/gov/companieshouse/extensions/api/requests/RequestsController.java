@@ -27,15 +27,18 @@ public class RequestsController {
     private ExtensionRequestsRepository extensionRequestsRepository;
 
     @PostMapping("/")
-    public ResponseEntity<String> createExtensionRequestResource(@RequestBody ExtensionRequest request) {
-        request.setId(UUID.randomUUID());
-        request.setStatus(RequestStatus.OPEN);
-        // TODO should request date be date application submitted (on end screen)?
-        request.setRequestDate(LocalDateTime.now());
+    public ResponseEntity<ExtensionRequest> createExtensionRequestResource(@RequestBody ExtensionCreateRequest extensionCreateRequest) {
+        ExtensionRequest extensionRequest = new ExtensionRequest();
+        extensionRequest.setId(UUID.randomUUID());
+        extensionRequest.setUser(extensionCreateRequest.getUser());
+        extensionRequest.setStatus(RequestStatus.OPEN);
+        extensionRequest.setRequestDate(LocalDateTime.now());
+        extensionRequest.setAccountingPeriodStartDate(extensionCreateRequest.getAccountingPeriodStartDate());
+        extensionRequest.setAccountingPeriodEndDate(extensionCreateRequest.getAccountingPeriodEndDate());
 
-        extensionRequestsRepository.insert(request);
+        extensionRequestsRepository.insert(extensionRequest);
 
-        return ResponseEntity.created(URI.create("//placeholder-uri")).body("Request received: " + request.toString());
+        return ResponseEntity.created(URI.create("//placeholder-uri")).body(extensionRequest);
     }
 
     @GetMapping("/")
