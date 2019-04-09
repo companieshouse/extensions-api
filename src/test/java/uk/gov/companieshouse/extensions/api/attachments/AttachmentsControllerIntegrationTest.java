@@ -8,6 +8,7 @@ import java.util.HashMap;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,14 +22,15 @@ import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import uk.gov.companieshouse.service.rest.response.PluggableResponseEntityFactory;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-@AutoConfigureMockMvc 
-public class AttachmentsControllerTests {
+@AutoConfigureMockMvc
+public class AttachmentsControllerIntegrationTest {
 
-    private static final String ROOT_URL = "/api/extensions/requests/a1/attachments";
-    private static final String SPECIFIC_URL = "/api/extensions/requests/a1/attachments/a2";
+    private static final String ROOT_URL = "/company/00006400/extensions/requests/a1/attachments";
+    private static final String SPECIFIC_URL = "/company/00006400/extensions/requests/a1/attachments/a2";
 
     @Autowired
     private MockMvc mockMvc;

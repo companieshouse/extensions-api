@@ -17,16 +17,17 @@ import uk.gov.companieshouse.extensions.api.reasons.ReasonsController;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(value = ReasonsController.class)
-public class ReasonsControllerTests {
+public class ReasonsControllerIntegrationTest {
 
-    private static final String ROOT_URL = "/api/extensions/requests/a1/extensionReasons/";
-    private static final String SPECIFIC_URL = "/api/extensions/requests/a1/extensionReasons/b2";
+    private static final String ROOT_URL = "/company/00006400/extensions/requests/a1/reasons/";
+    private static final String SPECIFIC_URL = "/company/00006400/extensions/requests/a1/reasons" +
+        "/b2";
 
     @Autowired
     private MockMvc mockMvc;
 
     @Test
-    public void testAddReasonToRequest() throws Exception {
+    public void canReachPostReasonEndpoint() throws Exception {
          RequestBuilder requestBuilder = MockMvcRequestBuilders.post(
                  ROOT_URL)
                   .contentType(MediaType.APPLICATION_JSON)
@@ -34,21 +35,21 @@ public class ReasonsControllerTests {
                   .accept(MediaType.APPLICATION_JSON);
 
           MvcResult result = mockMvc.perform(requestBuilder).andReturn();
-          assertEquals("ExtensionReason added: ExtensionReason illness Additional text: string  Date start: 2019-02-15  Date end: 2019-02-15", result.getResponse().getContentAsString());
+          assertEquals(200, result.getResponse().getStatus());
     }
 
     @Test
-    public void testDeleteReasonFromRequest() throws Exception {
+    public void canReasonDeleteReasonEndpoint() throws Exception {
          RequestBuilder requestBuilder = MockMvcRequestBuilders.delete(
                  SPECIFIC_URL)
                  .accept(MediaType.APPLICATION_JSON);
 
          MvcResult result = mockMvc.perform(requestBuilder).andReturn();
-         assertEquals("false", result.getResponse().getContentAsString());
+         assertEquals(200, result.getResponse().getStatus());
     }
     
     @Test
-    public void testUpdateReasonOnRequest() throws Exception {
+    public void canReachUpdateReasonEndpoint() throws Exception {
         RequestBuilder requestBuilder = MockMvcRequestBuilders.put(
                 SPECIFIC_URL)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -56,15 +57,15 @@ public class ReasonsControllerTests {
                 .accept(MediaType.APPLICATION_JSON);
 
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
-        assertEquals("ExtensionReason updated: ExtensionReason illness Additional text: string  Date start: 2019-02-15  Date end: 2019-02-15", result.getResponse().getContentAsString());
+        assertEquals(200, result.getResponse().getStatus());
     }
 
-    private String buildMockReason() {
-        return "{\n" + 
-                "  \"reason\": \"illness\",\n" + 
-                "  \"additional_text\": \"string\",\n" + 
-                "  \"date_start\": \"2019-02-15\",\n" + 
-                "  \"date_end\": \"2019-02-15\"\n" + 
+    String buildMockReason() {
+        return "{\n" +
+                "  \"reason\": \"illness\",\n" +
+                "  \"additional_text\": \"string\",\n" +
+                "  \"date_start\": \"2019-02-15\",\n" +
+                "  \"date_end\": \"2019-02-15\"\n" +
                 "}";
     }
 }

@@ -1,11 +1,13 @@
 package uk.gov.companieshouse.extensions.api.requests;
 
+import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,7 +27,7 @@ public class RequestsController {
     private ExtensionRequestsRepository extensionRequestsRepository;
 
     @PostMapping("/")
-    public String createExtensionRequestResource(@RequestBody ExtensionRequest request) {
+    public ResponseEntity<String> createExtensionRequestResource(@RequestBody ExtensionRequest request) {
         request.setId(UUID.randomUUID());
         request.setStatus(RequestStatus.OPEN);
         // TODO should request date be date application submitted (on end screen)?
@@ -33,7 +35,7 @@ public class RequestsController {
 
         extensionRequestsRepository.insert(request);
 
-        return "Request received: " + request.toString();
+        return ResponseEntity.created(URI.create("//placeholder-uri")).body("Request received: " + request.toString());
     }
 
     @GetMapping("/")
