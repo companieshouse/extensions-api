@@ -39,7 +39,7 @@ public class ReasonsControllerIntegrationTest {
     }
 
     @Test
-    public void canReasonDeleteReasonEndpoint() throws Exception {
+    public void canReachDeleteReasonEndpoint() throws Exception {
          RequestBuilder requestBuilder = MockMvcRequestBuilders.delete(
                  SPECIFIC_URL)
                  .accept(MediaType.APPLICATION_JSON);
