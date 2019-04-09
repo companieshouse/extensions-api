@@ -12,6 +12,9 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import java.time.LocalDateTime;
+import java.util.function.Supplier;
+
 import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringRunner.class)
@@ -29,6 +32,9 @@ public class RequestControllerIntegrationTest {
 
     @MockBean
     private ExtensionRequestsRepository extensionRequestsRepository;
+
+    @MockBean
+    private Supplier<LocalDateTime> localDateTimeSupplier;
 
     @Test
     public void testCreateExtensionRequestResource() throws Exception {

@@ -1,19 +1,24 @@
 package uk.gov.companieshouse.extensions.api.requests;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.ResponseEntity;
+import uk.gov.companieshouse.extensions.api.processor.StatusEnum;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.function.Supplier;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -35,18 +40,34 @@ public class RequestControllerUnitTest {
     @Mock
     private HttpServletRequest mockHttpServletRequest;
 
+    @Mock
+    private Supplier<LocalDateTime> mockDateTimeSupplierNow;
+
+    private static LocalDateTime now = LocalDateTime.now();
+
     @Before
     public void setup() {
         when(mockHttpServletRequest.getRequestURI()).thenReturn(BASE_URL);
+        when(mockDateTimeSupplierNow.get()).thenReturn(now);
     }
 
     @Test
     public void createsExtensionRequestResource() {
         ResponseEntity<ExtensionRequest> response =
             controller.createExtensionRequestResource(dummyRequest(), mockHttpServletRequest);
-        assertEquals("Micky Mock", response.getBody().getUser());
-        assertTrue(response.getBody().getLinks().getLink(() -> "self").startsWith(BASE_URL));
-        assertTrue(response.getHeaders().getLocation().toString().startsWith(BASE_URL));
+
+        ExtensionRequest extensionRequest = response.getBody();
+        assertEquals("Micky Mock", extensionRequest.getUser());
+        assertEquals(extensionRequest.getStatus(), RequestStatus.OPEN);
+        assertTrue(extensionRequest.getRequestDate().equals(now));
+        assertNotNull(extensionRequest.getId());
+        assertTrue((extensionRequest.getId().toString().length() > 0));
+        String linkToSelf = extensionRequest.getLinks().getLink(() -> "self");
+        assertTrue(linkToSelf.startsWith(BASE_URL));
+        assertTrue(linkToSelf.length() > BASE_URL.length());
+        String headerLinkToSelf = response.getHeaders().getLocation().toString();
+        assertTrue(headerLinkToSelf.startsWith(BASE_URL));
+        assertTrue(headerLinkToSelf.length() > BASE_URL.length());
     }
 
     @Test
