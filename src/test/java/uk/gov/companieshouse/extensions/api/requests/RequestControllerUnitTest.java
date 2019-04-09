@@ -19,8 +19,11 @@ import java.util.function.Supplier;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -43,7 +46,7 @@ public class RequestControllerUnitTest {
     @Mock
     private Supplier<LocalDateTime> mockDateTimeSupplierNow;
 
-    private static LocalDateTime now = LocalDateTime.now();
+    private static final LocalDateTime now = LocalDateTime.now();
 
     @Before
     public void setup() {
@@ -56,10 +59,12 @@ public class RequestControllerUnitTest {
         ResponseEntity<ExtensionRequest> response =
             controller.createExtensionRequestResource(dummyRequest(), mockHttpServletRequest);
 
+        verify(repo).insert(any(ExtensionRequest.class));
+
         ExtensionRequest extensionRequest = response.getBody();
         assertEquals("Micky Mock", extensionRequest.getUser());
-        assertEquals(extensionRequest.getStatus(), RequestStatus.OPEN);
-        assertTrue(extensionRequest.getRequestDate().equals(now));
+        assertEquals(RequestStatus.OPEN, extensionRequest.getStatus());
+        assertEquals(extensionRequest.getRequestDate(), now);
         assertNotNull(extensionRequest.getId());
         assertTrue((extensionRequest.getId().toString().length() > 0));
         String linkToSelf = extensionRequest.getLinks().getLink(() -> "self");
@@ -68,6 +73,8 @@ public class RequestControllerUnitTest {
         String headerLinkToSelf = response.getHeaders().getLocation().toString();
         assertTrue(headerLinkToSelf.startsWith(BASE_URL));
         assertTrue(headerLinkToSelf.length() > BASE_URL.length());
+        assertEquals(dummyRequest().getAccountingPeriodStartDate(), extensionRequest.getAccountingPeriodStartDate());
+        assertEquals(dummyRequest().getAccountingPeriodEndDate(), extensionRequest.getAccountingPeriodEndDate());
     }
 
     @Test
