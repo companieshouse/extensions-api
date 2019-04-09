@@ -1,11 +1,13 @@
 package uk.gov.companieshouse.extensions.api.requests;
 
+import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,8 +27,7 @@ public class RequestsController {
     private ExtensionRequestsRepository extensionRequestsRepository;
 
     @PostMapping("/")
-    public ExtensionRequest createExtensionRequestResource(@RequestBody ExtensionCreateRequest extensionCreateRequest) {
-
+    public ResponseEntity<ExtensionRequest> createExtensionRequestResource(@RequestBody ExtensionCreateRequest extensionCreateRequest) {
         ExtensionRequest extensionRequest = new ExtensionRequest();
         extensionRequest.setId(UUID.randomUUID());
         extensionRequest.setUser(extensionCreateRequest.getUser());
@@ -37,7 +38,7 @@ public class RequestsController {
 
         extensionRequestsRepository.insert(extensionRequest);
 
-        return extensionRequest;
+        return ResponseEntity.created(URI.create("//placeholder-uri")).body(extensionRequest);
     }
 
     @GetMapping("/")

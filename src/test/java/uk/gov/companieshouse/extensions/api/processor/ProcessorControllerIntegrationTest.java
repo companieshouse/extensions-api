@@ -17,22 +17,22 @@ import uk.gov.companieshouse.extensions.api.processor.ProcessorController;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(value = ProcessorController.class)
-public class ProcessorControllerTests {
+public class ProcessorControllerIntegrationTest {
  
-    public static String URL = "/api/extensions/processor/a1/status";
+    public static String URL = "/company/00006400/extensions/requests/a1/status";
 
     @Autowired
     private MockMvc mockMvc;
 
     @Test
-    public void testCreateExtensionRequestResource() throws Exception {
+    public void statusEndpointCanBeReached() throws Exception {
       RequestBuilder requestBuilder = MockMvcRequestBuilders.post(
              URL)
               .contentType(MediaType.APPLICATION_JSON)
               .accept(MediaType.APPLICATION_JSON);
 
       MvcResult result = mockMvc.perform(requestBuilder).andReturn();
-      assertEquals("OPEN", result.getResponse().getContentAsString());
+      assertEquals(200, result.getResponse().getStatus());
     }
 
 }

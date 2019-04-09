@@ -31,4 +31,4 @@ else
 
 fi
 
-exec java ${JAVA_MEM_ARGS} -jar -Dserver.port="${PORT}" "${APP_DIR}/extensions-api.jar"
+exec java ${JAVA_MEM_ARGS} -jar -Dserver.port="${PORT}" -Dspring.data.mongodb.uri="$EXTENSIONS_API_MONGODB_URL" "${APP_DIR}/extensions-api.jar"
