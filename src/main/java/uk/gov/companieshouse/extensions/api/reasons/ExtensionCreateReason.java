@@ -2,12 +2,7 @@ package uk.gov.companieshouse.extensions.api.reasons;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import uk.gov.companieshouse.extensions.api.attachments.Attachment;
-
-import java.util.List;
-
-public class ExtensionReason {
-
+public class ExtensionCreateReason {
     private String reason;
 
     @JsonProperty("additional_text")
@@ -18,8 +13,6 @@ public class ExtensionReason {
 
     @JsonProperty("date_end")
     private String dateEnd;
-
-    private List<Attachment> attachments;
 
     public String getReason() {
         return reason;
@@ -51,17 +44,5 @@ public class ExtensionReason {
 
     public void setDateEnd(String dateEnd) {
         this.dateEnd = dateEnd;
-    }
-
-    public List<Attachment> getAttachments() {
-        return attachments;
-    }
-
-    public void setAttachments(List<Attachment> attachments) {
-        this.attachments = attachments;
-    }
-
-    public String toString() {
-      return "Extension reason " + reason + " Additional text: " + additionalText + "  Date start: " + dateStart + "  Date end: " + dateEnd;
     }
 }
