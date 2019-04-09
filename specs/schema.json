@@ -13,7 +13,7 @@
   ],
   "tags": [
     {
-      "name": "Input API - Requests"
+      "name": "Input API - Extension Requests"
     },
     {
       "name": "Input API - Attachments"
@@ -38,7 +38,7 @@
           }
         ],
         "tags": [
-          "Input API - Requests"
+          "Input API - Extension Requests"
         ],
         "summary": "create a new extension request resource",
         "produces": [
@@ -55,7 +55,7 @@
       },
       "get": {
         "tags": [
-          "Input API - Requests"
+          "Input API - Extension Requests"
         ],
         "summary": "get a list of extension requests made against a company",
         "produces": [
@@ -85,7 +85,7 @@
       ],
       "get": {
         "tags": [
-          "Input API - Requests"
+          "Input API - Extension Requests"
         ],
         "summary": "Get a single extension request",
         "produces": [
@@ -100,9 +100,36 @@
           }
         }
       },
+      "patch": {
+        "tags": [
+          "Input API - Extension Requests"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        ],
+        "summary": "patch the resource to mark it as submitted",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "204": {
+            "description": "the request resource has been updated"
+          },
+          "404": {
+            "description": "the request does not exist"
+          }
+        }
+      },
       "delete": {
         "tags": [
-          "Input API - Requests"
+          "Input API - Extension Requests"
         ],
         "summary": "Delete an extension request",
         "produces": [
@@ -157,7 +184,7 @@
           "201": {
             "description": "the file was uploaded succesfully",
             "schema": {
-              "$ref": "#/definitions/Links"
+              "$ref": "#/definitions/Attachment"
             }
           },
           "404": {
@@ -210,6 +237,53 @@
       },
       "get": {
         "tags": ["Input API - Attachments"],
+        "summary": "attachment information",
+        "produces": [
+          "application/json",
+          "application/octet-stream",
+          "image/png",
+          "image/jpg",
+          "other..."
+        ],
+        "responses": {
+          "200": {
+            "description": "information about the attachment",
+            "schema": {
+              "$ref": "#/definitions/Attachment"
+            }
+          },
+          "404": {
+            "description": "the attachment does not exist"
+          }
+        }
+      }
+    },
+    "/{requestId}/reasons/{reasonId}/sttachments/{attachmentId}/download": {
+      "parameters": [
+        {
+          "in": "path",
+          "name": "requestId",
+          "type": "string",
+          "required": true,
+          "description": "the extension request id"
+        },
+        {
+          "in": "path",
+          "name": "attachmentId",
+          "type": "string",
+          "required": true,
+          "description": "the attachment id"
+        },
+        {
+          "in": "path",
+          "name": "reasonId",
+          "type": "string",
+          "required": true,
+          "description": "the reason id"
+        }
+      ],
+      "get": {
+        "tags": ["Input API - Attachments"],
         "summary": "download the attachment",
         "produces": [
           "application/json",
@@ -231,7 +305,7 @@
         }
       }
     },
-    "/{requestId}/status": {
+    "/{requestId}/process": {
       "parameters": [
         {
           "in": "path",
@@ -246,14 +320,14 @@
             "in": "body",
             "name": "status",
             "schema": {
-              "$ref": "#/definitions/Status"
+              "$ref": "#/definitions/ExtensionRequestFull"
             }
           }
         ],
         "tags": [
           "Processor API"
         ],
-        "summary": "Update the status of this extension request",
+        "summary": "starts the backend processing of the extension request",
         "produces": [
           "application/json"
         ],
@@ -271,7 +345,28 @@
           "name": "requestId",
           "required": true,
           "type": "string"
-        },
+        }
+      ],
+      "get": {
+        "tags":[
+          "Input API - Reasons"
+        ],
+        "summary": "get a list of reasons for this extension request",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "a list of reasons",
+            "schema": {
+              "$ref": "#/definitions/ReasonList"
+            }
+          }
+        }
+      },
+      "post": {
+        "parameters": [
+          
         {
           "in": "body",
           "name": "body",
@@ -279,8 +374,7 @@
             "$ref":"#/definitions/ExtensionCreateReason"
           }
         }
-      ],
-      "post": {
+        ],
         "tags": [
           "Input API - Reasons"
         ],
@@ -329,20 +423,20 @@
           }
         }
       },
-      "put": {
+      "patch": {
         "parameters": [
           {
             "in": "body",
             "name": "Extension reason",
             "schema": {
-              "$ref": "#/definitions/ExtensionReason"
+              "$ref": "#/definitions/ExtensionCreateReason"
             }
           }
         ],
         "tags": [
           "Input API - Reasons"
         ],
-        "summary": "Update the extension reason by replacing it with another",
+        "summary": "make changes to the extension reason",
         "responses": {
           "200": {
             "description": "The reason was updated",
@@ -355,84 +449,128 @@
     }
   },
   "definitions": {
-    "ExtensionRequestList": {
-      "type": "object",
-      "properties": {
-        "items": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/ExtensionRequestFull"
-          }
-        }
-      }
-    },
-    "ExtensionRequest": {
-      "type": "object",
-      "properties": {
-        "account_period_start_date": {
-          "type": "string",
-          "format": "date"
-        },
-        "accounting_period_end_date": {
-          "type": "string",
-          "format": "date"
-        },
-        "reasons": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/ExtensionReason"
-          }
-        }
-      }
-    },
     "ExtensionRequestFull": {
       "allOf": [
         {
           "type": "object",
           "properties": {
+            "etag": {
+              "type": "string"
+            },
             "id": {
               "type": "string"
             },
-            "links": {
-              "$ref": "#/definitions/Links"
-            },
-            "request_date": {
+            "created_on": {
               "type": "string",
               "format": "date-time"
             },
-            "status": {
-              "type": "string",
-              "enum": [
-                "open",
-                "submitted"
-              ]
-            }
-          }
-        },
-        {
-          "type": "object",
-          "properties": {
+            "created_by": {
+              "type": "object",
+              "$ref": "#/definitions/CreatedBy"
+            },
             "reasons": {
-              "type": "array",
-              "items": {
-                "allOf": [
-                  {
-                    "type": "object",
-                    "properties": {
-                      "links": {
-                        "$ref": "#/definitions/Links"
-                      }
-                    }
-                  }
-                ]
+              "type": "object",
+              "properties": {
+                "<key>": {
+                  "type": "string",
+                  "format": "uri"
+                }
+              }
+            },
+            "accounting_period_start_on": {
+              "type": "string",
+              "format": "date"
+            },
+            "accounting_period_end_on": {
+              "type": "string",
+              "format": "date"
+            },
+            "links": {
+              "type": "object",
+              "properties": {
+                "self": {
+                  "type": "string",
+                  "format": "uri"
+                }
               }
             }
           }
         },
         {
-          "$ref": "#/definitions/ExtensionRequest"
+          "$ref":"#/definitions/Status"
         }
       ]
+    },
+    "CreatedBy": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "forename": {
+          "type": "string"
+        },
+        "surname": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string",
+          "format": "email"
+        }
+      }
+    },
+    "ReasonList": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/ListResponse"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "items": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/ExtensionRequestFull"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "ExtensionRequestList": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/ListResponse"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "items": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/ExtensionRequestFull"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "ListResponse": {
+      "type": "object",
+      "properties": {
+        "etag": {
+          "type": "string"
+        },
+        "items_per_page": {
+          "type": "integer"
+        },
+        "start_index": {
+          "type": "integer"
+        },
+        "total_results": {
+          "type": "integer"
+        }
+      }
     },
     "Status": {
       "type": "object",
@@ -449,14 +587,17 @@
     "ExtensionCreateRequest": {
       "type": "object",
       "properties": {
-        "account_period_start_date": {
-          "type": "string"
+        "accounting_period_start_on": {
+          "type": "string",
+          "format": "date"
         },
-        "accounting_period_end_date": {
-          "type": "string"
+        "accounting_period_end_on": {
+          "type": "string",
+          "format": "date"
         }
       }
     },
+
     "ExtensionCreateReason": {
       "type": "object",
       "properties": {
@@ -466,11 +607,11 @@
         "additional_text": {
           "type": "string"
         },
-        "date_start": {
+        "start_on": {
           "type": "string",
           "format": "date"
         },
-        "date_end": {
+        "end_on": {
           "type": "string",
           "format": "date"
         }
@@ -479,40 +620,41 @@
     "ExtensionReason": {
       "type": "object",
       "properties": {
+        "etag": {
+          "type": "string"
+        },
         "reason": {
           "type": "string"
         },
         "additional_text": {
           "type": "string"
         },
-        "date_start": {
+        "start_on": {
           "type": "string",
           "format": "date"
         },
-        "date_end": {
+        "end_on": {
           "type": "string",
           "format": "date"
         },
         "attachments": {
-          "type": "array",
-          "items": {
-            "$ref":"#/definitions/Attachment"
+          "type": "object",
+          "properties": {
+            "<key>": {
+              "type": "string",
+              "format": "uri"
+            }
           }
-        }
-      }
-    },
-    "Links": {
-      "type": "object",
-      "properties": {
-        "self": {
-          "type": "string",
-          "format": "uri"
+          
         }
       }
     },
     "Attachment": {
       "type": "object",
       "properties": {
+        "etag": {
+          "type": "string"
+        },
         "id": {
           "type": "string",
           "format": "uuid"
