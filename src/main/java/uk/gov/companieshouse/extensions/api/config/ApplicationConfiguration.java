@@ -6,6 +6,9 @@ import org.springframework.context.annotation.Configuration;
 import uk.gov.companieshouse.environment.EnvironmentReader;
 import uk.gov.companieshouse.environment.impl.EnvironmentReaderImpl;
 
+import java.time.LocalDateTime;
+import java.util.function.Supplier;
+
 /**
  * MongoDB Properties .
  */
@@ -29,5 +32,10 @@ public class ApplicationConfiguration {
                 .maxConnectionIdleTime(connectionPoolProperties.getMaxConnectionIdleTimeMS())
                 .maxConnectionLifeTime(connectionPoolProperties.getMaxConnectionLifeTimeMS())
                 .build();
+    }
+
+    @Bean
+    public Supplier<LocalDateTime> dateTimeNow () {
+        return () -> LocalDateTime.now();
     }
 }
