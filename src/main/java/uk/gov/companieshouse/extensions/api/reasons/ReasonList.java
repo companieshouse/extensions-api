@@ -1,8 +1,10 @@
 package uk.gov.companieshouse.extensions.api.reasons;
 
+import uk.gov.companieshouse.extensions.api.response.ListResponse;
+
 import java.util.List;
 
-public class ReasonList {
+public class ReasonList extends ListResponse {
 
     private List<ExtensionReason> items;
 
