@@ -258,7 +258,7 @@
         }
       }
     },
-    "/{requestId}/reasons/{reasonId}/sttachments/{attachmentId}/download": {
+    "/{requestId}/reasons/{reasonId}/attachments/{attachmentId}/download": {
       "parameters": [
         {
           "in": "path",
