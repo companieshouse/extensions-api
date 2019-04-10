@@ -530,7 +530,7 @@
             "items": {
               "type": "array",
               "items": {
-                "$ref": "#/definitions/ExtensionRequestFull"
+                "$ref": "#/definitions/ExtensionReason"
               }
             }
           }
