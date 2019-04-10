@@ -8,12 +8,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class RequestsService {
 
-    public ExtensionRequest getExtensionsRequestById(String id){
-        ExtensionRequest extensionRequest =  new ExtensionRequest();
-        extensionRequest.setUser("Joe Bloggs");
-        extensionRequest.setAccountingPeriodStartDate(LocalDate.of(2018, Month.APRIL, 1));
-        extensionRequest.setAccountingPeriodEndDate(LocalDate.of(2019, Month.MARCH, 31));
-        return extensionRequest;
+    public ExtensionRequestFull getExtensionsRequestById(String id){
+        ExtensionRequestFull extensionRequestFull =  new ExtensionRequestFull();
+        extensionRequestFull.setAccountingPeriodStartOn(LocalDate.of(2018, Month.APRIL, 1));
+        extensionRequestFull.setAccountingPeriodEndOn(LocalDate.of(2019, Month.MARCH, 31));
+        return extensionRequestFull;
     }
 
 }

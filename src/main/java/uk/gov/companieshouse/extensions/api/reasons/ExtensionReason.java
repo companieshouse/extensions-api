@@ -1,25 +1,25 @@
 package uk.gov.companieshouse.extensions.api.reasons;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
-import uk.gov.companieshouse.extensions.api.attachments.Attachment;
-
-import java.util.List;
+import uk.gov.companieshouse.service.links.Links;
 
 public class ExtensionReason {
+
+    private String etag;
 
     private String reason;
 
     @JsonProperty("additional_text")
     private String additionalText;
 
-    @JsonProperty("date_start")
-    private String dateStart;
+    @JsonProperty("start_on")
+    private String startOn;
 
-    @JsonProperty("date_end")
-    private String dateEnd;
+    @JsonProperty("end_on")
+    private String endOn;
 
-    private List<Attachment> attachments;
+    // key = hash of attachment id, value = uri of attachment
+    private Links attachments;
 
     public String getReason() {
         return reason;
@@ -37,31 +37,39 @@ public class ExtensionReason {
         this.additionalText = additionalText;
     }
 
-    public String getDateStart() {
-        return dateStart;
+    public String getEtag() {
+        return etag;
     }
 
-    public void setDateStart(String dateStart) {
-        this.dateStart = dateStart;
+    public void setEtag(String etag) {
+        this.etag = etag;
     }
 
-    public String getDateEnd() {
-        return dateEnd;
+    public String getStartOn() {
+        return startOn;
     }
 
-    public void setDateEnd(String dateEnd) {
-        this.dateEnd = dateEnd;
+    public void setStartOn(String startOn) {
+        this.startOn = startOn;
     }
 
-    public List<Attachment> getAttachments() {
+    public String getEndOn() {
+        return endOn;
+    }
+
+    public void setEndOn(String endOn) {
+        this.endOn = endOn;
+    }
+
+    public Links getAttachments() {
         return attachments;
     }
 
-    public void setAttachments(List<Attachment> attachments) {
+    public void setAttachments(Links attachments) {
         this.attachments = attachments;
     }
 
     public String toString() {
-      return "Extension reason " + reason + " Additional text: " + additionalText + "  Date start: " + dateStart + "  Date end: " + dateEnd;
+      return "Extension reason " + reason + " Additional text: " + additionalText + "  Date start: " + startOn + "  Date end: " + endOn;
     }
 }

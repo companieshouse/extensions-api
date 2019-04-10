@@ -33,36 +33,35 @@ public class RequestsController {
     private Supplier<LocalDateTime> dateTimeSupplierNow;
 
     @PostMapping("/")
-    public ResponseEntity<ExtensionRequest> createExtensionRequestResource(@RequestBody ExtensionCreateRequest extensionCreateRequest,
-                                                                           HttpServletRequest request) {
+    public ResponseEntity<ExtensionRequestFull> createExtensionRequestResource(@RequestBody ExtensionCreateRequest extensionCreateRequest,
+                                                                               HttpServletRequest request) {
         UUID uuid = UUID.randomUUID();
         String linkToSelf = request.getRequestURI() + uuid;
 
-        ExtensionRequest extensionRequest = new ExtensionRequest();
-        extensionRequest.setId(uuid);
-        extensionRequest.setUser(extensionCreateRequest.getUser());
-        extensionRequest.setStatus(RequestStatus.OPEN);
-        extensionRequest.setRequestDate(dateTimeSupplierNow.get());
-        extensionRequest.setAccountingPeriodStartDate(extensionCreateRequest.getAccountingPeriodStartDate());
-        extensionRequest.setAccountingPeriodEndDate(extensionCreateRequest.getAccountingPeriodEndDate());
+        ExtensionRequestFull extensionRequestFull = new ExtensionRequestFull();
+        extensionRequestFull.setId(uuid);
+        extensionRequestFull.setStatus(Status.OPEN);
+        extensionRequestFull.setCreatedOn(dateTimeSupplierNow.get());
+        extensionRequestFull.setAccountingPeriodStartOn(extensionCreateRequest.getAccountingPeriodStartDate());
+        extensionRequestFull.setAccountingPeriodEndOn(extensionCreateRequest.getAccountingPeriodEndDate());
         Links links = new Links();
         links.setLink(() ->  "self", linkToSelf);
-        extensionRequest.setLinks(links);
+        extensionRequestFull.setLinks(links);
 
-        extensionRequestsRepository.insert(extensionRequest);
+        extensionRequestsRepository.insert(extensionRequestFull);
 
-        return ResponseEntity.created(URI.create(linkToSelf)).body(extensionRequest);
+        return ResponseEntity.created(URI.create(linkToSelf)).body(extensionRequestFull);
     }
 
     @GetMapping("/")
-    public List<ExtensionRequest> getExtensionRequestsList() {
-        ExtensionRequest er = new ExtensionRequest();
-        er.setUser("user one");
-      return Arrays.asList(er);
+    public List<ExtensionRequestFull> getExtensionRequestsList() {
+        ExtensionRequestFull er = new ExtensionRequestFull();
+        er.setId(UUID.randomUUID());
+        return Arrays.asList(er);
     }
 
     @GetMapping("/{requestId}")
-    public ExtensionRequest getSingleExtensionRequestById(@PathVariable String requestId) {
+    public ExtensionRequestFull getSingleExtensionRequestById(@PathVariable String requestId) {
         return requestsService.getExtensionsRequestById(requestId);
     }
 

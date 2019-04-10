@@ -6,6 +6,8 @@ import java.util.UUID;
 
 public class Attachment {
 
+    private String etag;
+
     private UUID id;
 
     private String name;
@@ -16,6 +18,14 @@ public class Attachment {
     private long size;
 
     private Links links;
+
+    public String getEtag() {
+        return etag;
+    }
+
+    public void setEtag(String etag) {
+        this.etag = etag;
+    }
 
     public UUID getId() {
         return id;

@@ -53,42 +53,40 @@ public class RequestControllerUnitTest {
 
     @Test
     public void createsExtensionRequestResource() {
-        ResponseEntity<ExtensionRequest> response =
+        ResponseEntity<ExtensionRequestFull> response =
             controller.createExtensionRequestResource(dummyRequest(), mockHttpServletRequest);
 
-        verify(repo).insert(any(ExtensionRequest.class));
+        verify(repo).insert(any(ExtensionRequestFull.class));
 
-        ExtensionRequest extensionRequest = response.getBody();
-        assertEquals("Micky Mock", extensionRequest.getUser());
-        assertEquals(RequestStatus.OPEN, extensionRequest.getStatus());
-        assertEquals(extensionRequest.getRequestDate(), now);
-        assertNotNull(extensionRequest.getId());
-        assertTrue((extensionRequest.getId().toString().length() > 0));
-        String linkToSelf = extensionRequest.getLinks().getLink(() -> "self");
+        ExtensionRequestFull extensionRequestFull = response.getBody();
+        assertEquals(Status.OPEN, extensionRequestFull.getStatus());
+        assertEquals(extensionRequestFull.getCreatedOn(), now);
+        assertNotNull(extensionRequestFull.getId());
+        assertTrue((extensionRequestFull.getId().toString().length() > 0));
+        String linkToSelf = extensionRequestFull.getLinks().getLink(() -> "self");
         assertTrue(linkToSelf.startsWith(BASE_URL));
         assertTrue(linkToSelf.length() > BASE_URL.length());
         String headerLinkToSelf = response.getHeaders().getLocation().toString();
         assertTrue(headerLinkToSelf.startsWith(BASE_URL));
         assertTrue(headerLinkToSelf.length() > BASE_URL.length());
-        assertEquals(dummyRequest().getAccountingPeriodStartDate(), extensionRequest.getAccountingPeriodStartDate());
-        assertEquals(dummyRequest().getAccountingPeriodEndDate(), extensionRequest.getAccountingPeriodEndDate());
+        assertEquals(dummyRequest().getAccountingPeriodStartDate(), extensionRequestFull.getAccountingPeriodStartOn());
+        assertEquals(dummyRequest().getAccountingPeriodEndDate(), extensionRequestFull.getAccountingPeriodEndOn());
     }
 
     @Test
     public void canGetExtensionRequestList() {
-        final ExtensionRequest expectedRequest = new ExtensionRequest();
-        expectedRequest.setUser("user one");
-        List<ExtensionRequest> response = controller.getExtensionRequestsList();
+        final ExtensionRequestFull expectedRequest = new ExtensionRequestFull();
+        List<ExtensionRequestFull> response = controller.getExtensionRequestsList();
         response.forEach(request -> {
-           assertEquals(expectedRequest.getUser(), request.getUser());
+           assertNotNull(request.getId());
         });
     }
 
     @Test
     public void canGetSingleExtensionRequest() {
-        ExtensionRequest expected = new ExtensionRequest();
+        ExtensionRequestFull expected = new ExtensionRequestFull();
         when(requestsService.getExtensionsRequestById(anyString())).thenReturn(expected);
-        ExtensionRequest request = controller.getSingleExtensionRequestById("123");
+        ExtensionRequestFull request = controller.getSingleExtensionRequestById("123");
         assertEquals(expected, request);
     }
 
@@ -100,7 +98,6 @@ public class RequestControllerUnitTest {
 
     public ExtensionCreateRequest dummyRequest() {
         ExtensionCreateRequest request = new ExtensionCreateRequest();
-        request.setUser("Micky Mock");
         request.setAccountingPeriodEndDate(LocalDate.of(2018, 12, 12));
         request.setAccountingPeriodStartDate(LocalDate.of(2018, 12, 12));
         return request;
