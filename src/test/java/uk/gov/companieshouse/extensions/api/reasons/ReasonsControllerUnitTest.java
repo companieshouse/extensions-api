@@ -32,8 +32,8 @@ public class ReasonsControllerUnitTest {
     public static ExtensionReason dummyReason() {
         ExtensionReason reason = new ExtensionReason();
         reason.setAdditionalText("string");
-        reason.setDateEnd("2019-02-15");
-        reason.setDateStart("2019-02-15");
+        reason.setEndOn("2019-02-15");
+        reason.setStartOn("2019-02-15");
         reason.setReason("illness");
         return reason;
     }

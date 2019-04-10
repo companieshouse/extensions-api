@@ -17,7 +17,7 @@ public class RequestServiceUnitTest {
 
     @Test
     public void testGetSingleRequest() {
-      ExtensionRequest request = requestsService.getExtensionsRequestById("a1");
-      assertEquals("User Joe Bloggs Acc period start: 2018-04-01  Acc period end: 2019-03-31", request.toString());
+      ExtensionRequestFull request = requestsService.getExtensionsRequestById("a1");
+      assertEquals("Acc period start: 2018-04-01  Acc period end: 2019-03-31", request.toString());
     }
 }

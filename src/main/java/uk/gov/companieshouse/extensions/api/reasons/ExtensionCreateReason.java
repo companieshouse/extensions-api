@@ -8,11 +8,11 @@ public class ExtensionCreateReason {
     @JsonProperty("additional_text")
     private String additionalText;
 
-    @JsonProperty("date_start")
-    private String dateStart;
+    @JsonProperty("start_on")
+    private String startOn;
 
-    @JsonProperty("date_end")
-    private String dateEnd;
+    @JsonProperty("end_on")
+    private String endOn;
 
     public String getReason() {
         return reason;
@@ -30,19 +30,19 @@ public class ExtensionCreateReason {
         this.additionalText = additionalText;
     }
 
-    public String getDateStart() {
-        return dateStart;
+    public String getStartOn() {
+        return startOn;
     }
 
-    public void setDateStart(String dateStart) {
-        this.dateStart = dateStart;
+    public void setStartOn(String startOn) {
+        this.startOn = startOn;
     }
 
-    public String getDateEnd() {
-        return dateEnd;
+    public String getEndOn() {
+        return endOn;
     }
 
-    public void setDateEnd(String dateEnd) {
-        this.dateEnd = dateEnd;
+    public void setEndOn(String endOn) {
+        this.endOn = endOn;
     }
 }
