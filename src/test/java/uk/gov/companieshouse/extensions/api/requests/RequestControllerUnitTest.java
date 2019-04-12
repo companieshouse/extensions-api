@@ -7,6 +7,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.ResponseEntity;
+import uk.gov.companieshouse.service.links.Links;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
@@ -27,6 +28,10 @@ import static org.mockito.Mockito.when;
 public class RequestControllerUnitTest {
 
     public static final String BASE_URL = "/company/00006400/extensions/requests/";
+    public static final String USER_ID = "userID";
+    public static final String EMAIL = "email";
+    public static final String FORENAME = "forename";
+    public static final String SURNAME = "surname";
 
     @InjectMocks
     private RequestsController controller;
@@ -43,12 +48,19 @@ public class RequestControllerUnitTest {
     @Mock
     private Supplier<LocalDateTime> mockDateTimeSupplierNow;
 
+    @Mock
+    private ERICHeaderParser mockEricHeaderParser;
+
     private static final LocalDateTime now = LocalDateTime.now();
 
     @Before
     public void setup() {
         when(mockHttpServletRequest.getRequestURI()).thenReturn(BASE_URL);
         when(mockDateTimeSupplierNow.get()).thenReturn(now);
+        when(mockEricHeaderParser.getUserId(mockHttpServletRequest)).thenReturn(USER_ID);
+        when(mockEricHeaderParser.getEmail(mockHttpServletRequest)).thenReturn(EMAIL);
+        when(mockEricHeaderParser.getForename(mockHttpServletRequest)).thenReturn(FORENAME);
+        when(mockEricHeaderParser.getSurname(mockHttpServletRequest)).thenReturn(SURNAME);
     }
 
     @Test
@@ -59,18 +71,32 @@ public class RequestControllerUnitTest {
         verify(repo).insert(any(ExtensionRequestFull.class));
 
         ExtensionRequestFull extensionRequestFull = response.getBody();
+
         assertEquals(Status.OPEN, extensionRequestFull.getStatus());
+
         assertEquals(extensionRequestFull.getCreatedOn(), now);
+
         assertNotNull(extensionRequestFull.getId());
         assertTrue((extensionRequestFull.getId().toString().length() > 0));
+
         String linkToSelf = extensionRequestFull.getLinks().getLink(() -> "self");
         assertTrue(linkToSelf.startsWith(BASE_URL));
         assertTrue(linkToSelf.length() > BASE_URL.length());
         String headerLinkToSelf = response.getHeaders().getLocation().toString();
         assertTrue(headerLinkToSelf.startsWith(BASE_URL));
         assertTrue(headerLinkToSelf.length() > BASE_URL.length());
+
         assertEquals(dummyRequest().getAccountingPeriodStartDate(), extensionRequestFull.getAccountingPeriodStartOn());
         assertEquals(dummyRequest().getAccountingPeriodEndDate(), extensionRequestFull.getAccountingPeriodEndOn());
+
+        CreatedBy createdBy = extensionRequestFull.getCreatedBy();
+        assertEquals(USER_ID, createdBy.getId());
+        assertEquals(EMAIL, createdBy.getEmail());
+        assertEquals(FORENAME, createdBy.getForename());
+        assertEquals(SURNAME, createdBy.getSurname());
+
+        Links reasons = extensionRequestFull.getReasons();
+        assertTrue(reasons.getLinks().isEmpty());
     }
 
     @Test

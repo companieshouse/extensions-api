@@ -36,6 +36,9 @@ public class RequestControllerIntegrationTest {
     @MockBean
     private Supplier<LocalDateTime> localDateTimeSupplier;
 
+    @MockBean
+    private ERICHeaderParser ericHeaderParser;
+
     @Test
     public void testCreateExtensionRequestResource() throws Exception {
         String request = buildMockRequest();
