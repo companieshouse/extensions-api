@@ -27,9 +27,6 @@ public class RequestsController {
     private RequestsService requestsService;
 
     @Autowired
-    private ExtensionRequestsRepository extensionRequestsRepository;
-
-    @Autowired
     private Supplier<LocalDateTime> dateTimeSupplierNow;
 
     @Autowired
@@ -62,7 +59,7 @@ public class RequestsController {
         extensionRequestFull.setCreatedBy(createdBy);
         extensionRequestFull.setReasons(reasons);
 
-        extensionRequestsRepository.insert(extensionRequestFull);
+        requestsService.insertExtensionsRequest(extensionRequestFull);
 
         return ResponseEntity.created(URI.create(linkToSelf)).body(extensionRequestFull);
     }

@@ -37,9 +37,6 @@ public class RequestControllerUnitTest {
     private RequestsController controller;
 
     @Mock
-    private ExtensionRequestsRepository repo;
-
-    @Mock
     private RequestsService requestsService;
 
     @Mock
@@ -68,7 +65,7 @@ public class RequestControllerUnitTest {
         ResponseEntity<ExtensionRequestFull> response =
             controller.createExtensionRequestResource(dummyRequest(), mockHttpServletRequest);
 
-        verify(repo).insert(any(ExtensionRequestFull.class));
+        verify(requestsService).insertExtensionsRequest(any(ExtensionRequestFull.class));
 
         ExtensionRequestFull extensionRequestFull = response.getBody();
 
