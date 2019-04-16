@@ -7,7 +7,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.ResponseEntity;
-import uk.gov.companieshouse.service.links.Links;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
