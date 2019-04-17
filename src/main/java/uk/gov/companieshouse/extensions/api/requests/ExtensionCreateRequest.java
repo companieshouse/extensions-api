@@ -6,25 +6,25 @@ import java.time.LocalDate;
 
 public class ExtensionCreateRequest {
 
-    @JsonProperty("accounting_period_start_date")
-    private LocalDate accountingPeriodStartDate;
+    @JsonProperty("accounting_period_start_on")
+    private LocalDate accountingPeriodStartOn;
 
-    @JsonProperty("accounting_period_end_date")
-    private LocalDate accountingPeriodEndDate;
+    @JsonProperty("accounting_period_end_on")
+    private LocalDate accountingPeriodEndOn;
 
-    public LocalDate getAccountingPeriodStartDate() {
-        return accountingPeriodStartDate;
+    public LocalDate getAccountingPeriodStartOn() {
+        return accountingPeriodStartOn;
     }
 
-    public void setAccountingPeriodStartDate(LocalDate accountingPeriodStartDate) {
-        this.accountingPeriodStartDate = accountingPeriodStartDate;
+    public void setAccountingPeriodStartOn(LocalDate accountingPeriodStartDate) {
+        this.accountingPeriodStartOn = accountingPeriodStartDate;
     }
 
-    public LocalDate getAccountingPeriodEndDate() {
-        return accountingPeriodEndDate;
+    public LocalDate getAccountingPeriodEndOn() {
+        return accountingPeriodEndOn;
     }
 
-    public void setAccountingPeriodEndDate(LocalDate accountingPeriodEndDate) {
-        this.accountingPeriodEndDate = accountingPeriodEndDate;
+    public void setAccountingPeriodEndOn(LocalDate accountingPeriodEndDate) {
+        this.accountingPeriodEndOn = accountingPeriodEndDate;
     }
 }

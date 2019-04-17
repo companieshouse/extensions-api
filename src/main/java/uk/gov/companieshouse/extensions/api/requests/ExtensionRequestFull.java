@@ -2,28 +2,22 @@ package uk.gov.companieshouse.extensions.api.requests;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import org.springframework.data.mongodb.core.mapping.Document;
 import uk.gov.companieshouse.service.links.Links;
 
-@Document(collection = "extension_requests")
-public class ExtensionRequestFull {
+public abstract class ExtensionRequestFull {
 
     private String etag;
 
-    private UUID id;
+    private String id;
 
     @JsonProperty("created_on")
     private LocalDateTime createdOn;
 
     @JsonProperty("created_by")
     private CreatedBy createdBy;
-
-    // key = hash of reason id, value = uri of reason
-    private Links reasons;
 
     @JsonProperty("accounting_period_start_on")
     private LocalDate accountingPeriodStartOn;
@@ -43,11 +37,11 @@ public class ExtensionRequestFull {
         this.etag = etag;
     }
 
-    public UUID getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(UUID id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -97,14 +91,6 @@ public class ExtensionRequestFull {
 
     public void setStatus(Status status) {
         this.status = status;
-    }
-
-    public Links getReasons() {
-        return reasons;
-    }
-
-    public void setReasons(Links reasons) {
-        this.reasons = reasons;
     }
 
     public String toString() {

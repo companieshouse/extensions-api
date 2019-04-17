@@ -11,11 +11,14 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import uk.gov.companieshouse.extensions.api.Utils.Utils;
 
 import java.time.LocalDateTime;
 import java.util.function.Supplier;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(value = RequestsController.class)
@@ -39,9 +42,22 @@ public class RequestControllerIntegrationTest {
     @MockBean
     private ERICHeaderParser ericHeaderParser;
 
+    @MockBean
+    private ExtensionRequestMapper extensionRequestMapper;
+
     @Test
     public void testCreateExtensionRequestResource() throws Exception {
         String request = buildMockRequest();
+
+        when(extensionRequestMapper.entityToDTO(
+            any(ExtensionRequestFullEntity.class)))
+            .thenReturn(Utils.dummyRequestDTO());
+        when(requestsService.insertExtensionsRequest(
+            any(ExtensionCreateRequest.class),
+            any(CreatedBy.class),
+            any(String.class)))
+            .thenReturn(Utils.dummyRequestEntity());
+
         RequestBuilder requestBuilder = MockMvcRequestBuilders.post(
              ROOT_URL)
               .contentType(MediaType.APPLICATION_JSON)

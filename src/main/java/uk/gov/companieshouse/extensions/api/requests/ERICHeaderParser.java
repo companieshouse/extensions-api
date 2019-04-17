@@ -29,12 +29,14 @@ public class ERICHeaderParser {
     public String getEmail(HttpServletRequest request) {
         String email = null;
         String ericAuthorisedUser = getERICAuthorisedUser(request);
-        String[] values = ericAuthorisedUser.split(DELIMITER);
-        //email should be first value in the string
-        if (values.length > 0) {
-            String firstValue = values[0];
-            if (firstValue.contains(EMAIL_IDENTIFIER)) {
-                email = firstValue;
+        if (ericAuthorisedUser != null) {
+            String[] values = ericAuthorisedUser.split(DELIMITER);
+            //email should be first value in the string
+            if (values.length > 0) {
+                String firstValue = values[0];
+                if (firstValue.contains(EMAIL_IDENTIFIER)) {
+                    email = firstValue;
+                }
             }
         }
         return email;
@@ -69,16 +71,18 @@ public class ERICHeaderParser {
     private String getFromAuthorisedUser(HttpServletRequest request, String key, String delimiter) {
         String ericAuthorisedUser = getERICAuthorisedUser(request);
         String name = null;
-        int nameStartIndex = ericAuthorisedUser.indexOf(key);
+        if (ericAuthorisedUser != null) {
+            int nameStartIndex = ericAuthorisedUser.indexOf(key);
 
-        if (nameStartIndex >= 0) {
-            nameStartIndex += key.length();
-            if (delimiter == null) {
-                name = ericAuthorisedUser.substring(nameStartIndex);
-            } else {
-                int nameEndIndex = ericAuthorisedUser.indexOf(delimiter, nameStartIndex);
-                if (nameEndIndex >= nameStartIndex) {
-                    name = ericAuthorisedUser.substring(nameStartIndex, nameEndIndex);
+            if (nameStartIndex >= 0) {
+                nameStartIndex += key.length();
+                if (delimiter == null) {
+                    name = ericAuthorisedUser.substring(nameStartIndex);
+                } else {
+                    int nameEndIndex = ericAuthorisedUser.indexOf(delimiter, nameStartIndex);
+                    if (nameEndIndex >= nameStartIndex) {
+                        name = ericAuthorisedUser.substring(nameStartIndex, nameEndIndex);
+                    }
                 }
             }
         }

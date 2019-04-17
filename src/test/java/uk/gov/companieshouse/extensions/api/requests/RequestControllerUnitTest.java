@@ -7,7 +7,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.ResponseEntity;
-import uk.gov.companieshouse.service.links.Links;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
@@ -18,20 +17,21 @@ import java.util.function.Supplier;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.companieshouse.extensions.api.Utils.Utils.BASE_URL;
+import static uk.gov.companieshouse.extensions.api.Utils.Utils.EMAIL;
+import static uk.gov.companieshouse.extensions.api.Utils.Utils.FORENAME;
+import static uk.gov.companieshouse.extensions.api.Utils.Utils.SURNAME;
+import static uk.gov.companieshouse.extensions.api.Utils.Utils.USER_ID;
+import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyRequestDTO;
+import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyRequestEntity;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RequestControllerUnitTest {
-
-    public static final String BASE_URL = "/company/00006400/extensions/requests/";
-    public static final String USER_ID = "userID";
-    public static final String EMAIL = "email";
-    public static final String FORENAME = "forename";
-    public static final String SURNAME = "surname";
 
     @InjectMocks
     private RequestsController controller;
@@ -43,63 +43,50 @@ public class RequestControllerUnitTest {
     private HttpServletRequest mockHttpServletRequest;
 
     @Mock
-    private Supplier<LocalDateTime> mockDateTimeSupplierNow;
+    private Supplier<LocalDateTime> mockDateTimeSupplier;
 
     @Mock
     private ERICHeaderParser mockEricHeaderParser;
 
-    private static final LocalDateTime now = LocalDateTime.now();
+    @Mock
+    private ExtensionRequestMapper mockExtensionRequestMapper;
 
     @Before
     public void setup() {
         when(mockHttpServletRequest.getRequestURI()).thenReturn(BASE_URL);
-        when(mockDateTimeSupplierNow.get()).thenReturn(now);
         when(mockEricHeaderParser.getUserId(mockHttpServletRequest)).thenReturn(USER_ID);
         when(mockEricHeaderParser.getEmail(mockHttpServletRequest)).thenReturn(EMAIL);
         when(mockEricHeaderParser.getForename(mockHttpServletRequest)).thenReturn(FORENAME);
         when(mockEricHeaderParser.getSurname(mockHttpServletRequest)).thenReturn(SURNAME);
+
     }
 
     @Test
     public void createsExtensionRequestResource() {
-        ResponseEntity<ExtensionRequestFull> response =
-            controller.createExtensionRequestResource(dummyRequest(), mockHttpServletRequest);
+        ExtensionCreateRequest createRequest = dummyRequest();
+        String requestUri = mockHttpServletRequest.getRequestURI();
+        ExtensionRequestFullEntity entity = dummyRequestEntity();
+        ExtensionRequestFullDTO entityRequestDTO = dummyRequestDTO();
 
-        verify(requestsService).insertExtensionsRequest(any(ExtensionRequestFull.class));
+        when(requestsService.insertExtensionsRequest(eq(createRequest), any(CreatedBy.class),
+        eq(requestUri))).thenReturn(entity);
 
-        ExtensionRequestFull extensionRequestFull = response.getBody();
+        when(mockExtensionRequestMapper.entityToDTO(entity)).thenReturn(entityRequestDTO);
 
-        assertEquals(Status.OPEN, extensionRequestFull.getStatus());
+        ResponseEntity<ExtensionRequestFullDTO> response =
+            controller.createExtensionRequestResource(createRequest, mockHttpServletRequest);
 
-        assertEquals(extensionRequestFull.getCreatedOn(), now);
+        verify(requestsService).insertExtensionsRequest(eq(createRequest), any(CreatedBy.class),
+            eq(requestUri));
 
-        assertNotNull(extensionRequestFull.getId());
-        assertTrue((extensionRequestFull.getId().toString().length() > 0));
-
-        String linkToSelf = extensionRequestFull.getLinks().getLink(() -> "self");
-        assertTrue(linkToSelf.startsWith(BASE_URL));
-        assertTrue(linkToSelf.length() > BASE_URL.length());
-        String headerLinkToSelf = response.getHeaders().getLocation().toString();
-        assertTrue(headerLinkToSelf.startsWith(BASE_URL));
-        assertTrue(headerLinkToSelf.length() > BASE_URL.length());
-
-        assertEquals(dummyRequest().getAccountingPeriodStartDate(), extensionRequestFull.getAccountingPeriodStartOn());
-        assertEquals(dummyRequest().getAccountingPeriodEndDate(), extensionRequestFull.getAccountingPeriodEndOn());
-
-        CreatedBy createdBy = extensionRequestFull.getCreatedBy();
-        assertEquals(USER_ID, createdBy.getId());
-        assertEquals(EMAIL, createdBy.getEmail());
-        assertEquals(FORENAME, createdBy.getForename());
-        assertEquals(SURNAME, createdBy.getSurname());
-
-        Links reasons = extensionRequestFull.getReasons();
-        assertTrue(reasons.getLinks().isEmpty());
+        assertNotNull(entityRequestDTO);
+        assertEquals(entityRequestDTO, response.getBody());
     }
 
     @Test
     public void canGetExtensionRequestList() {
-        final ExtensionRequestFull expectedRequest = new ExtensionRequestFull();
-        List<ExtensionRequestFull> response = controller.getExtensionRequestsList();
+        final ExtensionRequestFull expectedRequest = new ExtensionRequestFullDTO();
+        List<ExtensionRequestFullDTO> response = controller.getExtensionRequestsList();
         response.forEach(request -> {
            assertNotNull(request.getId());
         });
@@ -107,7 +94,7 @@ public class RequestControllerUnitTest {
 
     @Test
     public void canGetSingleExtensionRequest() {
-        ExtensionRequestFull expected = new ExtensionRequestFull();
+        ExtensionRequestFullEntity expected = new ExtensionRequestFullEntity();
         when(requestsService.getExtensionsRequestById(anyString())).thenReturn(expected);
         ExtensionRequestFull request = controller.getSingleExtensionRequestById("123");
         assertEquals(expected, request);
@@ -119,11 +106,10 @@ public class RequestControllerUnitTest {
         assertFalse(response);
     }
 
-    public ExtensionCreateRequest dummyRequest() {
+    private ExtensionCreateRequest dummyRequest() {
         ExtensionCreateRequest request = new ExtensionCreateRequest();
-        request.setAccountingPeriodEndDate(LocalDate.of(2018, 12, 12));
-        request.setAccountingPeriodStartDate(LocalDate.of(2018, 12, 12));
+        request.setAccountingPeriodEndOn(LocalDate.of(2019, 12, 12));
+        request.setAccountingPeriodStartOn(LocalDate.of(2018, 12, 12));
         return request;
     }
-
 }
