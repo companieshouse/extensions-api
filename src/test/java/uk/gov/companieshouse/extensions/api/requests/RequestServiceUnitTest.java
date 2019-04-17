@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -28,9 +29,8 @@ public class RequestServiceUnitTest {
 
         ExtensionCreateRequest extensionCreateRequest = Utils.dummyCreateRequestEntity();
         CreatedBy createdBy = Utils.createdBy();
-        String reqUri = "http://test";
-        ExtensionRequestFullEntity extensionRequest =
-            requestsService.insertExtensionsRequest(extensionCreateRequest, createdBy, reqUri);
+
+        ExtensionRequestFullEntity extensionRequest = requestsService.getExtensionRequestFullEntityFromCreateRequest(extensionCreateRequest, createdBy);
 
         assertNotNull(extensionRequest);
         assertEquals(extensionCreateRequest.getAccountingPeriodStartOn(), extensionRequest.getAccountingPeriodStartOn());

@@ -29,13 +29,7 @@ public class RequestsService {
     public ExtensionRequestFullEntity insertExtensionsRequest(ExtensionCreateRequest extensionCreateRequest, CreatedBy
         createdBy, String reqUri) {
 
-        ExtensionRequestFullEntity extensionRequestFullEntity = new ExtensionRequestFullEntity();
-        extensionRequestFullEntity.setStatus(Status.OPEN);
-        extensionRequestFullEntity.setReasons(new ArrayList<>());
-        extensionRequestFullEntity.setCreatedOn(dateTimeSupplierNow.get());
-        extensionRequestFullEntity.setAccountingPeriodStartOn(extensionCreateRequest.getAccountingPeriodStartOn());
-        extensionRequestFullEntity.setAccountingPeriodEndOn(extensionCreateRequest.getAccountingPeriodEndOn());
-        extensionRequestFullEntity.setCreatedBy(createdBy);
+        ExtensionRequestFullEntity extensionRequestFullEntity = getExtensionRequestFullEntityFromCreateRequest(extensionCreateRequest, createdBy);
 
         ExtensionRequestFullEntity savedEntity = extensionRequestsRepository.insert
             (extensionRequestFullEntity);
@@ -45,5 +39,16 @@ public class RequestsService {
         links.setLink(() ->  "self", linkToSelf);
         extensionRequestFullEntity.setLinks(links);
         return extensionRequestsRepository.save(extensionRequestFullEntity);
+    }
+
+    public ExtensionRequestFullEntity getExtensionRequestFullEntityFromCreateRequest(ExtensionCreateRequest extensionCreateRequest, CreatedBy createdBy) {
+        ExtensionRequestFullEntity extensionRequestFullEntity = new ExtensionRequestFullEntity();
+        extensionRequestFullEntity.setStatus(Status.OPEN);
+        extensionRequestFullEntity.setReasons(new ArrayList<>());
+        extensionRequestFullEntity.setCreatedOn(dateTimeSupplierNow.get());
+        extensionRequestFullEntity.setAccountingPeriodStartOn(extensionCreateRequest.getAccountingPeriodStartOn());
+        extensionRequestFullEntity.setAccountingPeriodEndOn(extensionCreateRequest.getAccountingPeriodEndOn());
+        extensionRequestFullEntity.setCreatedBy(createdBy);
+        return extensionRequestFullEntity;
     }
 }
