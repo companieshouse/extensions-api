@@ -27,10 +27,10 @@ public class RequestsController {
     private RequestsService requestsService;
 
     @Autowired
-    private ExtensionRequestsRepository extensionRequestsRepository;
+    private Supplier<LocalDateTime> dateTimeSupplierNow;
 
     @Autowired
-    private Supplier<LocalDateTime> dateTimeSupplierNow;
+    private ERICHeaderParser ericHeaderParser;
 
     @PostMapping("/")
     public ResponseEntity<ExtensionRequestFull> createExtensionRequestResource(@RequestBody ExtensionCreateRequest extensionCreateRequest,
@@ -38,17 +38,28 @@ public class RequestsController {
         UUID uuid = UUID.randomUUID();
         String linkToSelf = request.getRequestURI() + uuid;
 
+        CreatedBy createdBy = new CreatedBy();
+        createdBy.setId(ericHeaderParser.getUserId(request));
+        createdBy.setEmail(ericHeaderParser.getEmail(request));
+        createdBy.setForename(ericHeaderParser.getForename(request));
+        createdBy.setSurname(ericHeaderParser.getSurname(request));
+
+        Links links = new Links();
+        links.setLink(() ->  "self", linkToSelf);
+
+        Links reasons = new Links();
+
         ExtensionRequestFull extensionRequestFull = new ExtensionRequestFull();
         extensionRequestFull.setId(uuid);
         extensionRequestFull.setStatus(Status.OPEN);
         extensionRequestFull.setCreatedOn(dateTimeSupplierNow.get());
         extensionRequestFull.setAccountingPeriodStartOn(extensionCreateRequest.getAccountingPeriodStartDate());
         extensionRequestFull.setAccountingPeriodEndOn(extensionCreateRequest.getAccountingPeriodEndDate());
-        Links links = new Links();
-        links.setLink(() ->  "self", linkToSelf);
         extensionRequestFull.setLinks(links);
+        extensionRequestFull.setCreatedBy(createdBy);
+        extensionRequestFull.setReasons(reasons);
 
-        extensionRequestsRepository.insert(extensionRequestFull);
+        requestsService.insertExtensionsRequest(extensionRequestFull);
 
         return ResponseEntity.created(URI.create(linkToSelf)).body(extensionRequestFull);
     }
