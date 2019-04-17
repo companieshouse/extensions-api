@@ -1,9 +1,11 @@
 package uk.gov.companieshouse.extensions.api.requests;
 
-import org.junit.Test;
-import uk.gov.companieshouse.extensions.api.Utils.Utils;
-
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+import org.junit.Test;
+
+import uk.gov.companieshouse.extensions.api.Utils.Utils;
 
 public class RequestMapperTest {
 
@@ -16,6 +18,7 @@ public class RequestMapperTest {
 
         ExtensionRequestFullDTO dto = extensionRequestMapper.entityToDTO(dummyEntity);
 
+        assertNotNull(dto);
         assertEquals(dummyEntity.getEtag(), dto.getEtag());
         assertEquals(dummyEntity.getId(), dto.getId());
         assertEquals(dummyEntity.getCreatedOn(), dto.getCreatedOn());

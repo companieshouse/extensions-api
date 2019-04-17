@@ -1,9 +1,6 @@
 package uk.gov.companieshouse.extensions.api.Utils;
 
-import uk.gov.companieshouse.extensions.api.requests.CreatedBy;
-import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestFullDTO;
-import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestFullEntity;
-import uk.gov.companieshouse.extensions.api.requests.Status;
+import uk.gov.companieshouse.extensions.api.requests.*;
 import uk.gov.companieshouse.service.links.Links;
 
 import java.time.LocalDate;
@@ -27,7 +24,7 @@ public class Utils {
     public static final String FORENAME = "forename";
     public static final String SURNAME = "surname";
 
-    private static CreatedBy createdBy() {
+    public static CreatedBy createdBy() {
         CreatedBy createdBy = new CreatedBy();
         createdBy.setId(USER_ID);
         createdBy.setForename(FORENAME);
@@ -73,5 +70,12 @@ public class Utils {
         requestEntity.setStatus(STATUS_OPEN);
 
         return requestEntity;
+    }
+
+    public static ExtensionCreateRequest dummyCreateRequestEntity() {
+        ExtensionCreateRequest extensionCreateRequest = new ExtensionCreateRequest();
+        extensionCreateRequest.setAccountingPeriodStartOn(ACCOUNTING_PERIOD_START_ON);
+        extensionCreateRequest.setAccountingPeriodEndOn(ACCOUNTING_PERIOD_END_ON);
+        return extensionCreateRequest;
     }
 }

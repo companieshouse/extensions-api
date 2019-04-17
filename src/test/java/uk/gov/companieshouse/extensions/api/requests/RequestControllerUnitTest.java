@@ -79,6 +79,7 @@ public class RequestControllerUnitTest {
         verify(requestsService).insertExtensionsRequest(eq(createRequest), any(CreatedBy.class),
             eq(requestUri));
 
+        assertNotNull(entityRequestDTO);
         assertEquals(entityRequestDTO, response.getBody());
     }
 
