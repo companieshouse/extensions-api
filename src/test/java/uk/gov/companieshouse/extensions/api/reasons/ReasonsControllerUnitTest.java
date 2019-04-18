@@ -11,8 +11,8 @@ public class ReasonsControllerUnitTest {
 
     @Test
     public void AddReasonToRequest() {
-        String response = reasonsController.addReasonToRequest(dummyReason(), "1234");
-        assertEquals("ExtensionReason added: Extension reason illness Additional text: string  " +
+        String response = reasonsController.addReasonToRequest(dummyCreateReason(), "1234");
+        assertEquals("ExtensionReason added: Extension create reason illness Additional text: string  " +
             "Date start: 2019-02-15  Date end: 2019-02-15", response);
     }
 
@@ -24,13 +24,13 @@ public class ReasonsControllerUnitTest {
 
     @Test
     public void updateReasonPlaceholderTest() {
-        String response = reasonsController.updateReasonOnRequest(dummyReason(), "1234", "");
-        assertEquals("ExtensionReason updated: Extension reason illness Additional text: string  " +
+        String response = reasonsController.updateReasonOnRequest(dummyCreateReason(), "1234", "");
+        assertEquals("ExtensionReason updated: Extension create reason illness Additional text: string  " +
             "Date start: 2019-02-15  Date end: 2019-02-15", response);
     }
 
-    public static ExtensionReason dummyReason() {
-        ExtensionReason reason = new ExtensionReason();
+    public static ExtensionCreateReason dummyCreateReason() {
+        ExtensionCreateReason reason = new ExtensionCreateReason();
         reason.setAdditionalText("string");
         reason.setEndOn("2019-02-15");
         reason.setStartOn("2019-02-15");
