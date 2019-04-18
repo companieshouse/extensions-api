@@ -11,9 +11,6 @@ import java.util.function.Supplier;
 
 public class ExtensionRequestFullEntityBuilder {
 
-    @Autowired
-    private static Supplier<LocalDateTime> dateTimeSupplierNow;
-
     private LocalDateTime createdOn;
 
     private CreatedBy createdBy;
@@ -26,8 +23,8 @@ public class ExtensionRequestFullEntityBuilder {
 
     private List<ExtensionReason> reasons = new ArrayList<>();
 
-    public ExtensionRequestFullEntityBuilder withCreatedOn() {
-        this.createdOn = dateTimeSupplierNow.get();
+    public ExtensionRequestFullEntityBuilder withCreatedOn(Supplier<LocalDateTime> localDateTimeSupplier) {
+        this.createdOn = localDateTimeSupplier.get();
         return this;
     }
 
