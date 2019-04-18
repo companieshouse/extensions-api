@@ -3,7 +3,6 @@ package uk.gov.companieshouse.extensions.api.requests;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
-import java.util.ArrayList;
 import java.util.function.Supplier;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +28,14 @@ public class RequestsService {
     public ExtensionRequestFullEntity insertExtensionsRequest(ExtensionCreateRequest extensionCreateRequest, CreatedBy
         createdBy, String reqUri) {
 
-        ExtensionRequestFullEntity extensionRequestFullEntity = getExtensionRequestFullEntityFromCreateRequest(extensionCreateRequest, createdBy);
+        ExtensionRequestFullEntity extensionRequestFullEntity = ExtensionRequestFullEntityBuilder
+            .newInstance()
+            .withCreatedOn()
+            .withCreatedBy(createdBy)
+            .withAccountingPeriodStartOn(extensionCreateRequest.getAccountingPeriodStartOn())
+            .withAccountingPeriodEndOn(extensionCreateRequest.getAccountingPeriodEndOn())
+            .withStatus()
+            .build();
 
         ExtensionRequestFullEntity savedEntity = extensionRequestsRepository.insert
             (extensionRequestFullEntity);
@@ -39,16 +45,5 @@ public class RequestsService {
         links.setLink(() ->  "self", linkToSelf);
         extensionRequestFullEntity.setLinks(links);
         return extensionRequestsRepository.save(extensionRequestFullEntity);
-    }
-
-    public ExtensionRequestFullEntity getExtensionRequestFullEntityFromCreateRequest(ExtensionCreateRequest extensionCreateRequest, CreatedBy createdBy) {
-        ExtensionRequestFullEntity extensionRequestFullEntity = new ExtensionRequestFullEntity();
-        extensionRequestFullEntity.setStatus(Status.OPEN);
-        extensionRequestFullEntity.setReasons(new ArrayList<>());
-        extensionRequestFullEntity.setCreatedOn(dateTimeSupplierNow.get());
-        extensionRequestFullEntity.setAccountingPeriodStartOn(extensionCreateRequest.getAccountingPeriodStartOn());
-        extensionRequestFullEntity.setAccountingPeriodEndOn(extensionCreateRequest.getAccountingPeriodEndOn());
-        extensionRequestFullEntity.setCreatedBy(createdBy);
-        return extensionRequestFullEntity;
     }
 }
