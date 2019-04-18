@@ -30,7 +30,7 @@ public class RequestsService {
 
         ExtensionRequestFullEntity extensionRequestFullEntity = ExtensionRequestFullEntityBuilder
             .newInstance()
-            .withCreatedOn()
+            .withCreatedOn(dateTimeSupplierNow)
             .withCreatedBy(createdBy)
             .withAccountingPeriodStartOn(extensionCreateRequest.getAccountingPeriodStartOn())
             .withAccountingPeriodEndOn(extensionCreateRequest.getAccountingPeriodEndOn())
