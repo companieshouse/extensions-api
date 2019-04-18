@@ -11,26 +11,44 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import uk.gov.companieshouse.extensions.api.requests.CreatedBy;
+import uk.gov.companieshouse.extensions.api.requests.ERICHeaderParser;
 import uk.gov.companieshouse.service.ServiceResult;
 import uk.gov.companieshouse.service.rest.response.ChResponseBody;
 import uk.gov.companieshouse.service.rest.response.PluggableResponseEntityFactory;
+
+import javax.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("${api.endpoint.extensions}")
 public class AttachmentsController {
 
     private PluggableResponseEntityFactory responseEntityFactory;
+    private AttachmentsService attachmentsService;
+    private ERICHeaderParser ericHeaderParser;
 
     @Autowired
-    public AttachmentsController(PluggableResponseEntityFactory responseEntityFactory) {
+    public AttachmentsController(PluggableResponseEntityFactory responseEntityFactory,
+                                 AttachmentsService attachmentsService,
+                                 ERICHeaderParser ericHeaderParser) {
         this.responseEntityFactory = responseEntityFactory;
+        this.attachmentsService = attachmentsService;
+        this.ericHeaderParser = ericHeaderParser;
     }
 
     @PostMapping("/{requestId}/attachments")
     public ResponseEntity<ChResponseBody<AttachmentsMetadata>> uploadAttachmentToRequest(
-            @RequestParam("file") MultipartFile file, @PathVariable String requestId) {
-        return responseEntityFactory.createResponse(
-                ServiceResult.accepted(new AttachmentsMetadata("/dummy.url", "scanned")));
+            @RequestParam("file") MultipartFile file, @PathVariable String requestId,
+            HttpServletRequest servletRequest) {
+        CreatedBy createdBy = new CreatedBy();
+        createdBy.setId(ericHeaderParser.getUserId(servletRequest));
+        createdBy.setEmail(ericHeaderParser.getEmail(servletRequest));
+        createdBy.setForename(ericHeaderParser.getForename(servletRequest));
+        createdBy.setSurname(ericHeaderParser.getSurname(servletRequest));
+
+        ServiceResult<AttachmentsMetadata> result = attachmentsService.addAttachment(file,
+            servletRequest.getRequestURI());
+        return responseEntityFactory.createResponse(result);
     }
 
     @DeleteMapping("/{requestId}/attachments/{attachmentId}")

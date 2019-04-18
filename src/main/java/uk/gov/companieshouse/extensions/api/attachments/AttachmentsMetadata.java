@@ -1,5 +1,7 @@
 package uk.gov.companieshouse.extensions.api.attachments;
 
+import uk.gov.companieshouse.service.rest.ApiObjectImpl;
+
 import java.io.Serializable;
 
 /**
@@ -7,10 +9,12 @@ import java.io.Serializable;
  * awaiting virus scanning
  *
  */
-public class AttachmentsMetadata implements Serializable {
+public class AttachmentsMetadata extends ApiObjectImpl implements Serializable {
 
     private static final long serialVersionUID = -6411409736141740990L;
 
+    private String id;
+    private long size;
     private String accessUrl;
     private String scanResult;
 
@@ -21,6 +25,22 @@ public class AttachmentsMetadata implements Serializable {
 
     public static long getSerialVersionUID() {
         return serialVersionUID;
+    }
+
+    public String getId() {
+        return this.id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public long getSize() {
+        return size;
+    }
+
+    public void setSize(long size) {
+        this.size = size;
     }
 
     public String getAccessUrl() {
