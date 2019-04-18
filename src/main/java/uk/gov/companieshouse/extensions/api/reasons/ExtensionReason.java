@@ -3,7 +3,7 @@ package uk.gov.companieshouse.extensions.api.reasons;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import uk.gov.companieshouse.service.links.Links;
 
-public class ExtensionReason {
+public abstract class ExtensionReason {
 
     private String etag;
 
