@@ -2,13 +2,10 @@ package uk.gov.companieshouse.extensions.api.reasons;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import uk.gov.companieshouse.extensions.api.attachments.AttachmentsMetadata;
-import uk.gov.companieshouse.service.links.Links;
 
 import java.util.List;
 
 public abstract class ExtensionReason {
-
-    private String id;
 
     private String etag;
 
@@ -27,14 +24,6 @@ public abstract class ExtensionReason {
         if (attachments != null) {
             attachments.add(attachment);
         }
-    }
-
-    public String getId() {
-        return this.id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
     }
 
     // key = hash of attachment id, value = uri of attachment

@@ -45,4 +45,8 @@ public class ExtensionCreateReason {
     public void setEndOn(String endOn) {
         this.endOn = endOn;
     }
+
+    public String toString() {
+        return "Extension create reason " + reason + " Additional text: " + additionalText + "  Date start: " + startOn + "  Date end: " + endOn;
+    }
 }
