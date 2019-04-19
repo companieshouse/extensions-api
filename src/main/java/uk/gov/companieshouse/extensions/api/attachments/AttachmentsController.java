@@ -36,10 +36,10 @@ public class AttachmentsController {
         this.ericHeaderParser = ericHeaderParser;
     }
 
-    @PostMapping("/{requestId}/attachments")
+    @PostMapping("/{requestId}/reasons/{reasonId}/attachments")
     public ResponseEntity<ChResponseBody<AttachmentsMetadata>> uploadAttachmentToRequest(
             @RequestParam("file") MultipartFile file, @PathVariable String requestId,
-            HttpServletRequest servletRequest) {
+            @PathVariable String reasonId, HttpServletRequest servletRequest) throws Exception {
         CreatedBy createdBy = new CreatedBy();
         createdBy.setId(ericHeaderParser.getUserId(servletRequest));
         createdBy.setEmail(ericHeaderParser.getEmail(servletRequest));
@@ -47,7 +47,7 @@ public class AttachmentsController {
         createdBy.setSurname(ericHeaderParser.getSurname(servletRequest));
 
         ServiceResult<AttachmentsMetadata> result = attachmentsService.addAttachment(file,
-            servletRequest.getRequestURI());
+            servletRequest.getRequestURI(), requestId, reasonId);
         return responseEntityFactory.createResponse(result);
     }
 
