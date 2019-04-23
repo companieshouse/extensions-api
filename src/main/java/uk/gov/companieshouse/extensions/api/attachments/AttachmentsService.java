@@ -24,9 +24,10 @@ public class AttachmentsService {
         this.requestsRepo = requestsRepo;
     }
 
-    public ServiceResult<AttachmentsMetadata> addAttachment(MultipartFile file,
-                                                            String attachmentsUri,
-                                                            String requestId, String reasonId) throws Exception {
+    public ServiceResult<AttachmentsMetadata>
+            addAttachment(MultipartFile file,
+                          String attachmentsUri, String requestId,
+                          String reasonId) throws Exception {
         String randomUUID = UUID.randomUUID().toString();
 
         AttachmentsMetadata attachmentsMetadata = new AttachmentsMetadata(attachmentsUri,
@@ -36,7 +37,6 @@ public class AttachmentsService {
 
         Optional<ExtensionRequestFullEntity> extension = requestsRepo.findById(requestId);
 
-        System.out.println(extension.get());
         List<ExtensionReasonEntity> reasons =
             extension.map(ext -> ext.getReasons()).orElseThrow(() -> new Exception("You cannot " +
                 "add an attachment to a request without a reason"));
