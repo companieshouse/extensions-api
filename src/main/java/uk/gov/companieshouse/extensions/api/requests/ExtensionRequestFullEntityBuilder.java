@@ -1,19 +1,15 @@
 package uk.gov.companieshouse.extensions.api.requests;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.companieshouse.extensions.api.reasons.ExtensionReason;
-import uk.gov.companieshouse.service.links.Links;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
+import java.util.function.Supplier;
 
 public class ExtensionRequestFullEntityBuilder {
-
-    private String etag;
-
-    private UUID id;
 
     private LocalDateTime createdOn;
 
@@ -23,18 +19,53 @@ public class ExtensionRequestFullEntityBuilder {
 
     private LocalDate accountingPeriodEndOn;
 
-    private Links links;
-
     private Status status;
 
     private List<ExtensionReason> reasons = new ArrayList<>();
 
-    private ExtensionRequestFullEntityBuilder() {}
+    public ExtensionRequestFullEntityBuilder withCreatedOn(Supplier<LocalDateTime> localDateTimeSupplier) {
+        this.createdOn = localDateTimeSupplier.get();
+        return this;
+    }
+
+    public ExtensionRequestFullEntityBuilder withCreatedBy(CreatedBy createdBy) {
+        this.createdBy = createdBy;
+        return this;
+    }
+
+    public ExtensionRequestFullEntityBuilder withAccountingPeriodStartOn(LocalDate
+                                                                             accountingPeriodStartDate) {
+        this.accountingPeriodStartOn = accountingPeriodStartDate;
+        return this;
+    }
+
+    public ExtensionRequestFullEntityBuilder withAccountingPeriodEndOn(LocalDate
+                                                                           accountingPeriodStartDate) {
+        this.accountingPeriodEndOn = accountingPeriodStartDate;
+        return this;
+    }
+
+    public ExtensionRequestFullEntityBuilder withStatus() {
+        this.status = Status.OPEN;
+        return this;
+    }
 
     public static ExtensionRequestFullEntityBuilder newInstance() {
+        ExtensionRequestFullEntityBuilder extensionRequestFullEntityBuilder = new
+            ExtensionRequestFullEntityBuilder();
+
         return new ExtensionRequestFullEntityBuilder();
     }
 
+    public ExtensionRequestFullEntity build() {
+        ExtensionRequestFullEntity extensionRequestFullEntity = new ExtensionRequestFullEntity();
+        extensionRequestFullEntity.setCreatedOn(this.createdOn);
+        extensionRequestFullEntity.setCreatedBy(this.createdBy);
+        extensionRequestFullEntity.setAccountingPeriodStartOn(this.accountingPeriodStartOn);
+        extensionRequestFullEntity.setAccountingPeriodEndOn(this.accountingPeriodEndOn);
+        extensionRequestFullEntity.setReasons(this.reasons);
+        extensionRequestFullEntity.setStatus(this.status);
 
-
+        return extensionRequestFullEntity;
+    }
 }
