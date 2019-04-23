@@ -1,5 +1,7 @@
 package uk.gov.companieshouse.extensions.api.reasons;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -8,13 +10,27 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.net.URI;
+
 @RestController
 @RequestMapping("${api.endpoint.extensions}")
 public class ReasonsController {
 
+    @Autowired
+    private ReasonsService reasonsService;
+
     @PostMapping("/{requestId}/reasons")
-    public String addReasonToRequest(@RequestBody ExtensionCreateReason extensionCreateReason, @PathVariable String requestId) {
-      return "ExtensionReason added: " + extensionCreateReason.toString();
+    public ResponseEntity<ExtensionReasonDTO> addReasonToRequest(@RequestBody ExtensionCreateReason extensionCreateReason, @PathVariable String requestId) {
+      ExtensionReasonEntity extensionReasonEntity = reasonsService.insertExtensionsReason(extensionCreateReason);
+      ExtensionReasonDTO extensionReasonDTO = new ExtensionReasonDTO();
+
+      extensionReasonDTO.setEtag(extensionReasonEntity.getEtag());
+      extensionReasonDTO.setAdditionalText(extensionReasonEntity.getAdditionalText());
+      extensionReasonDTO.setStartOn(extensionReasonEntity.getStartOn());
+      extensionReasonDTO.setEndOn(extensionReasonEntity.getEndOn());
+      extensionReasonDTO.setReason(extensionReasonEntity.getReason());
+
+      return ResponseEntity.created(URI.create("")).body(extensionReasonDTO);
     }
 
     @DeleteMapping("/{requestId}/reasons/{reasonId}")
@@ -25,5 +41,5 @@ public class ReasonsController {
     @PutMapping("/{requestId}/reasons/{reasonId}")
     public String updateReasonOnRequest(@RequestBody ExtensionCreateReason extensionCreateReason, @PathVariable String requestId, @PathVariable String reasonId) {
       return "ExtensionReason updated: " + extensionCreateReason.toString();
-    }	
+    }
 }

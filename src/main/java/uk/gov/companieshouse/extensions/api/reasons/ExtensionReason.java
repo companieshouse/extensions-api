@@ -3,9 +3,13 @@ package uk.gov.companieshouse.extensions.api.reasons;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import uk.gov.companieshouse.service.links.Links;
 
+import java.time.LocalDate;
+
 public abstract class ExtensionReason {
 
     private String etag;
+
+    private String id;
 
     private String reason;
 
@@ -13,10 +17,10 @@ public abstract class ExtensionReason {
     private String additionalText;
 
     @JsonProperty("start_on")
-    private String startOn;
+    private LocalDate startOn;
 
     @JsonProperty("end_on")
-    private String endOn;
+    private LocalDate endOn;
 
     // key = hash of attachment id, value = uri of attachment
     private Links attachments;
@@ -45,19 +49,27 @@ public abstract class ExtensionReason {
         this.etag = etag;
     }
 
-    public String getStartOn() {
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public LocalDate getStartOn() {
         return startOn;
     }
 
-    public void setStartOn(String startOn) {
+    public void setStartOn(LocalDate startOn) {
         this.startOn = startOn;
     }
 
-    public String getEndOn() {
+    public LocalDate getEndOn() {
         return endOn;
     }
 
-    public void setEndOn(String endOn) {
+    public void setEndOn(LocalDate endOn) {
         this.endOn = endOn;
     }
 
@@ -70,6 +82,6 @@ public abstract class ExtensionReason {
     }
 
     public String toString() {
-      return "Extension reason " + reason + " Additional text: " + additionalText + "  Date start: " + startOn + "  Date end: " + endOn;
+      return "Extension reason: " + reason + " Additional text: " + additionalText + " Date start: " + startOn + " Date end: " + endOn;
     }
 }
