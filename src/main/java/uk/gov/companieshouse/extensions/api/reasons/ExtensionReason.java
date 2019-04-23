@@ -45,20 +45,20 @@ public abstract class ExtensionReason {
         this.etag = etag;
     }
 
-    public String getStartOn() {
-        return startOn;
-    }
-
-    public void setStartOn(String startOn) {
-        this.startOn = startOn;
-    }
-
     public Links getAttachments() {
         return this.attachments;
     }
 
     public void setAttachments(Links attachments) {
         this.attachments = attachments;
+    }
+
+    public String getStartOn() {
+        return startOn;
+    }
+
+    public void setStartOn(String startOn) {
+        this.startOn = startOn;
     }
 
     public String getEndOn() {
