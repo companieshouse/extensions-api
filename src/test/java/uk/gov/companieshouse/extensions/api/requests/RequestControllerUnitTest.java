@@ -80,7 +80,7 @@ public class RequestControllerUnitTest {
             eq(requestUri));
 
         assertNotNull(entityRequestDTO);
-        assertEquals(entityRequestDTO, response.getBody());
+        assertEquals(entityRequestDTO.toString(), response.getBody().toString());
     }
 
     @Test

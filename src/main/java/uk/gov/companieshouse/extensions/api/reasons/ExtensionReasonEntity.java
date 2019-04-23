@@ -14,11 +14,11 @@ public class ExtensionReasonEntity extends ExtensionReason {
         }
     }
 
-    public List<Attachment> getReasons() {
+    public List<Attachment> getAttachemnts() {
         return  attachments;
     }
 
-    public void setReasons(List<Attachment>  attachments) {
+    public void setAttachments(List<Attachment>  attachments) {
         this. attachments =  attachments;
     }
 }
