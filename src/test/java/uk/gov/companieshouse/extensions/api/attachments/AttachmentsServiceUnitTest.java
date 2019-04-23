@@ -1,7 +1,5 @@
 package uk.gov.companieshouse.extensions.api.attachments;
 
-import org.apache.commons.collections.ArrayStack;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
