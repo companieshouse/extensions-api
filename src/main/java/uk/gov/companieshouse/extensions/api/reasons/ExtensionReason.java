@@ -1,9 +1,7 @@
 package uk.gov.companieshouse.extensions.api.reasons;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import uk.gov.companieshouse.extensions.api.attachments.AttachmentsMetadata;
-
-import java.util.List;
+import uk.gov.companieshouse.service.links.Links;
 
 public abstract class ExtensionReason {
 
@@ -20,14 +18,8 @@ public abstract class ExtensionReason {
     @JsonProperty("end_on")
     private String endOn;
 
-    public void addAttachment(AttachmentsMetadata attachment) {
-        if (attachments != null) {
-            attachments.add(attachment);
-        }
-    }
-
     // key = hash of attachment id, value = uri of attachment
-    private List<AttachmentsMetadata> attachments;
+    private Links attachments;
 
     public String getReason() {
         return reason;
@@ -61,20 +53,20 @@ public abstract class ExtensionReason {
         this.startOn = startOn;
     }
 
+    public Links getAttachments() {
+        return this.attachments;
+    }
+
+    public void setAttachments(Links attachments) {
+        this.attachments = attachments;
+    }
+
     public String getEndOn() {
         return endOn;
     }
 
     public void setEndOn(String endOn) {
         this.endOn = endOn;
-    }
-
-    public List<AttachmentsMetadata> getAttachments() {
-        return attachments;
-    }
-
-    public void setAttachments(List<AttachmentsMetadata> attachments) {
-        this.attachments = attachments;
     }
 
     public String toString() {
