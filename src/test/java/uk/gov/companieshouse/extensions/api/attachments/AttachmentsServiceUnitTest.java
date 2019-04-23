@@ -35,6 +35,7 @@ public class AttachmentsServiceUnitTest {
         final String requestID = "123";
         final String reasonId = "1234";
         final String accessUrl = "/dummyUrl";
+        final String fileName = "testMultipart.txt";
         ExtensionRequestFullEntity entity = new ExtensionRequestFullEntity();
         entity.setId(requestID);
         ExtensionReasonEntity reasonEntity = new ExtensionReasonEntity();
@@ -47,29 +48,24 @@ public class AttachmentsServiceUnitTest {
 
         AttachmentsService service = new AttachmentsService(repo);
 
-        ServiceResult<AttachmentsMetadata> result =
-            service.addAttachment(new MockMultipartFile("testMultipart.txt",
-            "testMultipart.txt", "text/plain", Files.readAllBytes(rsc.getFile().toPath())),
+        ServiceResult<AttachmentDTO> result =
+            service.addAttachment(new MockMultipartFile(fileName,
+                    fileName, "text/plain", Files.readAllBytes(rsc.getFile().toPath())),
                 accessUrl, requestID, reasonId);
 
-        AttachmentsMetadata expectedMetadata = new AttachmentsMetadata(accessUrl, "scanned");
-        ServiceResult<AttachmentsMetadata> expectedResult =
-            ServiceResult.accepted(expectedMetadata);
-
-        assertEquals(accessUrl, result.getData().getAccessUrl());
+        assertEquals(result.getData().getContentType(), "text/plain");
         assertNotNull(result.getData().getId());
-        assertEquals(result.getData().getScanResult(), "scanned");
+        assertEquals(result.getData().getName(), fileName);
         assertEquals(ServiceResultStatus.ACCEPTED, result.getStatus());
 
-        Optional<AttachmentsMetadata> entityMetadata = entity.getReasons()
+        Optional<Attachment> entityMetadata = entity.getReasons()
             .stream()
             .flatMap(reason -> reason.getAttachments().stream())
             .findAny();
         assertTrue(entityMetadata.isPresent());
-        assertEquals(expectedMetadata.getAccessUrl(), entityMetadata.get().getAccessUrl());
         assertNotNull(entityMetadata.get().getId());
 
         verify(repo).save(entity);
-        verify(repo).findById("123");
+        verify(repo).findById(requestID);
     }
 }

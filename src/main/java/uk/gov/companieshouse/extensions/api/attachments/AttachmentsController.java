@@ -20,7 +20,7 @@ import uk.gov.companieshouse.service.rest.response.PluggableResponseEntityFactor
 import javax.servlet.http.HttpServletRequest;
 
 @RestController
-@RequestMapping("${api.endpoint.extensions}")
+@RequestMapping("/company/{companyNumber}/extensions/requests")
 public class AttachmentsController {
 
     private PluggableResponseEntityFactory responseEntityFactory;
@@ -37,7 +37,7 @@ public class AttachmentsController {
     }
 
     @PostMapping("/{requestId}/reasons/{reasonId}/attachments")
-    public ResponseEntity<ChResponseBody<AttachmentsMetadata>> uploadAttachmentToRequest(
+    public ResponseEntity<ChResponseBody<AttachmentDTO>> uploadAttachmentToRequest(
             @RequestParam("file") MultipartFile file, @PathVariable String requestId,
             @PathVariable String reasonId, HttpServletRequest servletRequest) throws Exception {
         CreatedBy createdBy = new CreatedBy();
@@ -46,17 +46,17 @@ public class AttachmentsController {
         createdBy.setForename(ericHeaderParser.getForename(servletRequest));
         createdBy.setSurname(ericHeaderParser.getSurname(servletRequest));
 
-        ServiceResult<AttachmentsMetadata> result = attachmentsService.addAttachment(file,
+        ServiceResult<AttachmentDTO> result = attachmentsService.addAttachment(file,
             servletRequest.getRequestURI(), requestId, reasonId);
         return responseEntityFactory.createResponse(result);
     }
 
-    @DeleteMapping("/{requestId}/attachments/{attachmentId}")
+    @DeleteMapping("/{requestId}/reasons/{reasonId}/attachments/{attachmentId}")
     public boolean deleteAttachmentFromRequest(@PathVariable String requestId, @PathVariable String attachmentId) {
       return false;
     }
 
-    @GetMapping("/{requestId}/attachments/{attachmentId}")
+    @GetMapping("/{requestId}/reasons/{reasonId}/attachments/{attachmentId}")
     public String downloadAttachmentFromRequest(@PathVariable String requestId, @PathVariable String attachmentId) {
       return "Getting attachment";
     }	

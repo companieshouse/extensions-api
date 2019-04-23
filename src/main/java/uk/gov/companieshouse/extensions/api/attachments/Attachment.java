@@ -1,14 +1,13 @@
 package uk.gov.companieshouse.extensions.api.attachments;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import uk.gov.companieshouse.service.links.Links;
-import java.util.UUID;
+import uk.gov.companieshouse.service.rest.ApiObjectImpl;
 
-public class Attachment {
+import java.io.Serializable;
 
-    private String etag;
+public class Attachment extends ApiObjectImpl implements Serializable {
 
-    private UUID id;
+    private String id;
 
     private String name;
 
@@ -17,21 +16,11 @@ public class Attachment {
 
     private long size;
 
-    private Links links;
-
-    public String getEtag() {
-        return etag;
-    }
-
-    public void setEtag(String etag) {
-        this.etag = etag;
-    }
-
-    public UUID getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(UUID id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -57,13 +46,5 @@ public class Attachment {
 
     public void setSize(long size) {
         this.size = size;
-    }
-
-    public Links getLinks() {
-        return links;
-    }
-
-    public void setLinks(Links links) {
-        this.links = links;
     }
 }
