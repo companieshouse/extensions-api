@@ -1,13 +1,18 @@
 package uk.gov.companieshouse.extensions.api.reasons;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import uk.gov.companieshouse.extensions.api.attachments.Attachment;
 import uk.gov.companieshouse.service.links.Links;
+
+import java.util.List;
 
 public abstract class ExtensionReason {
 
     private String etag;
 
     private String reason;
+
+    private String id;
 
     @JsonProperty("additional_text")
     private String additionalText;
@@ -18,8 +23,13 @@ public abstract class ExtensionReason {
     @JsonProperty("end_on")
     private String endOn;
 
-    // key = hash of attachment id, value = uri of attachment
-    private Links attachments;
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public String getReason() {
         return reason;
@@ -43,14 +53,6 @@ public abstract class ExtensionReason {
 
     public void setEtag(String etag) {
         this.etag = etag;
-    }
-
-    public Links getAttachments() {
-        return this.attachments;
-    }
-
-    public void setAttachments(Links attachments) {
-        this.attachments = attachments;
     }
 
     public String getStartOn() {
