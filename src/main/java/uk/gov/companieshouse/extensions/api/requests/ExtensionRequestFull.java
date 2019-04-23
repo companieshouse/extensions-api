@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import uk.gov.companieshouse.service.links.Links;
 
 public abstract class ExtensionRequestFull {
@@ -25,6 +26,7 @@ public abstract class ExtensionRequestFull {
     @JsonProperty("accounting_period_end_on")
     private LocalDate accountingPeriodEndOn;
 
+    @JsonUnwrapped
     private Links links;
 
     private Status status;
