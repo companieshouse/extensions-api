@@ -15,10 +15,10 @@ public class ExtensionReasonEntity extends ExtensionReason {
     }
 
     public List<Attachment> getAttachments() {
-        return  attachments;
+        return attachments;
     }
 
-    public void setAttachments(List<Attachment>  attachments) {
-        this. attachments =  attachments;
+    public void setAttachments(List<Attachment> attachments) {
+        this.attachments = attachments;
     }
 }

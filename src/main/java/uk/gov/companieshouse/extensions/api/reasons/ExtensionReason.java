@@ -1,10 +1,6 @@
 package uk.gov.companieshouse.extensions.api.reasons;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import uk.gov.companieshouse.extensions.api.attachments.Attachment;
-import uk.gov.companieshouse.service.links.Links;
-
-import java.util.List;
 
 public abstract class ExtensionReason {
 

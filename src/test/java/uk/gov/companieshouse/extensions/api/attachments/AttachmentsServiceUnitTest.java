@@ -1,5 +1,7 @@
 package uk.gov.companieshouse.extensions.api.attachments;
 
+import org.apache.commons.collections.ArrayStack;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -12,11 +14,13 @@ import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestFullEntity;
 import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestsRepository;
 import uk.gov.companieshouse.service.ServiceResult;
 import uk.gov.companieshouse.service.ServiceResultStatus;
-import uk.gov.companieshouse.service.links.LinkKey;
 
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -26,19 +30,20 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class AttachmentsServiceUnitTest {
 
+    private static final String REQUEST_ID = "123";
+    private static final String REASON_ID = "1234";
+    private static final String ACCESS_URL = "/dummyUrl";
+    private static final String FILENAME = "testMultipart.txt";
+
     @Mock
     private ExtensionRequestsRepository repo;
 
     @Test
     public void canAddAnAttachment() throws Exception {
-        final String requestID = "123";
-        final String reasonId = "1234";
-        final String accessUrl = "/dummyUrl";
-        final String fileName = "testMultipart.txt";
         ExtensionRequestFullEntity entity = new ExtensionRequestFullEntity();
-        entity.setId(requestID);
+        entity.setId(REQUEST_ID);
         ExtensionReasonEntity reasonEntity = new ExtensionReasonEntity();
-        reasonEntity.setId(reasonId);
+        reasonEntity.setId(REASON_ID);
         reasonEntity.setReason("illness");
         entity.setReasons(Arrays.asList(reasonEntity));
         when(repo.findById(anyString())).thenReturn(Optional.of(entity));
@@ -48,13 +53,13 @@ public class AttachmentsServiceUnitTest {
         AttachmentsService service = new AttachmentsService(repo);
 
         ServiceResult<AttachmentDTO> result =
-            service.addAttachment(new MockMultipartFile(fileName,
-                    fileName, "text/plain", Files.readAllBytes(rsc.getFile().toPath())),
-                accessUrl, requestID, reasonId);
+            service.addAttachment(new MockMultipartFile(FILENAME,
+                    FILENAME, "text/plain", Files.readAllBytes(rsc.getFile().toPath())),
+                ACCESS_URL, REQUEST_ID, REASON_ID);
 
         assertEquals(result.getData().getContentType(), "text/plain");
         assertNotNull(result.getData().getId());
-        assertEquals(result.getData().getName(), fileName);
+        assertEquals(result.getData().getName(), FILENAME);
         assertEquals(ServiceResultStatus.ACCEPTED, result.getStatus());
 
         Optional<Attachment> entityAttachment = entity.getReasons()
@@ -63,11 +68,47 @@ public class AttachmentsServiceUnitTest {
             .findAny();
         assertTrue(entityAttachment.isPresent());
         String linkUrl = entityAttachment.get().getLinks().getLinks().get("self");
-        assertTrue(linkUrl.startsWith(accessUrl));
-        assertFalse(linkUrl.endsWith(accessUrl + "/"));
+        assertTrue(linkUrl.startsWith(ACCESS_URL));
+        assertFalse(linkUrl.endsWith(ACCESS_URL + "/"));
         assertNotNull(entityAttachment.get().getId());
 
         verify(repo).save(entity);
-        verify(repo).findById(requestID);
+        verify(repo).findById(REQUEST_ID);
+    }
+
+    @Test
+    public void willNotOverrideAlreadyExistingAttachments() throws Exception {
+        ExtensionRequestFullEntity entity = new ExtensionRequestFullEntity();
+        entity.setId(REQUEST_ID);
+        ExtensionReasonEntity reasonEntity = new ExtensionReasonEntity();
+        reasonEntity.setId(REASON_ID);
+        reasonEntity.setReason("illness");
+        Attachment attachment = new Attachment();
+        attachment.setSize(1L);
+        attachment.setContentType("text/plain");
+        attachment.setName("testFile");
+        attachment.setId("12345a");
+        List<Attachment> attachmentsList = new ArrayList<>();
+        attachmentsList.add(attachment);
+        reasonEntity.setAttachments(attachmentsList);
+        entity.setReasons(Arrays.asList(reasonEntity));
+        when(repo.findById(anyString())).thenReturn(Optional.of(entity));
+
+        Resource rsc = new ClassPathResource("input/testMultipart.txt");
+
+        AttachmentsService service = new AttachmentsService(repo);
+
+        service.addAttachment(new MockMultipartFile(FILENAME,
+                FILENAME, "text/plain", Files.readAllBytes(rsc.getFile().toPath())),
+            ACCESS_URL, REQUEST_ID, REASON_ID);
+
+        List<Attachment> entityAttachments = entity.getReasons()
+            .stream()
+            .flatMap(reason -> reason.getAttachments().stream())
+            .collect(Collectors.toList());
+
+        assertEquals(2, entityAttachments.size());
+        assertEquals("testFile", entityAttachments.get(0).getName());
+        assertEquals(FILENAME, entityAttachments.get(1).getName());
     }
 }
