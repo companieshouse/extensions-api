@@ -44,12 +44,12 @@ public class AttachmentsService {
                .filter(reason -> reason.getId().equals(reasonId))
                .forEachOrdered(reason -> reason.addAttachment(attachment));
 
-        requestsRepo.save(extension.get());
-
-        String linkToSelf = attachmentsUri + randomUUID;
+        String linkToSelf = attachmentsUri + "/" + randomUUID;
         Links links = new Links();
         links.setLink(() ->  "self", linkToSelf);
         attachment.setLinks(links);
+
+        requestsRepo.save(extension.get());
 
         return ServiceResult.accepted(AttachmentDTO.builder()
             .withAttachment(attachment)

@@ -12,14 +12,13 @@ import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestFullEntity;
 import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestsRepository;
 import uk.gov.companieshouse.service.ServiceResult;
 import uk.gov.companieshouse.service.ServiceResultStatus;
+import uk.gov.companieshouse.service.links.LinkKey;
 
 import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.Optional;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -58,12 +57,15 @@ public class AttachmentsServiceUnitTest {
         assertEquals(result.getData().getName(), fileName);
         assertEquals(ServiceResultStatus.ACCEPTED, result.getStatus());
 
-        Optional<Attachment> entityMetadata = entity.getReasons()
+        Optional<Attachment> entityAttachment = entity.getReasons()
             .stream()
             .flatMap(reason -> reason.getAttachments().stream())
             .findAny();
-        assertTrue(entityMetadata.isPresent());
-        assertNotNull(entityMetadata.get().getId());
+        assertTrue(entityAttachment.isPresent());
+        String linkUrl = entityAttachment.get().getLinks().getLinks().get("self");
+        assertTrue(linkUrl.startsWith(accessUrl));
+        assertFalse(linkUrl.endsWith(accessUrl + "/"));
+        assertNotNull(entityAttachment.get().getId());
 
         verify(repo).save(entity);
         verify(repo).findById(requestID);
