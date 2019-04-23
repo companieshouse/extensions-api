@@ -1,20 +1,28 @@
 package uk.gov.companieshouse.extensions.api.attachments;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import uk.gov.companieshouse.service.rest.ApiObjectImpl;
+import uk.gov.companieshouse.service.links.Links;
 
 import java.io.Serializable;
 
-public class Attachment extends ApiObjectImpl implements Serializable {
+public class Attachment implements Serializable {
 
     private String id;
-
+    private Links links;
     private String name;
 
     @JsonProperty("content_type")
     private String contentType;
 
     private long size;
+
+    public Links getLinks() {
+        return links;
+    }
+
+    public void setLinks(Links links) {
+        this.links = links;
+    }
 
     public String getId() {
         return id;
