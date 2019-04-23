@@ -6,19 +6,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ExtensionReasonEntity extends ExtensionReason {
-    private List<Attachment>  attachments = new ArrayList<>();
+    private List<Attachment> attachments = new ArrayList<>();
 
-    public void addReason(Attachment attachment) {
+    public void addAttachment(Attachment attachment) {
         if (attachments != null) {
             attachments.add(attachment);
         }
     }
 
-    public List<Attachment> getReasons() {
+    public List<Attachment> getAttachments() {
         return  attachments;
     }
 
-    public void setReasons(List<Attachment>  attachments) {
+    public void setAttachments(List<Attachment>  attachments) {
         this. attachments =  attachments;
     }
 }
