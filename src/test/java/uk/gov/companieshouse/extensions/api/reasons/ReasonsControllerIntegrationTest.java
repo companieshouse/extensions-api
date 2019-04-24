@@ -1,11 +1,16 @@
 package uk.gov.companieshouse.extensions.api.reasons;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyCreateReason;
+import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyReasonEntity;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -26,8 +31,16 @@ public class ReasonsControllerIntegrationTest {
     @Autowired
     private MockMvc mockMvc;
 
+    @MockBean
+    private ReasonsService reasonsService;
+
+    @MockBean
+    private ExtensionReasonMapper extensionReasonMapper;
+
     @Test
     public void canReachPostReasonEndpoint() throws Exception {
+         ExtensionReasonEntity dummyReasonEntity = dummyReasonEntity();
+         when(reasonsService.insertExtensionsReason(any(ExtensionCreateReason.class))).thenReturn(dummyReasonEntity);
          RequestBuilder requestBuilder = MockMvcRequestBuilders.post(
                  ROOT_URL)
                   .contentType(MediaType.APPLICATION_JSON)
@@ -35,7 +48,7 @@ public class ReasonsControllerIntegrationTest {
                   .accept(MediaType.APPLICATION_JSON);
 
           MvcResult result = mockMvc.perform(requestBuilder).andReturn();
-          assertEquals(200, result.getResponse().getStatus());
+          assertEquals(201, result.getResponse().getStatus());
     }
 
     @Test

@@ -1,5 +1,8 @@
 package uk.gov.companieshouse.extensions.api.Utils;
 
+import uk.gov.companieshouse.extensions.api.reasons.ExtensionCreateReason;
+import uk.gov.companieshouse.extensions.api.reasons.ExtensionReasonDTO;
+import uk.gov.companieshouse.extensions.api.reasons.ExtensionReasonEntity;
 import uk.gov.companieshouse.extensions.api.requests.*;
 import uk.gov.companieshouse.service.links.Links;
 
@@ -23,6 +26,12 @@ public class Utils {
     public static final String EMAIL = "email";
     public static final String FORENAME = "forename";
     public static final String SURNAME = "surname";
+    public static final LocalDate REASON_START_ON = LocalDate.of(
+        2018, 12, 12);
+    public static final LocalDate REASON_END_ON = LocalDate.of(
+        2019, 12, 12);
+    public static final String REASON = "illness";
+    public static final String ADDITIONAL_TEXT = "string";
 
     public static CreatedBy createdBy() {
         CreatedBy createdBy = new CreatedBy();
@@ -77,5 +86,36 @@ public class Utils {
         extensionCreateRequest.setAccountingPeriodStartOn(ACCOUNTING_PERIOD_START_ON);
         extensionCreateRequest.setAccountingPeriodEndOn(ACCOUNTING_PERIOD_END_ON);
         return extensionCreateRequest;
+    }
+
+    public static ExtensionReasonDTO dummyReasonDTO() {
+        ExtensionReasonDTO extensionReasonDTO = new ExtensionReasonDTO();
+        extensionReasonDTO.setEtag(ETAG);
+        extensionReasonDTO.setId(ID);
+        extensionReasonDTO.setAdditionalText(ADDITIONAL_TEXT);
+        extensionReasonDTO.setStartOn(REASON_START_ON);
+        extensionReasonDTO.setEndOn(REASON_END_ON);
+        extensionReasonDTO.setReason(REASON);
+        return extensionReasonDTO;
+    }
+
+    public static ExtensionReasonEntity dummyReasonEntity() {
+        ExtensionReasonEntity extensionReasonEntity = new ExtensionReasonEntity();
+        extensionReasonEntity.setEtag(ETAG);
+        extensionReasonEntity.setId(ID);
+        extensionReasonEntity.setAdditionalText(ADDITIONAL_TEXT);
+        extensionReasonEntity.setStartOn(REASON_START_ON);
+        extensionReasonEntity.setEndOn(REASON_END_ON);
+        extensionReasonEntity.setReason(REASON);
+        return extensionReasonEntity;
+    }
+
+    public static ExtensionCreateReason dummyCreateReason() {
+        ExtensionCreateReason reason = new ExtensionCreateReason();
+        reason.setAdditionalText(ADDITIONAL_TEXT);
+        reason.setStartOn(REASON_START_ON);
+        reason.setEndOn(REASON_END_ON);
+        reason.setReason(REASON);
+        return reason;
     }
 }
