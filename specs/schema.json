@@ -181,14 +181,17 @@
           "multipart/form-data"
         ],
         "responses": {
-          "201": {
-            "description": "the file was uploaded succesfully",
+          "202": {
+            "description": "the file was uploaded for scanning",
             "schema": {
               "$ref": "#/definitions/Attachment"
             }
           },
           "404": {
-            "description": "the request does not exist"
+            "description": "the request or reason does not exist",
+            "schema": {
+              "$ref": "#/definitions/errors"
+            }
           },
           "400": {
             "description": "there was an error processing the request"
@@ -678,6 +681,31 @@
             "self": {
               "type": "string",
               "format": "uri"
+            }
+          }
+        }
+      }
+    },
+    "errors": {
+      "type": "object",
+      "properties": {
+        "errors": {
+          "type": "array",
+          "items": {
+            "properties": {
+              "error": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string"
+              },
+              "location": {
+                "type": "string",
+                "format": "uri"
+              },
+              "location-type": {
+                "type": "string"
+              }
             }
           }
         }
