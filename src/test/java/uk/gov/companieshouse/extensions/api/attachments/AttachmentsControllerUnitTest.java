@@ -27,9 +27,6 @@ public class AttachmentsControllerUnitTest {
     private AttachmentsService attachmentsService;
 
     @Mock
-    private ERICHeaderParser ericHeaderParser;
-
-    @Mock
     private HttpServletRequest servletRequest;
 
     @Test
@@ -40,7 +37,7 @@ public class AttachmentsControllerUnitTest {
 
         AttachmentsController controller =
             new AttachmentsController(PluggableResponseEntityFactory.buildWithStandardFactories(),
-                attachmentsService, ericHeaderParser);
+                attachmentsService);
 
         ResponseEntity entity = controller.uploadAttachmentToRequest(Utils.mockMultipartFile(),
             "123","1234", servletRequest);

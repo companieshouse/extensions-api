@@ -53,12 +53,9 @@ public class AttachmentsControllerIntegrationTest {
     @Autowired
     private PluggableResponseEntityFactory responseEntityFactory;
 
-    @Autowired
-    private ERICHeaderParser parser;
-
     @Before
     public void setup() {
-        controller = new AttachmentsController(responseEntityFactory, attachmentsService, parser);
+        controller = new AttachmentsController(responseEntityFactory, attachmentsService);
         this.mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
     }
 

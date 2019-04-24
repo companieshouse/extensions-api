@@ -21,27 +21,18 @@ public class AttachmentsController {
 
     private PluggableResponseEntityFactory responseEntityFactory;
     private AttachmentsService attachmentsService;
-    private ERICHeaderParser ericHeaderParser;
 
     @Autowired
     public AttachmentsController(PluggableResponseEntityFactory responseEntityFactory,
-                                 AttachmentsService attachmentsService,
-                                 ERICHeaderParser ericHeaderParser) {
+                                 AttachmentsService attachmentsService) {
         this.responseEntityFactory = responseEntityFactory;
         this.attachmentsService = attachmentsService;
-        this.ericHeaderParser = ericHeaderParser;
     }
 
     @PostMapping("/{requestId}/reasons/{reasonId}/attachments")
     public ResponseEntity<ChResponseBody<AttachmentDTO>> uploadAttachmentToRequest(
             @RequestParam("file") MultipartFile file, @PathVariable String requestId,
             @PathVariable String reasonId, HttpServletRequest servletRequest) {
-        CreatedBy createdBy = new CreatedBy();
-        createdBy.setId(ericHeaderParser.getUserId(servletRequest));
-        createdBy.setEmail(ericHeaderParser.getEmail(servletRequest));
-        createdBy.setForename(ericHeaderParser.getForename(servletRequest));
-        createdBy.setSurname(ericHeaderParser.getSurname(servletRequest));
-
         try {
             ServiceResult<AttachmentDTO> result = attachmentsService.addAttachment(file,
                 servletRequest.getRequestURI(), requestId, reasonId);
