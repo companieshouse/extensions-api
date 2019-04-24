@@ -4,8 +4,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 import uk.gov.companieshouse.extensions.api.Utils.Utils;
 import uk.gov.companieshouse.extensions.api.reasons.ExtensionReasonEntity;
 import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestFullEntity;
@@ -45,8 +43,6 @@ public class AttachmentsServiceUnitTest {
         reasonEntity.setReason("illness");
         entity.setReasons(Arrays.asList(reasonEntity));
         when(repo.findById(anyString())).thenReturn(Optional.of(entity));
-
-        Resource rsc = new ClassPathResource("input/testMultipart.txt");
 
         AttachmentsService service = new AttachmentsService(repo);
 
@@ -91,8 +87,6 @@ public class AttachmentsServiceUnitTest {
         entity.setReasons(Arrays.asList(reasonEntity));
         when(repo.findById(anyString())).thenReturn(Optional.of(entity));
 
-        Resource rsc = new ClassPathResource("input/testMultipart.txt");
-
         AttachmentsService service = new AttachmentsService(repo);
 
         service.addAttachment(Utils.mockMultipartFile(),
@@ -113,8 +107,6 @@ public class AttachmentsServiceUnitTest {
         ExtensionRequestFullEntity entity = new ExtensionRequestFullEntity();
         entity.setId(REQUEST_ID);
         when(repo.findById(anyString())).thenReturn(Optional.of(entity));
-
-        Resource rsc = new ClassPathResource("input/testMultipart.txt");
 
         AttachmentsService service = new AttachmentsService(repo);
 
