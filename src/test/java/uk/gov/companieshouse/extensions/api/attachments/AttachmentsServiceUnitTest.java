@@ -6,7 +6,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
-import org.springframework.mock.web.MockMultipartFile;
+import uk.gov.companieshouse.extensions.api.Utils.Utils;
 import uk.gov.companieshouse.extensions.api.reasons.ExtensionReasonEntity;
 import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestFullEntity;
 import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestsRepository;
@@ -14,7 +14,6 @@ import uk.gov.companieshouse.service.ServiceException;
 import uk.gov.companieshouse.service.ServiceResult;
 import uk.gov.companieshouse.service.ServiceResultStatus;
 
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -52,8 +51,7 @@ public class AttachmentsServiceUnitTest {
         AttachmentsService service = new AttachmentsService(repo);
 
         ServiceResult<AttachmentDTO> result =
-            service.addAttachment(new MockMultipartFile(FILENAME,
-                    FILENAME, "text/plain", Files.readAllBytes(rsc.getFile().toPath())),
+            service.addAttachment(Utils.mockMultipartFile(),
                 ACCESS_URL, REQUEST_ID, REASON_ID);
 
         assertEquals(result.getData().getContentType(), "text/plain");
@@ -97,8 +95,7 @@ public class AttachmentsServiceUnitTest {
 
         AttachmentsService service = new AttachmentsService(repo);
 
-        service.addAttachment(new MockMultipartFile(FILENAME,
-                FILENAME, "text/plain", Files.readAllBytes(rsc.getFile().toPath())),
+        service.addAttachment(Utils.mockMultipartFile(),
             ACCESS_URL, REQUEST_ID, REASON_ID);
 
         List<Attachment> entityAttachments = entity.getReasons()
@@ -122,8 +119,7 @@ public class AttachmentsServiceUnitTest {
         AttachmentsService service = new AttachmentsService(repo);
 
         try {
-            service.addAttachment(new MockMultipartFile(FILENAME,
-                    FILENAME, "text/plain", Files.readAllBytes(rsc.getFile().toPath())),
+            service.addAttachment(Utils.mockMultipartFile(),
                 ACCESS_URL, REQUEST_ID, REASON_ID);
             fail();
         } catch(ServiceException e) {

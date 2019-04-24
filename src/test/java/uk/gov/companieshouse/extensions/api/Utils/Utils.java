@@ -1,11 +1,17 @@
 package uk.gov.companieshouse.extensions.api.Utils;
 
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
 import uk.gov.companieshouse.extensions.api.reasons.ExtensionCreateReason;
 import uk.gov.companieshouse.extensions.api.reasons.ExtensionReasonDTO;
 import uk.gov.companieshouse.extensions.api.reasons.ExtensionReasonEntity;
 import uk.gov.companieshouse.extensions.api.requests.*;
 import uk.gov.companieshouse.service.links.Links;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -117,5 +123,12 @@ public class Utils {
         reason.setEndOn(REASON_END_ON);
         reason.setReason(REASON);
         return reason;
+    }
+
+    public static MultipartFile mockMultipartFile() throws IOException {
+        String fileName = "testMultipart.txt";
+        Resource rsc = new ClassPathResource("input/testMultipart.txt");
+        return new MockMultipartFile(fileName,
+            fileName, "text/plain", Files.readAllBytes(rsc.getFile().toPath()));
     }
 }
