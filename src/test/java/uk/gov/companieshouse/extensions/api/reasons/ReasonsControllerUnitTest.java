@@ -14,13 +14,16 @@ import static org.mockito.Mockito.when;
 import static uk.gov.companieshouse.extensions.api.Utils.Utils.*;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ReasonsControllerUnitTest {
+public class ReasonControllerUnitTest {
 
     @InjectMocks
     private ReasonsController reasonsController;
 
     @Mock
     private ReasonsService reasonsService;
+
+    @Mock
+    private ExtensionReasonMapper extensionReasonMapper;
 
     @Test
     public void addReasonToRequest() {
@@ -29,6 +32,7 @@ public class ReasonsControllerUnitTest {
         ExtensionReasonDTO dummyReasonDTO = dummyReasonDTO();
 
         when(reasonsService.insertExtensionsReason(dummyCreateReason)).thenReturn(dummyReasonEntity);
+        when(extensionReasonMapper.entityToDTO(dummyReasonEntity)).thenReturn(dummyReasonDTO);
         ResponseEntity<ExtensionReasonDTO> response = reasonsController.addReasonToRequest(dummyCreateReason, "1234");
 
         assertNotNull(response.getBody());
