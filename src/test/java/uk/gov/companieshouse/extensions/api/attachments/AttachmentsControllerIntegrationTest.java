@@ -70,14 +70,14 @@ public class AttachmentsControllerIntegrationTest {
          HashMap<String, String> contentTypeParams = new HashMap<String, String>();
          MediaType mediaType = new MediaType("multipart", "form-data", contentTypeParams);
 
+         AttachmentDTO expectedDto = AttachmentDTO
+             .builder()
+             .withFile(multipartFile)
+             .withAttachment(new Attachment())
+             .build();
          when(attachmentsService.addAttachment(any(MultipartFile.class),
                 anyString(), anyString(), anyString()))
-            .thenReturn(ServiceResult
-                .accepted(AttachmentDTO
-                    .builder()
-                    .withFile(multipartFile)
-                    .withAttachment(new Attachment())
-                    .build()));
+            .thenReturn(ServiceResult.accepted(expectedDto));
 
          RequestBuilder requestBuilder = MockMvcRequestBuilders.multipart(ROOT_URL)
                  .file("file", multipartFile.getBytes())
@@ -87,10 +87,7 @@ public class AttachmentsControllerIntegrationTest {
          MvcResult result = mockMvc.perform(requestBuilder).andReturn();
          String expectedJsonResponse = new ObjectMapper()
                  .writer()
-                 .writeValueAsString(AttachmentDTO.builder()
-                    .withFile(multipartFile)
-                    .withAttachment(new Attachment())
-                    .build());
+                 .writeValueAsString(expectedDto);
          assertEquals(expectedJsonResponse, result.getResponse().getContentAsString());
          assertEquals(HttpStatus.ACCEPTED.value(), result.getResponse().getStatus());
     }
