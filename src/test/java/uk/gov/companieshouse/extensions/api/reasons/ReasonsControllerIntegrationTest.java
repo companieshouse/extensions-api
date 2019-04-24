@@ -34,6 +34,9 @@ public class ReasonsControllerIntegrationTest {
     @MockBean
     private ReasonsService reasonsService;
 
+    @MockBean
+    private ExtensionReasonMapper extensionReasonMapper;
+
     @Test
     public void canReachPostReasonEndpoint() throws Exception {
          ExtensionReasonEntity dummyReasonEntity = dummyReasonEntity();

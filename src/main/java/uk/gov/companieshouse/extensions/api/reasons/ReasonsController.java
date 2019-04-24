@@ -19,17 +19,13 @@ public class ReasonsController {
     @Autowired
     private ReasonsService reasonsService;
 
+    @Autowired
+    private ExtensionReasonMapper extensionReasonMapper;
+
     @PostMapping("/{requestId}/reasons")
     public ResponseEntity<ExtensionReasonDTO> addReasonToRequest(@RequestBody ExtensionCreateReason extensionCreateReason, @PathVariable String requestId) {
       ExtensionReasonEntity extensionReasonEntity = reasonsService.insertExtensionsReason(extensionCreateReason);
-      ExtensionReasonDTO extensionReasonDTO = new ExtensionReasonDTO();
-
-      extensionReasonDTO.setEtag(extensionReasonEntity.getEtag());
-      extensionReasonDTO.setAdditionalText(extensionReasonEntity.getAdditionalText());
-      extensionReasonDTO.setStartOn(extensionReasonEntity.getStartOn());
-      extensionReasonDTO.setEndOn(extensionReasonEntity.getEndOn());
-      extensionReasonDTO.setReason(extensionReasonEntity.getReason());
-
+      ExtensionReasonDTO extensionReasonDTO = extensionReasonMapper.entityToDTO(extensionReasonEntity);
       return ResponseEntity.created(URI.create("")).body(extensionReasonDTO);
     }
 
