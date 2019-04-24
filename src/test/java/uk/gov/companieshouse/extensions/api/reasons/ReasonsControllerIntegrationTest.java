@@ -22,7 +22,7 @@ import uk.gov.companieshouse.extensions.api.reasons.ReasonsController;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(value = ReasonsController.class)
-public class ReasonControllerIntegrationTest {
+public class ReasonsControllerIntegrationTest {
 
     private static final String ROOT_URL = "/company/00006400/extensions/requests/a1/reasons/";
     private static final String SPECIFIC_URL = "/company/00006400/extensions/requests/a1/reasons" +

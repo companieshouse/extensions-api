@@ -7,7 +7,7 @@ import org.junit.Test;
 
 import uk.gov.companieshouse.extensions.api.Utils.Utils;
 
-public class RequestMapperTest {
+public class RequestMapperUnitTest {
 
     private ExtensionRequestFullEntity dummyEntity = Utils.dummyRequestEntity();
     private CreatedBy createdBy = dummyEntity.getCreatedBy();

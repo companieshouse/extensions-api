@@ -14,7 +14,7 @@ import static org.mockito.Mockito.when;
 import static uk.gov.companieshouse.extensions.api.Utils.Utils.*;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ReasonControllerUnitTest {
+public class ReasonsControllerUnitTest {
 
     @InjectMocks
     private ReasonsController reasonsController;
