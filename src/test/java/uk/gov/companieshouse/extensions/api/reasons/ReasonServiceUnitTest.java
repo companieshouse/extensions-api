@@ -16,7 +16,7 @@ public class ReasonServiceUnitTest {
     private ReasonsService reasonService;
 
     @Test
-    public void testInsertExtensionRequest() {
+    public void testInsertExtensionReason() {
         ExtensionCreateReason dummyCreateReason = dummyCreateReason();
         ExtensionReason extensionReason =
             reasonService.insertExtensionsReason(dummyCreateReason);
