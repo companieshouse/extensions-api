@@ -47,11 +47,7 @@ public class AttachmentsController {
                 servletRequest.getRequestURI(), requestId, reasonId);
             return responseEntityFactory.createResponse(result);
         } catch(ServiceException e) {
-            Errors errors = new Errors();
-            errors.addError(Err.invalidPathBuilderWithLocation(servletRequest.getRequestURI())
-                .withError(e.getMessage())
-                .build());
-            return responseEntityFactory.createResponse(ServiceResult.invalid(errors));
+            return responseEntityFactory.createResponse(ServiceResult.notFound());
         }
     }
 

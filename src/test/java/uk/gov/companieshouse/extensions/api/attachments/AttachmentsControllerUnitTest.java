@@ -45,9 +45,6 @@ public class AttachmentsControllerUnitTest {
         ResponseEntity entity = controller.uploadAttachmentToRequest(Utils.mockMultipartFile(),
             "123","1234", servletRequest);
 
-        assertEquals("{\"errors\":[{\"error\":\"exception error\",\"location\":" +
-                "\"url\",\"location_type\":\"json-path\",\"type\":\"ch:validation\"}]}",
-            new ObjectMapper().writeValueAsString(entity.getBody()));
-        assertEquals(HttpStatus.BAD_REQUEST, entity.getStatusCode());
+        assertEquals(HttpStatus.NOT_FOUND, entity.getStatusCode());
     }
 }
