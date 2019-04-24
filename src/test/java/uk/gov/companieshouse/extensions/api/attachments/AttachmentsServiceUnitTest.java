@@ -62,7 +62,7 @@ public class AttachmentsServiceUnitTest {
         assertTrue(entityAttachment.isPresent());
         String linkUrl = entityAttachment.get().getLinks().getLinks().get("self");
         String downloadUrl = entityAttachment.get().getLinks().getLinks().get("download");
-        assertEquals("dummyDownloadUrl", downloadUrl);
+        assertEquals(linkUrl + "/download", downloadUrl);
         assertTrue(linkUrl.startsWith(ACCESS_URL));
         assertFalse(linkUrl.endsWith(ACCESS_URL + "/"));
         assertNotNull(entityAttachment.get().getId());

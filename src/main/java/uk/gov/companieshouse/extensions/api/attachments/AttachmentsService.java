@@ -48,7 +48,7 @@ public class AttachmentsService {
         String linkToSelf = attachmentsUri + "/" + randomUUID;
         Links links = new Links();
         links.setLink(() ->  "self", linkToSelf);
-        links.setLink(() -> "download", "dummyDownloadUrl");
+        links.setLink(() -> "download", linkToSelf + "/download");
         attachment.setLinks(links);
 
         requestsRepo.save(extension.get());
