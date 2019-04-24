@@ -1,7 +1,6 @@
 package uk.gov.companieshouse.extensions.api.requests;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import uk.gov.companieshouse.extensions.api.reasons.ExtensionReason;
+import uk.gov.companieshouse.extensions.api.reasons.ExtensionReasonEntity;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -21,7 +20,7 @@ public class ExtensionRequestFullEntityBuilder {
 
     private Status status;
 
-    private List<ExtensionReason> reasons = new ArrayList<>();
+    private List<ExtensionReasonEntity> reasons = new ArrayList<>();
 
     public ExtensionRequestFullEntityBuilder withCreatedOn(Supplier<LocalDateTime> localDateTimeSupplier) {
         this.createdOn = localDateTimeSupplier.get();
@@ -51,9 +50,6 @@ public class ExtensionRequestFullEntityBuilder {
     }
 
     public static ExtensionRequestFullEntityBuilder newInstance() {
-        ExtensionRequestFullEntityBuilder extensionRequestFullEntityBuilder = new
-            ExtensionRequestFullEntityBuilder();
-
         return new ExtensionRequestFullEntityBuilder();
     }
 

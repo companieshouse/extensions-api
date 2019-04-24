@@ -12,8 +12,6 @@ public abstract class ExtensionReason {
 
     private String reason;
 
-    private String id;
-
     @JsonProperty("additional_text")
     private String additionalText;
 
@@ -22,14 +20,6 @@ public abstract class ExtensionReason {
 
     @JsonProperty("end_on")
     private LocalDate endOn;
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
 
     public String getReason() {
         return reason;

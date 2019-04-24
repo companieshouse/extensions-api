@@ -10,6 +10,7 @@ import org.springframework.mock.web.MockMultipartFile;
 import uk.gov.companieshouse.extensions.api.reasons.ExtensionReasonEntity;
 import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestFullEntity;
 import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestsRepository;
+import uk.gov.companieshouse.service.ServiceException;
 import uk.gov.companieshouse.service.ServiceResult;
 import uk.gov.companieshouse.service.ServiceResultStatus;
 
@@ -108,5 +109,26 @@ public class AttachmentsServiceUnitTest {
         assertEquals(2, entityAttachments.size());
         assertEquals("testFile", entityAttachments.get(0).getName());
         assertEquals(FILENAME, entityAttachments.get(1).getName());
+    }
+
+    @Test
+    public void willThrowServiceExceptionIfAttachmentAddedWithNoReason() throws Exception {
+        ExtensionRequestFullEntity entity = new ExtensionRequestFullEntity();
+        entity.setId(REQUEST_ID);
+        when(repo.findById(anyString())).thenReturn(Optional.of(entity));
+
+        Resource rsc = new ClassPathResource("input/testMultipart.txt");
+
+        AttachmentsService service = new AttachmentsService(repo);
+
+        try {
+            service.addAttachment(new MockMultipartFile(FILENAME,
+                    FILENAME, "text/plain", Files.readAllBytes(rsc.getFile().toPath())),
+                ACCESS_URL, REQUEST_ID, REASON_ID);
+            fail();
+        } catch(ServiceException e) {
+            assertEquals("Attempting to add an attachment to request " + REQUEST_ID +
+                " that contains no Extension Reason.", e.getMessage());
+        }
     }
 }

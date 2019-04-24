@@ -14,7 +14,7 @@ public class ExtensionReasonEntity extends ExtensionReason {
         }
     }
 
-    public List<Attachment> getAttachemnts() {
+    public List<Attachment> getAttachments() {
         return  attachments;
     }
 
