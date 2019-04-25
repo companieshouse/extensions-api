@@ -34,7 +34,8 @@ public class ReasonsController {
 
       ExtensionRequestFullDTO extensionRequestFullDTO = extensionRequestMapper.entityToDTO(extensionRequestFullEntityUpdated);
 
-      return ResponseEntity.created(URI.create("")).body(extensionRequestFullDTO);
+      return ResponseEntity.created(URI.create(extensionRequestFullEntityUpdated.getLinks().getLink
+          (() -> "self"))).body(extensionRequestFullDTO);
     }
 
     @DeleteMapping("/{requestId}/reasons/{reasonId}")
