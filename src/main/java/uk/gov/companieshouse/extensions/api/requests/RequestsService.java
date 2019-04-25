@@ -19,8 +19,7 @@ public class RequestsService {
     @Autowired
     private ExtensionRequestsRepository extensionRequestsRepository;
 
-    public ExtensionRequestFullEntity getExtensionsRequestById(String id){
-        Optional<ExtensionRequestFullEntity> opt = extensionRequestsRepository.findById(id);
+    public ExtensionRequestFullEntity getExtensionsRequestById(String id) {
         return extensionRequestsRepository.findById(id).orElse(null);
     }
 
