@@ -22,8 +22,7 @@ public abstract class ExtensionReason {
     @JsonProperty("end_on")
     private LocalDate endOn;
 
-    // key = hash of attachment id, value = uri of attachment
-    private Links attachments;
+    private Links links;
 
     public String getReason() {
         return reason;
@@ -73,12 +72,12 @@ public abstract class ExtensionReason {
         this.endOn = endOn;
     }
 
-    public Links getAttachments() {
-        return attachments;
+    public Links getLinks() {
+        return links;
     }
 
-    public void setAttachments(Links attachments) {
-        this.attachments = attachments;
+    public void setLinks(Links links) {
+        this.links = links;
     }
 
     public String toString() {

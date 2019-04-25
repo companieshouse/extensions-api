@@ -3,6 +3,7 @@ package uk.gov.companieshouse.extensions.api.requests;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,11 +19,8 @@ public class RequestsService {
     @Autowired
     private ExtensionRequestsRepository extensionRequestsRepository;
 
-    public ExtensionRequestFullEntity getExtensionsRequestById(String id){
-        ExtensionRequestFullEntity extensionRequestFull =  new ExtensionRequestFullEntity();
-        extensionRequestFull.setAccountingPeriodStartOn(LocalDate.of(2018, Month.APRIL, 1));
-        extensionRequestFull.setAccountingPeriodEndOn(LocalDate.of(2019, Month.MARCH, 31));
-        return extensionRequestFull;
+    public ExtensionRequestFullEntity getExtensionsRequestById(String id) {
+        return extensionRequestsRepository.findById(id).orElse(null);
     }
 
     public ExtensionRequestFullEntity insertExtensionsRequest(ExtensionCreateRequest extensionCreateRequest, CreatedBy

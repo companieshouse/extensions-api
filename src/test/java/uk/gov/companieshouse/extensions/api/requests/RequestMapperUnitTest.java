@@ -1,31 +1,47 @@
 package uk.gov.companieshouse.extensions.api.requests;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
 import org.junit.Test;
 
 import uk.gov.companieshouse.extensions.api.Utils.Utils;
+import uk.gov.companieshouse.extensions.api.reasons.ExtensionReasonEntity;
+import uk.gov.companieshouse.service.links.LinkKey;
+import uk.gov.companieshouse.service.links.Links;
+
+import java.util.Map;
+
+import static org.junit.Assert.*;
+import static uk.gov.companieshouse.extensions.api.Utils.Utils.*;
 
 public class RequestMapperUnitTest {
 
-    private ExtensionRequestFullEntity dummyEntity = Utils.dummyRequestEntity();
-    private CreatedBy createdBy = dummyEntity.getCreatedBy();
 
     @Test
     public void canMapEntityToDTO() {
         ExtensionRequestMapper extensionRequestMapper = new ExtensionRequestMapper();
+        ExtensionRequestFullEntity dummyRequest = dummyRequestEntity();
+        CreatedBy createdBy = dummyRequest.getCreatedBy();
+        ExtensionReasonEntity dummyReason = dummyReasonEntity();
+        dummyRequest.addReason(dummyReason);
+        String linkToSelf = TESTURI  + "/" + REQUEST_ID;
+        Links links = new Links();
+        links.setLink(() ->  "self", linkToSelf);
+        dummyReason.setLinks(links);
 
-        ExtensionRequestFullDTO dto = extensionRequestMapper.entityToDTO(dummyEntity);
+        ExtensionRequestFullDTO dto = extensionRequestMapper.entityToDTO(dummyRequest);
+        assertNotEquals(dto.getReasons().size(), 0);
+        Links reasonLinks = dto.getReasons().get(0);
+        String linkValue = reasonLinks.getLinks().get("self");
 
         assertNotNull(dto);
-        assertEquals(dummyEntity.getEtag(), dto.getEtag());
-        assertEquals(dummyEntity.getId(), dto.getId());
-        assertEquals(dummyEntity.getCreatedOn(), dto.getCreatedOn());
-        assertEquals(dummyEntity.getLinks(), dto.getLinks());
-        assertEquals(dummyEntity.getAccountingPeriodStartOn(), dto.getAccountingPeriodStartOn());
-        assertEquals(dummyEntity.getAccountingPeriodEndOn(), dto.getAccountingPeriodEndOn());
-        assertEquals(dummyEntity.getStatus(), dto.getStatus());
+        assertEquals(dummyRequest.getEtag(), dto.getEtag());
+        assertEquals(dummyRequest.getId(), dto.getId());
+        assertEquals(dummyRequest.getCreatedOn(), dto.getCreatedOn());
+        assertEquals(dummyRequest.getLinks(), dto.getLinks());
+        assertEquals(dummyRequest.getAccountingPeriodStartOn(), dto.getAccountingPeriodStartOn());
+        assertEquals(dummyRequest.getAccountingPeriodEndOn(), dto.getAccountingPeriodEndOn());
+        assertEquals(dummyRequest.getStatus(), dto.getStatus());
+        assertNotNull(reasonLinks);
+        assertEquals(linkToSelf, linkValue);
         assertEquals(createdBy.getId(), dto.getCreatedBy().getId());
         assertEquals(createdBy.getEmail(), dto.getCreatedBy().getEmail());
         assertEquals(createdBy.getForename(), dto.getCreatedBy().getForename());
