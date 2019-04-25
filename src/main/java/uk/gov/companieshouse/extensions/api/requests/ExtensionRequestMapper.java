@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class ExtensionRequestMapper {
+
     public ExtensionRequestFullDTO entityToDTO(ExtensionRequestFullEntity entity) {
 
         ExtensionRequestFullDTO dto = new ExtensionRequestFullDTO();
@@ -17,7 +18,9 @@ public class ExtensionRequestMapper {
         dto.setAccountingPeriodEndOn(entity.getAccountingPeriodEndOn());
         dto.setStatus(entity.getStatus());
 
-        //TODO map request reason links
+        entity.getReasons().forEach((reason) -> {
+            dto.addReason(reason.getLinks());
+        });
 
         return dto;
     }

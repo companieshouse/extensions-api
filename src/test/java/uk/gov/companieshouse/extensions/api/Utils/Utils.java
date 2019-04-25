@@ -38,6 +38,8 @@ public class Utils {
         2019, 12, 12);
     public static final String REASON = "illness";
     public static final String ADDITIONAL_TEXT = "string";
+    public static final String REQUEST_ID = "1234";
+    public static final String TESTURI = "testuri";
 
     public static CreatedBy createdBy() {
         CreatedBy createdBy = new CreatedBy();

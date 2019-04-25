@@ -2,12 +2,21 @@ package uk.gov.companieshouse.extensions.api.reasons;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
+
+import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestFullEntity;
+import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestsRepository;
+import uk.gov.companieshouse.extensions.api.requests.RequestsService;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyCreateReason;
+import static org.mockito.Mockito.*;
+import static uk.gov.companieshouse.extensions.api.Utils.Utils.*;
+
 
 @RunWith(MockitoJUnitRunner.class)
 public class ReasonServiceUnitTest {
@@ -15,18 +24,31 @@ public class ReasonServiceUnitTest {
     @InjectMocks
     private ReasonsService reasonService;
 
+    @Mock
+    private RequestsService requestsService;
+
+    @Mock
+    private ExtensionRequestsRepository extensionRequestsRepository;
+
+    @Captor
+    private ArgumentCaptor<ExtensionRequestFullEntity> captor;
+
     @Test
-    public void testInsertExtensionReason() {
+    public void testCorrectDataIsPassedToAddExtensionsReasonToRequest() {
+        ExtensionRequestFullEntity extensionRequestFullEntity = dummyRequestEntity();
+        when(requestsService.getExtensionsRequestById(REQUEST_ID)).thenReturn(extensionRequestFullEntity);
+        when(extensionRequestsRepository.save(extensionRequestFullEntity)).thenReturn(extensionRequestFullEntity);
+
         ExtensionCreateReason dummyCreateReason = dummyCreateReason();
-        ExtensionReason extensionReason =
-            reasonService.insertExtensionsReason(dummyCreateReason);
-        //TODO ensure test still passes when work is completed for lfa-610 to add reason to databse
+        reasonService.addExtensionsReasonToRequest(dummyCreateReason, REQUEST_ID, "");
+        verify(extensionRequestsRepository, times(1)).save(captor.capture());
+        ExtensionRequestFullEntity extensionRequestResult = captor.getValue();
+        ExtensionReasonEntity extensionReasonResult = extensionRequestResult.getReasons().get(0);
 
-        assertNotNull(extensionReason);
-        assertEquals(dummyCreateReason.getAdditionalText(), extensionReason.getAdditionalText());
-        assertEquals(dummyCreateReason.getStartOn(), extensionReason.getStartOn());
-        assertEquals(dummyCreateReason.getEndOn(), extensionReason.getEndOn());
-        assertEquals(dummyCreateReason.getReason(), extensionReason.getReason());
-
+        assertNotNull(extensionReasonResult);
+        assertEquals(dummyCreateReason.getAdditionalText(), extensionReasonResult.getAdditionalText());
+        assertEquals(dummyCreateReason.getStartOn(), extensionReasonResult.getStartOn());
+        assertEquals(dummyCreateReason.getEndOn(), extensionReasonResult.getEndOn());
+        assertEquals(dummyCreateReason.getReason(), extensionReasonResult.getReason());
     }
 }

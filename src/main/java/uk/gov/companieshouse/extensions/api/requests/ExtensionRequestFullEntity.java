@@ -1,7 +1,6 @@
 package uk.gov.companieshouse.extensions.api.requests;
 
 import org.springframework.data.mongodb.core.mapping.Document;
-import uk.gov.companieshouse.extensions.api.reasons.ExtensionReason;
 import uk.gov.companieshouse.extensions.api.reasons.ExtensionReasonEntity;
 
 import java.util.ArrayList;

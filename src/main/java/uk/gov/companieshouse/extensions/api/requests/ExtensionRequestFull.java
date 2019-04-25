@@ -96,6 +96,6 @@ public abstract class ExtensionRequestFull {
     }
 
     public String toString() {
-      return "Acc period start: " + accountingPeriodStartOn + "  Acc period end: " + accountingPeriodEndOn;
+      return "id " + id + " Acc period start: " + accountingPeriodStartOn + "  Acc period end: " + accountingPeriodEndOn;
     }
 }

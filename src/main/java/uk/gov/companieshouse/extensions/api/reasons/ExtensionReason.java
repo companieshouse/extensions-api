@@ -1,6 +1,7 @@
 package uk.gov.companieshouse.extensions.api.reasons;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import uk.gov.companieshouse.service.links.Links;
 
 import java.time.LocalDate;
 
@@ -20,6 +21,8 @@ public abstract class ExtensionReason {
 
     @JsonProperty("end_on")
     private LocalDate endOn;
+
+    private Links links;
 
     public String getReason() {
         return reason;
@@ -67,6 +70,14 @@ public abstract class ExtensionReason {
 
     public void setEndOn(LocalDate endOn) {
         this.endOn = endOn;
+    }
+
+    public Links getLinks() {
+        return links;
+    }
+
+    public void setLinks(Links links) {
+        this.links = links;
     }
 
     public String toString() {

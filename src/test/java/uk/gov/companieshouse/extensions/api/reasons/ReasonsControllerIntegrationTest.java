@@ -3,11 +3,11 @@ package uk.gov.companieshouse.extensions.api.reasons;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyCreateReason;
-import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyReasonEntity;
+import static uk.gov.companieshouse.extensions.api.Utils.Utils.*;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -17,8 +17,12 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestFullDTO;
+import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestFullEntity;
+import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestMapper;
+import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestsRepository;
 
-import uk.gov.companieshouse.extensions.api.reasons.ReasonsController;
+import javax.servlet.http.HttpServletRequest;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(value = ReasonsController.class)
@@ -35,12 +39,24 @@ public class ReasonsControllerIntegrationTest {
     private ReasonsService reasonsService;
 
     @MockBean
-    private ExtensionReasonMapper extensionReasonMapper;
+    private ExtensionRequestMapper extensionRequestMapper;
+
+    @MockBean
+    private ExtensionRequestsRepository extensionRequestsRepository;
+
+    @MockBean
+    private HttpServletRequest mockHttpServletRequest;
 
     @Test
     public void canReachPostReasonEndpoint() throws Exception {
-         ExtensionReasonEntity dummyReasonEntity = dummyReasonEntity();
-         when(reasonsService.insertExtensionsReason(any(ExtensionCreateReason.class))).thenReturn(dummyReasonEntity);
+
+         ExtensionRequestFullEntity dummyRequestEntity = dummyRequestEntity();
+         dummyRequestEntity.addReason(dummyReasonEntity());
+
+         ExtensionRequestFullDTO entityRequestDTO = dummyRequestDTO();
+
+         when(reasonsService.addExtensionsReasonToRequest(any(ExtensionCreateReason.class), any(String.class), any(String.class))).thenReturn(dummyRequestEntity);
+         when(extensionRequestMapper.entityToDTO(dummyRequestEntity)).thenReturn(entityRequestDTO);
          RequestBuilder requestBuilder = MockMvcRequestBuilders.post(
                  ROOT_URL)
                   .contentType(MediaType.APPLICATION_JSON)

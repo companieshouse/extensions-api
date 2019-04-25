@@ -2,52 +2,67 @@ package uk.gov.companieshouse.extensions.api.requests;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.*;
+import static uk.gov.companieshouse.extensions.api.Utils.Utils.*;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
-import uk.gov.companieshouse.extensions.api.Utils.Utils;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest
+import java.time.LocalDateTime;
+import java.util.Optional;
+import java.util.function.Supplier;
+
+@RunWith(MockitoJUnitRunner.class)
 public class RequestServiceUnitTest {
 
-    @Autowired
+    @InjectMocks
     private RequestsService requestsService;
+
+    @Mock
+    private ExtensionRequestsRepository extensionRequestsRepository;
+
+    @Mock
+    private Supplier<LocalDateTime> dateTimeSupplierNow;
+
+    @Captor
+    private ArgumentCaptor<ExtensionRequestFullEntity> captor;
 
     @Test
     public void testGetSingleRequest() {
-      ExtensionRequestFull request = requestsService.getExtensionsRequestById("a1");
-      assertEquals("Acc period start: 2018-04-01  Acc period end: 2019-03-31", request.toString());
+      ExtensionRequestFullEntity entity = dummyRequestEntity();
+      when(extensionRequestsRepository.findById(REQUEST_ID)).thenReturn(Optional.of(entity));
+      ExtensionRequestFull request = requestsService.getExtensionsRequestById(REQUEST_ID);
+      assertEquals("id id Acc period start: 2018-12-12  Acc period end: 2019-12-12", request.toString());
     }
 
     @Test
-    public void testInsertExtensionRequest() {
+    public void testCorrectDataIsPassedToInsertExtensionRequest() {
 
-        ExtensionCreateRequest extensionCreateRequest = Utils.dummyCreateRequestEntity();
-        CreatedBy createdBy = Utils.createdBy();
+        ExtensionCreateRequest extensionCreateRequest = dummyCreateRequestEntity();
+        CreatedBy createdBy = createdBy();
 
-        ExtensionRequestFullEntity extensionRequest = ExtensionRequestFullEntityBuilder
-            .newInstance()
-            .withCreatedBy(createdBy)
-            .withAccountingPeriodStartOn(extensionCreateRequest.getAccountingPeriodStartOn())
-            .withAccountingPeriodEndOn(extensionCreateRequest.getAccountingPeriodEndOn())
-            .withStatus()
-            .build();
+        ExtensionRequestFullEntity extensionRequestFullEntity = dummyRequestEntity();
+        when(extensionRequestsRepository.insert(any(ExtensionRequestFullEntity.class))).thenReturn(extensionRequestFullEntity);
 
-        assertNotNull(extensionRequest);
-        assertEquals(extensionCreateRequest.getAccountingPeriodStartOn(), extensionRequest.getAccountingPeriodStartOn());
-        assertEquals(extensionCreateRequest.getAccountingPeriodEndOn(), extensionRequest.getAccountingPeriodEndOn());
+        requestsService.insertExtensionsRequest(extensionCreateRequest, createdBy, TESTURI);
+        verify(extensionRequestsRepository, times(1)).insert(captor.capture());
 
-        assertEquals(Status.OPEN, extensionRequest.getStatus());
+        ExtensionRequestFullEntity extensionRequestResult = captor.getValue();
 
-        CreatedBy createdByInEntity = extensionRequest.getCreatedBy();
+        assertNotNull(extensionRequestResult);
+        assertEquals(extensionCreateRequest.getAccountingPeriodStartOn(), extensionRequestResult.getAccountingPeriodStartOn());
+        assertEquals(extensionCreateRequest.getAccountingPeriodEndOn(), extensionRequestResult.getAccountingPeriodEndOn());
+        assertEquals(Status.OPEN, extensionRequestResult.getStatus());
+
+        CreatedBy createdByInEntity = extensionRequestResult.getCreatedBy();
         assertEquals(createdBy.getEmail(), createdByInEntity.getEmail());
         assertEquals(createdBy.getForename(), createdByInEntity.getForename());
         assertEquals(createdBy.getId(), createdByInEntity.getId());
         assertEquals(createdBy.getSurname(), createdByInEntity.getSurname());
     }
-
 }
