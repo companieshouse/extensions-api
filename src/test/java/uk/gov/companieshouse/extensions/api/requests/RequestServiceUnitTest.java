@@ -2,21 +2,20 @@ package uk.gov.companieshouse.extensions.api.requests;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-import static uk.gov.companieshouse.extensions.api.Utils.Utils.REQUEST_ID;
-import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyRequestEntity;
-
+import static org.mockito.Mockito.*;
+import static uk.gov.companieshouse.extensions.api.Utils.Utils.*;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import uk.gov.companieshouse.extensions.api.Utils.Utils;
-
+import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RequestServiceUnitTest {
@@ -27,6 +26,12 @@ public class RequestServiceUnitTest {
     @Mock
     private ExtensionRequestsRepository extensionRequestsRepository;
 
+    @Mock
+    private Supplier<LocalDateTime> dateTimeSupplierNow;
+
+    @Captor
+    private ArgumentCaptor<ExtensionRequestFullEntity> captor;
+
     @Test
     public void testGetSingleRequest() {
       ExtensionRequestFullEntity entity = dummyRequestEntity();
@@ -36,30 +41,28 @@ public class RequestServiceUnitTest {
     }
 
     @Test
-    public void testInsertExtensionRequest() {
+    public void testCorrectDataIsPassedToInsertExtensionRequest() {
 
-        ExtensionCreateRequest extensionCreateRequest = Utils.dummyCreateRequestEntity();
-        CreatedBy createdBy = Utils.createdBy();
+        ExtensionCreateRequest extensionCreateRequest = dummyCreateRequestEntity();
+        CreatedBy createdBy = createdBy();
 
-        ExtensionRequestFullEntity extensionRequest = ExtensionRequestFullEntityBuilder
-            .newInstance()
-            .withCreatedBy(createdBy)
-            .withAccountingPeriodStartOn(extensionCreateRequest.getAccountingPeriodStartOn())
-            .withAccountingPeriodEndOn(extensionCreateRequest.getAccountingPeriodEndOn())
-            .withStatus()
-            .build();
+        ExtensionRequestFullEntity extensionRequestFullEntity = dummyRequestEntity();
+        when(extensionRequestsRepository.insert(any(ExtensionRequestFullEntity.class))).thenReturn(extensionRequestFullEntity);
 
-        assertNotNull(extensionRequest);
-        assertEquals(extensionCreateRequest.getAccountingPeriodStartOn(), extensionRequest.getAccountingPeriodStartOn());
-        assertEquals(extensionCreateRequest.getAccountingPeriodEndOn(), extensionRequest.getAccountingPeriodEndOn());
+        requestsService.insertExtensionsRequest(extensionCreateRequest, createdBy, TESTURI);
+        verify(extensionRequestsRepository, times(1)).insert(captor.capture());
 
-        assertEquals(Status.OPEN, extensionRequest.getStatus());
+        ExtensionRequestFullEntity extensionRequestResult = captor.getValue();
 
-        CreatedBy createdByInEntity = extensionRequest.getCreatedBy();
+        assertNotNull(extensionRequestResult);
+        assertEquals(extensionCreateRequest.getAccountingPeriodStartOn(), extensionRequestResult.getAccountingPeriodStartOn());
+        assertEquals(extensionCreateRequest.getAccountingPeriodEndOn(), extensionRequestResult.getAccountingPeriodEndOn());
+        assertEquals(Status.OPEN, extensionRequestResult.getStatus());
+
+        CreatedBy createdByInEntity = extensionRequestResult.getCreatedBy();
         assertEquals(createdBy.getEmail(), createdByInEntity.getEmail());
         assertEquals(createdBy.getForename(), createdByInEntity.getForename());
         assertEquals(createdBy.getId(), createdByInEntity.getId());
         assertEquals(createdBy.getSurname(), createdByInEntity.getSurname());
     }
-
 }
