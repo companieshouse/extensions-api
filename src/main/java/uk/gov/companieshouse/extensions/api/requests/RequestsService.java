@@ -21,10 +21,7 @@ public class RequestsService {
 
     public ExtensionRequestFullEntity getExtensionsRequestById(String id){
         Optional<ExtensionRequestFullEntity> opt = extensionRequestsRepository.findById(id);
-        if (opt.isPresent()) {
-            return opt.get();
-        }
-        return null;
+        return extensionRequestsRepository.findById(id).orElse(null);
     }
 
     public ExtensionRequestFullEntity insertExtensionsRequest(ExtensionCreateRequest extensionCreateRequest, CreatedBy
