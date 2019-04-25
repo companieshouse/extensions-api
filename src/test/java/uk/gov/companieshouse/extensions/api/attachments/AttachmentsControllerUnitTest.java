@@ -1,6 +1,5 @@
 package uk.gov.companieshouse.extensions.api.attachments;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -9,7 +8,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 import uk.gov.companieshouse.extensions.api.Utils.Utils;
-import uk.gov.companieshouse.extensions.api.requests.ERICHeaderParser;
 import uk.gov.companieshouse.service.ServiceException;
 import uk.gov.companieshouse.service.rest.response.PluggableResponseEntityFactory;
 
@@ -30,7 +28,7 @@ public class AttachmentsControllerUnitTest {
     private HttpServletRequest servletRequest;
 
     @Test
-    public void willReturnErrorsJson() throws Exception {
+    public void willReturn404IfInvalidRequestSupplied() throws Exception {
         when(servletRequest.getRequestURI()).thenReturn("url");
         when(attachmentsService.addAttachment(any(MultipartFile.class), anyString(), anyString(),
             anyString())).thenThrow(new ServiceException("exception error"));
