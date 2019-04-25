@@ -2,25 +2,37 @@ package uk.gov.companieshouse.extensions.api.requests;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+import static uk.gov.companieshouse.extensions.api.Utils.Utils.REQUEST_ID;
+import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyRequestEntity;
+
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+
 import uk.gov.companieshouse.extensions.api.Utils.Utils;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest
+import java.util.Optional;
+
+@RunWith(MockitoJUnitRunner.class)
 public class RequestServiceUnitTest {
 
-    @Autowired
+    @InjectMocks
     private RequestsService requestsService;
+
+    @Mock
+    private ExtensionRequestsRepository extensionRequestsRepository;
 
     @Test
     public void testGetSingleRequest() {
-      ExtensionRequestFull request = requestsService.getExtensionsRequestById("a1");
-      assertEquals("Acc period start: 2018-04-01  Acc period end: 2019-03-31", request.toString());
+      ExtensionRequestFullEntity entity = dummyRequestEntity();
+      when(extensionRequestsRepository.findById(REQUEST_ID)).thenReturn(Optional.of(entity));
+      ExtensionRequestFull request = requestsService.getExtensionsRequestById(REQUEST_ID);
+      assertEquals("id id Acc period start: 2018-12-12  Acc period end: 2019-12-12", request.toString());
     }
 
     @Test

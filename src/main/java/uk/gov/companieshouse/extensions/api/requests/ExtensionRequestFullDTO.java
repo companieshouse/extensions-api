@@ -2,16 +2,19 @@ package uk.gov.companieshouse.extensions.api.requests;
 
 import uk.gov.companieshouse.service.links.Links;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ExtensionRequestFullDTO extends ExtensionRequestFull {
 
     // key = hash of reason id, value = uri of reason
-    private Links reasons;
+    private List<Links> reasons = new ArrayList<>();
 
-    public Links getReasons() {
+    public List<Links> getReasons() {
         return reasons;
     }
 
-    public void setReasons(Links reasons) {
-        this.reasons = reasons;
+    public void addReason(Links reason) {
+        reasons.add(reason);
     }
 }

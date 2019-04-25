@@ -1,15 +1,29 @@
 package uk.gov.companieshouse.extensions.api.reasons;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestFullEntity;
+import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestsRepository;
+import uk.gov.companieshouse.extensions.api.requests.RequestsService;
+import uk.gov.companieshouse.service.links.Links;
 
 import java.time.LocalDate;
 
 @Component
 public class ReasonsService {
 
-    public ExtensionReasonEntity insertExtensionsReason(ExtensionCreateReason extensionCreateReason) {
-        ExtensionReasonEntityBuilder extensionReasonEntityBuilder = ExtensionReasonEntityBuilder.getInstance();
+    @Autowired
+    private RequestsService requestsService;
+
+    @Autowired
+    private ExtensionRequestsRepository extensionRequestsRepository;
+
+    public ExtensionRequestFullEntity addExtensionsReasonToRequest(ExtensionCreateReason extensionCreateReason, String requestId, String requestURI) {
+
+        ExtensionRequestFullEntity extensionRequestFullEntity = requestsService.getExtensionsRequestById(requestId);
+
+        ExtensionReasonEntityBuilder extensionReasonEntityBuilder = ExtensionReasonEntityBuilder.getInstance().withLinks(requestURI);
 
         String reason = extensionCreateReason.getReason();
         if (StringUtils.isNotBlank(reason)) {
@@ -31,7 +45,12 @@ public class ReasonsService {
             extensionReasonEntityBuilder.withEndOn(endOn);
         }
 
-        //TODO insert into mongo
-        return extensionReasonEntityBuilder.build();
+        ExtensionReasonEntity extensionReasonEntity = extensionReasonEntityBuilder.build();
+
+        extensionRequestFullEntity.addReason(extensionReasonEntity);
+
+        ExtensionRequestFullEntity extensionRequestFullEntityUpdated = extensionRequestsRepository.save(extensionRequestFullEntity);
+
+        return extensionRequestFullEntityUpdated;
     }
 }
