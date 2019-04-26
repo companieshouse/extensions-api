@@ -39,7 +39,7 @@ jobs:
           aws_access_key_id: ((aws-access-key-id))
           aws_secret_access_key: ((aws-secret-access-key))
           repository: ((docker-registry))/ansible-runner
-          tag: latest
+          tag: 2.7.9
       inputs:
       - name: source-code
       run:
