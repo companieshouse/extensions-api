@@ -41,13 +41,9 @@ public class ReasonsController {
     @DeleteMapping("/{requestId}/reasons/{reasonId}")
     public ResponseEntity<ExtensionRequestFullDTO> deleteReasonFromRequest(@PathVariable String
                                                                          requestId, @PathVariable String reasonId) {
-        ExtensionRequestFullEntity extensionRequestFullEntity = reasonsService
-            .removeExtensionsReasonFromRequest(requestId, reasonId);
+        reasonsService.removeExtensionsReasonFromRequest(requestId, reasonId);
 
-        ExtensionRequestFullDTO extensionRequestFullDTO = extensionRequestMapper.entityToDTO(extensionRequestFullEntity);
-
-        return ResponseEntity.created(URI.create(extensionRequestFullEntity.getLinks().getLink
-            (() -> "self"))).body(extensionRequestFullDTO);
+        return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{requestId}/reasons/{reasonId}")

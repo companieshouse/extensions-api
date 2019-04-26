@@ -8,6 +8,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestFullDTO;
 import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestFullEntity;
@@ -63,13 +64,11 @@ public class ReasonsControllerUnitTest {
         ExtensionRequestFullDTO entityRequestDTO = dummyRequestDTO();
 
         when(reasonsService.removeExtensionsReasonFromRequest(REQUEST_ID, REASON_ID)).thenReturn(dummyRequestEntity);
-        when(extensionRequestMapper.entityToDTO(dummyRequestEntity)).thenReturn(entityRequestDTO);
 
         ResponseEntity<ExtensionRequestFullDTO> response = reasonsController.deleteReasonFromRequest
             (REQUEST_ID, REASON_ID);
 
-        assertNotNull(response.getBody());
-        assertEquals(entityRequestDTO.toString(), response.getBody().toString());
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
     }
 
     @Test

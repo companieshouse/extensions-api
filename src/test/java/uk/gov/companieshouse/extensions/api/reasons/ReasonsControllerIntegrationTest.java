@@ -83,7 +83,7 @@ public class ReasonsControllerIntegrationTest {
                  .accept(MediaType.APPLICATION_JSON);
 
          MvcResult result = mockMvc.perform(requestBuilder).andReturn();
-         assertEquals(201, result.getResponse().getStatus());
+         assertEquals(204, result.getResponse().getStatus());
     }
     
     @Test
