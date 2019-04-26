@@ -56,11 +56,11 @@ public class ReasonsControllerUnitTest {
         assertEquals(entityRequestDTO.toString(), response.getBody().toString());
     }
 
-    @Test
-    public void deleteReasonPlaceholderTest() {
-        boolean response = reasonsController.deleteReasonFromRequest("234", "234");
-        assertFalse(response);
-    }
+//    @Test
+//    public void deleteReasonPlaceholderTest() {
+//        boolean response = reasonsController.deleteReasonFromRequest("234", "234");
+//        assertFalse(response);
+//    }
 
     @Test
     public void updateReasonPlaceholderTest() {
