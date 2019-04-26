@@ -69,12 +69,21 @@ public class ReasonsControllerIntegrationTest {
 
     @Test
     public void canReachDeleteReasonEndpoint() throws Exception {
+
+        ExtensionRequestFullEntity dummyRequestEntity = dummyRequestEntity();
+        dummyRequestEntity.addReason(dummyReasonEntity());
+
+        ExtensionRequestFullDTO entityRequestDTO = dummyRequestDTO();
+
+        when(reasonsService.removeExtensionsReasonFromRequest(any(String.class), any
+            (String.class))).thenReturn(dummyRequestEntity);
+        when(extensionRequestMapper.entityToDTO(dummyRequestEntity)).thenReturn(entityRequestDTO);
          RequestBuilder requestBuilder = MockMvcRequestBuilders.delete(
                  SPECIFIC_URL)
                  .accept(MediaType.APPLICATION_JSON);
 
          MvcResult result = mockMvc.perform(requestBuilder).andReturn();
-         assertEquals(200, result.getResponse().getStatus());
+         assertEquals(204, result.getResponse().getStatus());
     }
     
     @Test

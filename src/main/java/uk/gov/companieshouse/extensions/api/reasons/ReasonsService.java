@@ -9,6 +9,8 @@ import uk.gov.companieshouse.extensions.api.requests.RequestsService;
 import uk.gov.companieshouse.service.links.Links;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class ReasonsService {
@@ -49,8 +51,22 @@ public class ReasonsService {
 
         extensionRequestFullEntity.addReason(extensionReasonEntity);
 
-        ExtensionRequestFullEntity extensionRequestFullEntityUpdated = extensionRequestsRepository.save(extensionRequestFullEntity);
+        return extensionRequestsRepository.save(extensionRequestFullEntity);
+    }
 
-        return extensionRequestFullEntityUpdated;
+    public ExtensionRequestFullEntity removeExtensionsReasonFromRequest(String requestId, String
+        reasonId) {
+
+        ExtensionRequestFullEntity extensionRequestFullEntity = requestsService.getExtensionsRequestById(requestId);
+
+        if (!extensionRequestFullEntity.getReasons().isEmpty()) {
+            List<ExtensionReasonEntity> extensionRequestReasons = extensionRequestFullEntity
+                .getReasons().stream().filter(reason -> !reason.getId().equals(reasonId)).collect(Collectors.toList());
+
+            extensionRequestFullEntity.setReasons(extensionRequestReasons);
+
+            return extensionRequestsRepository.save(extensionRequestFullEntity);
+        }
+        return  extensionRequestFullEntity;
     }
 }
