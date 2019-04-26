@@ -16,11 +16,21 @@ build:
 	mvn compile
 
 .PHONY: test
-test: test-unit
+test: clean
+	mvn verify
 
 .PHONY: test-unit
 test-unit: clean
-	mvn test
+	mvn verify -Punit-test
+
+.PHONY: test-integration
+test-integration: clean
+	mvn verify -Pintegration-test
+
+.PHONY: dev
+dev: clean
+	mvn package -DskipTests=true
+	cp target/$(artifact_name)-unversioned.jar $(artifact_name).jar
 
 .PHONY: package
 package:
