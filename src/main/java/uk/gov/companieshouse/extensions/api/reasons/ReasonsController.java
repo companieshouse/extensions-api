@@ -39,8 +39,11 @@ public class ReasonsController {
     }
 
     @DeleteMapping("/{requestId}/reasons/{reasonId}")
-    public boolean deleteReasonFromRequest(@PathVariable String requestId, @PathVariable String reasonId) {
-      return false;
+    public ResponseEntity<ExtensionRequestFullDTO> deleteReasonFromRequest(@PathVariable String
+                                                                         requestId, @PathVariable String reasonId) {
+        reasonsService.removeExtensionsReasonFromRequest(requestId, reasonId);
+
+        return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{requestId}/reasons/{reasonId}")

@@ -22,7 +22,7 @@ import static uk.gov.companieshouse.extensions.api.Utils.Utils.*;
 public class ReasonServiceUnitTest {
 
     @InjectMocks
-    private ReasonsService reasonService;
+    private ReasonsService reasonsService;
 
     @Mock
     private RequestsService requestsService;
@@ -37,10 +37,11 @@ public class ReasonServiceUnitTest {
     public void testCorrectDataIsPassedToAddExtensionsReasonToRequest() {
         ExtensionRequestFullEntity extensionRequestFullEntity = dummyRequestEntity();
         when(requestsService.getExtensionsRequestById(REQUEST_ID)).thenReturn(extensionRequestFullEntity);
-        when(extensionRequestsRepository.save(extensionRequestFullEntity)).thenReturn(extensionRequestFullEntity);
+        when(extensionRequestsRepository.save(any(ExtensionRequestFullEntity.class))).thenReturn
+            (extensionRequestFullEntity);
 
         ExtensionCreateReason dummyCreateReason = dummyCreateReason();
-        reasonService.addExtensionsReasonToRequest(dummyCreateReason, REQUEST_ID, "");
+        reasonsService.addExtensionsReasonToRequest(dummyCreateReason, REQUEST_ID, "");
         verify(extensionRequestsRepository, times(1)).save(captor.capture());
         ExtensionRequestFullEntity extensionRequestResult = captor.getValue();
         ExtensionReasonEntity extensionReasonResult = extensionRequestResult.getReasons().get(0);
@@ -50,5 +51,23 @@ public class ReasonServiceUnitTest {
         assertEquals(dummyCreateReason.getStartOn(), extensionReasonResult.getStartOn());
         assertEquals(dummyCreateReason.getEndOn(), extensionReasonResult.getEndOn());
         assertEquals(dummyCreateReason.getReason(), extensionReasonResult.getReason());
+    }
+
+    @Test
+    public void testReasonIsRemovedFromRequest() {
+        ExtensionRequestFullEntity extensionRequestFullEntity = dummyRequestEntity();
+        extensionRequestFullEntity.addReason(dummyReasonEntity());
+
+        when(requestsService.getExtensionsRequestById(extensionRequestFullEntity.getId())).thenReturn(extensionRequestFullEntity);
+        assertEquals(1, extensionRequestFullEntity.getReasons().size());
+        when(extensionRequestsRepository.save(any(ExtensionRequestFullEntity.class))).thenReturn
+            (extensionRequestFullEntity);
+
+        reasonsService.removeExtensionsReasonFromRequest(extensionRequestFullEntity.getId(),
+            extensionRequestFullEntity.getReasons().get(0).getId());
+        verify(extensionRequestsRepository, times(1)).save(captor.capture());
+        ExtensionRequestFullEntity extensionRequestResult = captor.getValue();
+
+        assertEquals(0, extensionRequestResult.getReasons().size());
     }
 }

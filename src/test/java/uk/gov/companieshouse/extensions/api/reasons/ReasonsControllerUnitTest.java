@@ -1,5 +1,6 @@
 package uk.gov.companieshouse.extensions.api.reasons;
 
+import javafx.beans.binding.When;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -7,6 +8,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestFullDTO;
 import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestFullEntity;
@@ -57,9 +59,16 @@ public class ReasonsControllerUnitTest {
     }
 
     @Test
-    public void deleteReasonPlaceholderTest() {
-        boolean response = reasonsController.deleteReasonFromRequest("234", "234");
-        assertFalse(response);
+    public void deleteReasonFromRequest() {
+        ExtensionRequestFullEntity dummyRequestEntity = dummyRequestEntity();
+        ExtensionRequestFullDTO entityRequestDTO = dummyRequestDTO();
+
+        when(reasonsService.removeExtensionsReasonFromRequest(REQUEST_ID, REASON_ID)).thenReturn(dummyRequestEntity);
+
+        ResponseEntity<ExtensionRequestFullDTO> response = reasonsController.deleteReasonFromRequest
+            (REQUEST_ID, REASON_ID);
+
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
     }
 
     @Test
