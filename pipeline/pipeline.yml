@@ -36,10 +36,8 @@ jobs:
       image_resource:
         type: docker-image
         source:
-          aws_access_key_id: ((aws-access-key-id))
-          aws_secret_access_key: ((aws-secret-access-key))
-          repository: ((docker-registry))/ansible-runner
-          tag: 2.7.9
+          repository: mongo
+          tag: 4.1.10-bionic
       inputs:
       - name: source-code
       run:
@@ -48,9 +46,6 @@ jobs:
           - -c
           - |
             cd source-code
-            cp mongodb-org-3.2.repo /etc/yum.repos.d/
-            yum repolist
-            yum -y install mongodb-org
             mongoimport --jsonArray --host mongo-db1-waldorf.dev.aws.internal:27017 --db extension_requests --collection extension_requests --file src/test/resources/mongoTestData.json --drop
 
   - task: integration test
