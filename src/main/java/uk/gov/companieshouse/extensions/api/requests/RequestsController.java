@@ -49,9 +49,11 @@ public class RequestsController {
         ExtensionRequestFullDTO extensionRequestFullDTO = extensionRequestMapper.entityToDTO
             (extensionRequestFullEntity);
 
-        return ResponseEntity.created(URI.create(extensionRequestFullEntity.getLinks().getLink
-            (() -> "self"))).body
-            (extensionRequestFullDTO);
+        return ResponseEntity.created(
+            URI.create(extensionRequestFullEntity
+                .getLinks()
+                .getLink(() -> "self")))
+            .body(extensionRequestFullDTO);
     }
 
     @GetMapping("/")

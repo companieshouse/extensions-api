@@ -50,9 +50,6 @@ public class ExtensionRequestFullEntityBuilder {
     }
 
     public static ExtensionRequestFullEntityBuilder newInstance() {
-        ExtensionRequestFullEntityBuilder extensionRequestFullEntityBuilder = new
-            ExtensionRequestFullEntityBuilder();
-
         return new ExtensionRequestFullEntityBuilder();
     }
 
