@@ -1,7 +1,6 @@
 package uk.gov.companieshouse.extensions.api.requests;
 
 import java.util.Objects;
-import java.util.Optional;
 
 public class CreatedBy {
     private String id;
