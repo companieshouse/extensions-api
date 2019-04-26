@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 
 public class Utils {
     public static final String ETAG = "etag";
-    public static final String ID = "id";
+    public static final String REQUEST_ID = "1234";
     public static final LocalDateTime CREATED_ON = LocalDateTime.of(
         2018, 10, 10, 00,00,00);
     public static final CreatedBy CREATED_BY = createdBy();
@@ -38,8 +38,8 @@ public class Utils {
         2019, 12, 12);
     public static final String REASON = "illness";
     public static final String ADDITIONAL_TEXT = "string";
-    public static final String REQUEST_ID = "1234";
     public static final String TESTURI = "testuri";
+    public static final String REASON_ID = "abc";
 
     public static CreatedBy createdBy() {
         CreatedBy createdBy = new CreatedBy();
@@ -52,7 +52,7 @@ public class Utils {
     }
 
     private static Links links() {
-        String linkToSelf = BASE_URL + ID;
+        String linkToSelf = BASE_URL + REQUEST_ID;
         Links links = new Links();
         links.setLink(() ->  "self", linkToSelf);
         return links;
@@ -63,7 +63,7 @@ public class Utils {
         ExtensionRequestFullDTO requestDTO = new ExtensionRequestFullDTO();
 
         requestDTO.setEtag(ETAG);
-        requestDTO.setId(ID);
+        requestDTO.setId(REQUEST_ID);
         requestDTO.setCreatedOn(CREATED_ON);
         requestDTO.setCreatedBy(CREATED_BY);
         requestDTO.setAccountingPeriodStartOn(ACCOUNTING_PERIOD_START_ON);
@@ -78,7 +78,7 @@ public class Utils {
         ExtensionRequestFullEntity requestEntity = new ExtensionRequestFullEntity();
 
         requestEntity.setEtag(ETAG);
-        requestEntity.setId(ID);
+        requestEntity.setId(REQUEST_ID);
         requestEntity.setCreatedOn(CREATED_ON);
         requestEntity.setCreatedBy(CREATED_BY);
         requestEntity.setAccountingPeriodStartOn(ACCOUNTING_PERIOD_START_ON);
@@ -99,7 +99,7 @@ public class Utils {
     public static ExtensionReasonDTO dummyReasonDTO() {
         ExtensionReasonDTO extensionReasonDTO = new ExtensionReasonDTO();
         extensionReasonDTO.setEtag(ETAG);
-        extensionReasonDTO.setId(ID);
+        extensionReasonDTO.setId(REASON_ID);
         extensionReasonDTO.setAdditionalText(ADDITIONAL_TEXT);
         extensionReasonDTO.setStartOn(REASON_START_ON);
         extensionReasonDTO.setEndOn(REASON_END_ON);
@@ -110,7 +110,7 @@ public class Utils {
     public static ExtensionReasonEntity dummyReasonEntity() {
         ExtensionReasonEntity extensionReasonEntity = new ExtensionReasonEntity();
         extensionReasonEntity.setEtag(ETAG);
-        extensionReasonEntity.setId(ID);
+        extensionReasonEntity.setId(REASON_ID);
         extensionReasonEntity.setAdditionalText(ADDITIONAL_TEXT);
         extensionReasonEntity.setStartOn(REASON_START_ON);
         extensionReasonEntity.setEndOn(REASON_END_ON);

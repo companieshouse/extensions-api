@@ -1,5 +1,6 @@
 package uk.gov.companieshouse.extensions.api.reasons;
 
+import javafx.beans.binding.When;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -56,11 +57,20 @@ public class ReasonsControllerUnitTest {
         assertEquals(entityRequestDTO.toString(), response.getBody().toString());
     }
 
-//    @Test
-//    public void deleteReasonPlaceholderTest() {
-//        boolean response = reasonsController.deleteReasonFromRequest("234", "234");
-//        assertFalse(response);
-//    }
+    @Test
+    public void deleteReasonFromRequest() {
+        ExtensionRequestFullEntity dummyRequestEntity = dummyRequestEntity();
+        ExtensionRequestFullDTO entityRequestDTO = dummyRequestDTO();
+
+        when(reasonsService.removeExtensionsReasonFromRequest(REQUEST_ID, REASON_ID)).thenReturn(dummyRequestEntity);
+        when(extensionRequestMapper.entityToDTO(dummyRequestEntity)).thenReturn(entityRequestDTO);
+
+        ResponseEntity<ExtensionRequestFullDTO> response = reasonsController.deleteReasonFromRequest
+            (REQUEST_ID, REASON_ID);
+
+        assertNotNull(response.getBody());
+        assertEquals(entityRequestDTO.toString(), response.getBody().toString());
+    }
 
     @Test
     public void updateReasonPlaceholderTest() {
