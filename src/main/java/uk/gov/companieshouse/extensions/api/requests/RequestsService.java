@@ -1,14 +1,11 @@
 package uk.gov.companieshouse.extensions.api.requests;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.Month;
-import java.util.Optional;
-import java.util.function.Supplier;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.companieshouse.service.links.Links;
+
+import java.time.LocalDateTime;
+import java.util.function.Supplier;
 
 @Component
 public class RequestsService {

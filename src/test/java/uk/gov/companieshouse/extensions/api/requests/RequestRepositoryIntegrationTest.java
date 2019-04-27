@@ -13,7 +13,6 @@ import uk.gov.companieshouse.service.links.Links;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -23,10 +22,30 @@ import static org.junit.Assert.*;
 @SpringBootTest
 public class RequestRepositoryIntegrationTest {
 
-    private static final String STATIC_REQUEST_ID = "5cc2edc4b2804e4514a4d25e";
+    private static final String REQUEST_1 = "aaaaaaaaaaaaaaaaaaaaaaa1";
+    private static final String REQUEST_2 = "aaaaaaaaaaaaaaaaaaaaaaa2";
+    private static final String REQUEST_3 = "aaaaaaaaaaaaaaaaaaaaaaa3";
 
     @Autowired
     private ExtensionRequestsRepository requestsRepository;
+
+    @Test
+    public void canGetRequestFromDB() {
+        Optional<ExtensionRequestFullEntity> dummyData = requestsRepository.findById(REQUEST_1);
+
+        assertTrue(dummyData.isPresent());
+
+        ExtensionRequestFullEntity actualEntity = dummyData.get();
+
+        assertEquals(REQUEST_1, actualEntity.getId());
+        assertEquals(Status.OPEN, actualEntity.getStatus());
+        assertEquals(LocalDateTime.of(2019,1, 2, 11, 38, 44), actualEntity.getCreatedOn());
+
+        CreatedBy createdBy = new CreatedBy();
+        createdBy.setId("Y2VkZWVlMzhlZWFjY2M4MzQ3MT");
+        createdBy.setEmail("demo@ch.gov.uk");
+        assertEquals(createdBy, actualEntity.getCreatedBy());
+    }
 
     @Test
     public void canSaveRequestToDB() {
@@ -45,16 +64,17 @@ public class RequestRepositoryIntegrationTest {
 
     @Test
     public void canUpdateRequestToSaveReason() throws Exception {
-        ExtensionRequestFullEntity expectedEntity = dummyRequest();
-        requestsRepository.insert(expectedEntity);
+        ExtensionRequestFullEntity expectedEntity =
+            requestsRepository.findById(REQUEST_2)
+                .orElseThrow(() -> new Exception("Request not found in DB"));
 
         String reasonId = UUID.randomUUID().toString();
         ExtensionReasonEntity expectedReason = dummyReason(reasonId);
         expectedEntity.setReasons(Arrays.asList(expectedReason));
-        ExtensionRequestFullEntity actualEntity = requestsRepository.save(expectedEntity);
+        ExtensionRequestFullEntity savedEntity = requestsRepository.save(expectedEntity);
 
-        assertEquals(1, actualEntity.getReasons().size());
-        ExtensionReasonEntity actualReason = actualEntity.getReasons()
+        assertEquals(1, savedEntity.getReasons().size());
+        ExtensionReasonEntity actualReason = savedEntity.getReasons()
             .stream()
             .findAny()
             .orElseThrow(() -> new Exception("Reason expected in request object"));
@@ -62,21 +82,13 @@ public class RequestRepositoryIntegrationTest {
         assertEquals("text", actualReason.getAdditionalText());
         assertEquals(reasonId, actualReason.getId());
         assertEquals("illness", actualReason.getReason());
-
-//        Links links = new Links();
-//        links.setLink(() -> "self", String.format("url/%s", reasonId));
-//
-//        assertEquals(links, actualReason.getLinks());
     }
 
     @Test
-    public void canSaveAttachmentToDB() {
-        ExtensionRequestFullEntity expectedEntity = dummyRequest();
-        String reasonId = UUID.randomUUID().toString();
-        expectedEntity.setReasons(Arrays.asList(dummyReason(reasonId)));
-        ExtensionRequestFullEntity insert = requestsRepository.insert(expectedEntity);
-
-        assertFalse(insert.getReasons().isEmpty());
+    public void canSaveAttachmentToReason() throws Exception {
+        ExtensionRequestFullEntity entity =
+            requestsRepository.findById(REQUEST_3)
+                .orElseThrow(() -> new Exception("Request not found in DB"));
 
         Attachment expectedAttachment = new Attachment();
         String attachmentId = UUID.randomUUID().toString();
@@ -90,47 +102,23 @@ public class RequestRepositoryIntegrationTest {
         links.setLink(() -> "download", "downloadLink");
         expectedAttachment.setLinks(links);
 
-        insert.getReasons()
+        entity.getReasons()
             .stream()
             .forEach(reason -> {
                 reason.setAttachments(Arrays.asList(expectedAttachment));
             });
 
-        ExtensionRequestFullEntity actual = requestsRepository.save(insert);
+        ExtensionRequestFullEntity savedEntity = requestsRepository.save(entity);
 
-        assertFalse(actual.getReasons().get(0).getAttachments().isEmpty());
+        assertFalse(savedEntity.getReasons().get(0).getAttachments().isEmpty());
 
-        Attachment attachment = actual.getReasons().get(0).getAttachments().get(0);
+        Attachment attachment = savedEntity.getReasons().get(0).getAttachments().get(0);
 
         assertEquals(expectedAttachment.getName(), attachment.getName());
         assertEquals(attachmentId, attachment.getId());
         assertEquals(expectedAttachment.getContentType(), attachment.getContentType());
         assertEquals(expectedAttachment.getSize(), attachment.getSize());
         assertEquals(links, attachment.getLinks());
-    }
-
-    @Test
-    public void canGetRequestFromDB() {
-        Optional<ExtensionRequestFullEntity> dummyData = requestsRepository.findById(STATIC_REQUEST_ID);
-
-        assertTrue(dummyData.isPresent());
-
-        ExtensionRequestFullEntity actualEntity = dummyData.get();
-
-        assertNotNull(actualEntity.getId());
-        assertFalse(actualEntity.getReasons().isEmpty());
-        assertTrue(actualEntity.getReasons()
-            .stream()
-            .map(ExtensionReasonEntity::getAttachments)
-            .flatMap(List::stream)
-            .findAny()
-            .isPresent());
-        assertEquals(Status.OPEN, actualEntity.getStatus());
-
-        CreatedBy createdBy = new CreatedBy();
-        createdBy.setId("Y2VkZWVlMzhlZWFjY2M4MzQ3MT");
-        createdBy.setEmail("demo@ch.gov.uk");
-        assertEquals(createdBy, actualEntity.getCreatedBy());
     }
 
     private ExtensionRequestFullEntity dummyRequest() {
