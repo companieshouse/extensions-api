@@ -1,0 +1,61 @@
+[
+  {
+    "_id" : ObjectId("aaaaaaaaaaaaaaaaaaaaaaa1"),
+    "createdOn" : ISODate("2019-01-02T11:38:44Z"),
+    "createdBy" : {
+        "_id" : "Y2VkZWVlMzhlZWFjY2M4MzQ3MT",
+        "email" : "demo@ch.gov.uk"
+    },
+    "links" : {
+        "linksMap" : {
+            "self" : "/company/00006400/extensions/requests/request1"
+        }
+    },
+    "status" : "OPEN",
+    "_class" : "uk.gov.companieshouse.extensions.api.requests.ExtensionRequestFullEntity"
+  },
+  {
+    "_id" : ObjectId("aaaaaaaaaaaaaaaaaaaaaaa2"),
+    "createdOn" : ISODate("2019-01-01T11:38:44.085Z"),
+    "createdBy" : {
+      "_id" : "qwe",
+      "email" : "demo@ch.gov.uk"
+    },
+    "links" : {
+      "linksMap" : {
+        "self" : "/company/00006400/extensions/requests/request2"
+      }
+    },
+    "status" : "OPEN",
+    "_class" : "uk.gov.companieshouse.extensions.api.requests.ExtensionRequestFullEntity"
+  },
+  {
+    "_id" : ObjectId("aaaaaaaaaaaaaaaaaaaaaaa3"),
+    "reasons" : [
+      {
+        "_id" : "reason3",
+        "reason" : "illness",
+        "additionalText" : "I was ill",
+        "startOn" : ISODate("2018-01-01T23:00:00.000Z"),
+        "endOn" : ISODate("2019-01-01T00:00:00.000Z"),
+        "links" : {
+          "linksMap" : {
+            "self" : "/company/00006400/extensions/requests/request2/reasons/reason3"
+          }
+        }
+      }
+    ],
+    "createdOn" : ISODate("2019-01-01T11:38:44.085Z"),
+    "createdBy" : {
+      "_id" : "qwe",
+      "email" : "demo@ch.gov.uk"
+    },
+    "links" : {
+      "linksMap" : {
+        "self" : "/company/00006400/extensions/requests/request3"
+      }
+    },
+    "status" : "OPEN",
+    "_class" : "uk.gov.companieshouse.extensions.api.requests.ExtensionRequestFullEntity"
+  }
+]

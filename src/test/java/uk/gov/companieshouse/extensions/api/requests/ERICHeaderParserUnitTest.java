@@ -9,7 +9,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import javax.servlet.http.HttpServletRequest;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ERICHeaderParserTest {
+public class ERICHeaderParserUnitTest {
 
     private static final String ERIC_HEADER_IDENTITY = "ERIC-identity";
     private static final String ERIC_AUTHORISED_USER = "ERIC-Authorised-User";

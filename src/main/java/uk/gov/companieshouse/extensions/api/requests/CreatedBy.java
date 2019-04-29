@@ -1,5 +1,7 @@
 package uk.gov.companieshouse.extensions.api.requests;
 
+import java.util.Objects;
+
 public class CreatedBy {
     private String id;
     private String forename;
@@ -36,5 +38,25 @@ public class CreatedBy {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        CreatedBy createdBy = (CreatedBy) o;
+        return Objects.equals(id, createdBy.id) &&
+            Objects.equals(forename, createdBy.forename) &&
+            Objects.equals(surname, createdBy.surname) &&
+            Objects.equals(email, createdBy.email);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, forename, surname, email);
     }
 }

@@ -24,6 +24,49 @@ jobs:
         - |
           make -C source-code build test-unit
 
+- name: integration-testing
+  plan:
+  - get: concourse-resources
+  - get: source-code
+    trigger: true
+
+  - task: drop database and insert dummy values
+    config:
+      platform: linux
+      image_resource:
+        type: docker-image
+        source:
+          repository: mongo
+          tag: 4.1.10-bionic
+      inputs:
+      - name: source-code
+      run:
+        path: /bin/bash
+        args:
+          - -c
+          - |
+            cd source-code
+            mongoimport --jsonArray --host mongo-db1-waldorf.dev.aws.internal:27017 --db extension_requests --collection extension_requests --file src/test/resources/mongoTestData.json --drop
+
+  - task: integration test
+    config:
+      platform: linux
+      image_resource:
+        type: docker-image
+        source:
+          aws_access_key_id: ((aws-access-key-id))
+          aws_secret_access_key: ((aws-secret-access-key))
+          repository: ((docker-registry))/ci-open-jdk8-maven-build
+          tag: latest
+      inputs:
+      - name: source-code
+      run:
+        path: /bin/bash
+        args:
+          - -c
+          - |
+            make -C source-code build test-integration
+
 - name: waldorf
   serial_groups: [waldorf-group]
   plan:
@@ -103,7 +146,7 @@ jobs:
   plan:
   - get: source-code
     trigger: true
-    passed: [unit-testing]
+    passed: [unit-testing, integration-testing]
   - get: release-tag
   - get: concourse-resources
   - task: verify-not-release
