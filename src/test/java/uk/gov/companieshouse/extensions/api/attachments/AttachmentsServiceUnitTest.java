@@ -20,8 +20,7 @@ import java.util.stream.Collectors;
 
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AttachmentsServiceUnitTest {
@@ -117,8 +116,122 @@ public class AttachmentsServiceUnitTest {
                 ACCESS_URL, REQUEST_ID, REASON_ID);
             fail();
         } catch(ServiceException e) {
-            assertEquals("Attempting to add an attachment to request " + REQUEST_ID +
-                " that contains no Extension Reason.", e.getMessage());
+            assertEquals(String.format("Reason %s not found in " +
+                "Request %s", REASON_ID, REQUEST_ID), e.getMessage());
         }
+    }
+
+    @Test
+    public void willThrowServiceExceptionIfNoReason() throws Exception {
+        when(repo.findById(anyString())).thenReturn(Optional.ofNullable(null));
+
+        AttachmentsService service = new AttachmentsService(repo);
+
+        try {
+            service.addAttachment(Utils.mockMultipartFile(),
+                ACCESS_URL, REQUEST_ID, REASON_ID);
+            fail();
+        } catch(ServiceException e) {
+            assertEquals(String.format("No request found: %s", REQUEST_ID), e.getMessage());
+        }
+    }
+
+    @Test
+    public void willRemoveAttachmentFromReason() throws ServiceException {
+        ExtensionRequestFullEntity entity = Utils.dummyRequestEntity();
+        List<ExtensionReasonEntity> reasons = new ArrayList<>();
+        reasons.add(Utils.dummyReasonEntity());
+        entity.setReasons(reasons);
+        entity.getReasons()
+            .stream()
+            .forEachOrdered(reason -> {
+                addAttachmentToReason(reason, "12345");
+                addAttachmentToReason(reason, "123456");
+            });
+
+        assertFalse(entity.getReasons().get(0).getAttachments().isEmpty());
+        assertEquals(entity.getReasons().get(0).getAttachments().size(), 2);
+
+        AttachmentsService service = new AttachmentsService(repo);
+        when(repo.findById(entity.getId()))
+            .thenReturn(Optional.of(entity));
+
+        service.removeAttachment(entity.getId(),
+            entity.getReasons().stream().findAny().get().getId(), "12345");
+
+        assertFalse(entity.getReasons().isEmpty());
+        entity.getReasons()
+            .stream()
+            .forEach(reason -> {
+                assertFalse(reason.getAttachments().isEmpty());
+                assertEquals(reason.getAttachments().size(), 1);
+                assertEquals(reason.getAttachments().get(0).getId(), "123456");
+            });
+
+        verify(repo).save(entity);
+    }
+
+    @Test
+    public void willThrowExceptionIfNoAttachmentsToRemove() {
+        ExtensionRequestFullEntity entity = Utils.dummyRequestEntity();
+        List<ExtensionReasonEntity> reasons = new ArrayList<>();
+        reasons.add(Utils.dummyReasonEntity());
+        entity.setReasons(reasons);
+
+        assertTrue(entity.getReasons().get(0).getAttachments().isEmpty());
+
+        AttachmentsService service = new AttachmentsService(repo);
+        when(repo.findById(entity.getId()))
+            .thenReturn(Optional.of(entity));
+
+        try {
+            service.removeAttachment(entity.getId(),
+                entity.getReasons().stream().findAny().get().getId(), "12345");
+            fail();
+        } catch(ServiceException e) {
+            assertEquals(String.format("Reason %s contains no attachment to delete: %s",
+                entity.getReasons().stream().findAny().get().getId(), "12345"), e.getMessage());
+        }
+
+        verify(repo, never()).save(entity);
+    }
+
+    @Test
+    public void willThrowExceptionIfAttachmentDoesntExist() {
+        ExtensionRequestFullEntity entity = Utils.dummyRequestEntity();
+        List<ExtensionReasonEntity> reasons = new ArrayList<>();
+        reasons.add(Utils.dummyReasonEntity());
+        entity.setReasons(reasons);
+        entity.getReasons()
+            .stream()
+            .forEachOrdered(reason -> {
+                addAttachmentToReason(reason, "12345");
+                addAttachmentToReason(reason, "123456");
+            });
+
+        assertFalse(entity.getReasons().get(0).getAttachments().isEmpty());
+
+        AttachmentsService service = new AttachmentsService(repo);
+        when(repo.findById(entity.getId()))
+            .thenReturn(Optional.of(entity));
+
+        try {
+            service.removeAttachment(entity.getId(),
+                entity.getReasons().stream().findAny().get().getId(), "12345ab");
+            fail();
+        } catch(ServiceException e) {
+            assertEquals(String.format("Attachment %s does not exist in reason %s", "12345ab",
+                entity.getReasons().stream().findAny().get().getId()), e.getMessage());
+        }
+
+        verify(repo, never()).save(entity);
+    }
+
+    private void addAttachmentToReason(ExtensionReasonEntity reason, String attachmentId) {
+        Attachment attachment = new Attachment();
+        attachment.setSize(2L);
+        attachment.setName("filename");
+        attachment.setId(attachmentId);
+        reason.addAttachment(attachment);
     }
 }

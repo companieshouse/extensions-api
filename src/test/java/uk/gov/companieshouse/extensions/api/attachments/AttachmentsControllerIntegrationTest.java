@@ -91,21 +91,23 @@ public class AttachmentsControllerIntegrationTest {
 
     @Test
     public void testDeleteAttachmentFromRequest() throws Exception {
-       RequestBuilder requestBuilder = MockMvcRequestBuilders.delete(
-                SPECIFIC_URL).accept(
-                    MediaType.APPLICATION_JSON);
+        when(attachmentsService.removeAttachment(anyString(), anyString(), anyString()))
+            .thenReturn(ServiceResult.deleted());
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+            .delete(SPECIFIC_URL)
+            .accept(MediaType.APPLICATION_JSON);
 
-         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
-         assertEquals("false", result.getResponse().getContentAsString());
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+        assertEquals(HttpStatus.NO_CONTENT.value(), result.getResponse().getStatus());
     }
 
     @Test
     public void testDownloadAttachmentFromRequest() throws Exception {
-       RequestBuilder requestBuilder = MockMvcRequestBuilders.get(
-                SPECIFIC_URL).accept(
-                     MediaType.APPLICATION_JSON);
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+            .get(SPECIFIC_URL)
+            .accept(MediaType.APPLICATION_JSON);
 
-         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
-         assertEquals("Getting attachment", result.getResponse().getContentAsString());
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+        assertEquals("Getting attachment", result.getResponse().getContentAsString());
     }
 }
