@@ -81,6 +81,7 @@ public class RequestRepositoryIntegrationTest {
 
         assertEquals("string", actualReason.getAdditionalText());
         assertNotNull(actualReason.getId());
+        assertTrue(actualReason.getAttachments().isEmpty());
         assertEquals("illness", actualReason.getReason());
     }
 

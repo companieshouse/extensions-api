@@ -2,9 +2,11 @@ package uk.gov.companieshouse.extensions.api.requests;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 import uk.gov.companieshouse.extensions.api.reasons.ExtensionReasonEntity;
+import uk.gov.companieshouse.service.ServiceException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Document(collection = "extension_requests")
 public class ExtensionRequestFullEntity extends ExtensionRequestFull {
@@ -23,5 +25,11 @@ public class ExtensionRequestFullEntity extends ExtensionRequestFull {
 
     public void setReasons(List<ExtensionReasonEntity> reasons) {
         this.reasons = reasons;
+    }
+
+    public Optional<ExtensionReasonEntity> mapToReason(String reasonId) {
+        return reasons.stream()
+            .filter(reason -> reason.getId().equals(reasonId))
+            .findAny();
     }
 }

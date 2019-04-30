@@ -28,7 +28,7 @@ public class AttachmentsControllerUnitTest {
     private HttpServletRequest servletRequest;
 
     @Test
-    public void willReturn404IfInvalidRequestSupplied() throws Exception {
+    public void willReturn404IfInvalidRequestSuppliedPostRequest() throws Exception {
         when(servletRequest.getRequestURI()).thenReturn("url");
         when(attachmentsService.addAttachment(any(MultipartFile.class), anyString(), anyString(),
             anyString())).thenThrow(new ServiceException("exception error"));
@@ -39,6 +39,21 @@ public class AttachmentsControllerUnitTest {
 
         ResponseEntity entity = controller.uploadAttachmentToRequest(Utils.mockMultipartFile(),
             "123","1234", servletRequest);
+
+        assertEquals(HttpStatus.NOT_FOUND, entity.getStatusCode());
+    }
+
+    @Test
+    public void willReturn404IfInvalidRequestSuppliedDeleteRequest() throws Exception {
+        when(attachmentsService.removeAttachment(anyString(), anyString(),
+            anyString())).thenThrow(new ServiceException("exception error"));
+
+        AttachmentsController controller =
+            new AttachmentsController(PluggableResponseEntityFactory.buildWithStandardFactories(),
+                attachmentsService);
+
+        ResponseEntity entity = controller.deleteAttachmentFromRequest(
+            "123","1234", "12345");
 
         assertEquals(HttpStatus.NOT_FOUND, entity.getStatusCode());
     }

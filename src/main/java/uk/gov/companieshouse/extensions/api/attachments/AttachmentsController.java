@@ -43,8 +43,15 @@ public class AttachmentsController {
     }
 
     @DeleteMapping("/{requestId}/reasons/{reasonId}/attachments/{attachmentId}")
-    public boolean deleteAttachmentFromRequest(@PathVariable String requestId, @PathVariable String attachmentId) {
-      return false;
+    public ResponseEntity<ChResponseBody<Void>> deleteAttachmentFromRequest(@PathVariable String requestId,
+          @PathVariable String reasonId, @PathVariable String attachmentId) {
+      try {
+          ServiceResult<Void> result = attachmentsService.removeAttachment(requestId, reasonId,
+              attachmentId);
+          return responseEntityFactory.createResponse(result);
+      } catch(ServiceException e) {
+          return responseEntityFactory.createResponse(ServiceResult.notFound());
+      }
     }
 
     @GetMapping("/{requestId}/reasons/{reasonId}/attachments/{attachmentId}")
