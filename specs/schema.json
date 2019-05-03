@@ -620,6 +620,10 @@
     "ExtensionReason": {
       "type": "object",
       "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
         "etag": {
           "type": "string"
         },
