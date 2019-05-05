@@ -4,9 +4,9 @@ import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
 @Mapper(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-public interface ReasonMapper {
+public interface PatchReasonMapper {
 
-    ReasonMapper INSTANCE = Mappers.getMapper(ReasonMapper.class);
+    PatchReasonMapper INSTANCE = Mappers.getMapper(PatchReasonMapper.class);
 
     @Mapping(target = "id", ignore = true)
     ExtensionReasonEntity mapPatchToEntity(ExtensionReasonEntity patchEntity,

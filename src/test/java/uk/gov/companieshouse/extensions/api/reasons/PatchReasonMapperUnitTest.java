@@ -24,7 +24,7 @@ public class PatchReasonMapperUnitTest {
         links.setLink(() -> "self", "something");
         dbEntity.setLinks(links);
 
-        ExtensionReasonEntity mappedEntity = ReasonMapper.INSTANCE
+        ExtensionReasonEntity mappedEntity = PatchReasonMapper.INSTANCE
             .mapPatchToEntity(patchEntity, dbEntity);
 
         assertEquals("replacement text", mappedEntity.getAdditionalText());
