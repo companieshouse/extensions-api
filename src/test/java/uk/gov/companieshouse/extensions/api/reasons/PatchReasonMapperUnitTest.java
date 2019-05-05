@@ -10,7 +10,7 @@ import static org.junit.Assert.assertEquals;
 public class PatchReasonMapperUnitTest {
 
     @Test
-    public void canMapDtoToEntity() {
+    public void canMergeAPatchEntityIntoADatabaseEntity() {
         ExtensionReasonEntity patchEntity = new ExtensionReasonEntity();
         patchEntity.setId("123");
         patchEntity.setAdditionalText("replacement text");
