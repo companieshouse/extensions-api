@@ -11,6 +11,8 @@ public class ExtensionReasonMapper {
         extensionReasonDTO.setStartOn(entity.getStartOn());
         extensionReasonDTO.setEndOn(entity.getEndOn());
         extensionReasonDTO.setReason(entity.getReason());
+        extensionReasonDTO.setId(entity.getId());
+        extensionReasonDTO.setLinks(entity.getLinks());
 
         // TODO map attachment links
 

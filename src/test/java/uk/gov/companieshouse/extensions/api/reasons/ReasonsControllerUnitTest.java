@@ -8,9 +8,10 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestFullDTO;
 import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestFullEntity;
-import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestMapper;
+import uk.gov.companieshouse.service.ServiceException;
+import uk.gov.companieshouse.service.ServiceResult;
+import uk.gov.companieshouse.service.links.Links;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -29,9 +30,6 @@ public class ReasonsControllerUnitTest {
     private ReasonsService reasonsService;
 
     @Mock
-    private ExtensionRequestMapper extensionRequestMapper;
-
-    @Mock
     private HttpServletRequest mockHttpServletRequest;
 
     @Before
@@ -40,30 +38,37 @@ public class ReasonsControllerUnitTest {
     }
 
     @Test
-    public void addReasonToRequest() {
+    public void addReasonToRequest() throws ServiceException {
         ExtensionCreateReason dummyCreateReason = dummyCreateReason();
 
         ExtensionRequestFullEntity dummyRequestEntity = dummyRequestEntity();
         dummyRequestEntity.addReason(dummyReasonEntity());
 
-        ExtensionRequestFullDTO entityRequestDTO = dummyRequestDTO();
+        ExtensionReasonDTO dto = new ExtensionReasonDTO();
+        dto.setId("123");
 
-        when(reasonsService.addExtensionsReasonToRequest(dummyCreateReason, REQUEST_ID, mockHttpServletRequest.getRequestURI())).thenReturn(dummyRequestEntity);
-        when(extensionRequestMapper.entityToDTO(dummyRequestEntity)).thenReturn(entityRequestDTO);
-        ResponseEntity<ExtensionRequestFullDTO> response = reasonsController.addReasonToRequest(dummyCreateReason, REQUEST_ID, mockHttpServletRequest);
+        Links links = new Links();
+        links.setLink(() -> "self", "requestURL");
+        dto.setLinks(links);
+
+        when(reasonsService.addExtensionsReasonToRequest(dummyCreateReason, REQUEST_ID,
+            mockHttpServletRequest.getRequestURI())).thenReturn(ServiceResult.created(dto));
+        ResponseEntity<ExtensionReasonDTO> response =
+            reasonsController.addReasonToRequest(dummyCreateReason, REQUEST_ID, mockHttpServletRequest);
 
         assertNotNull(response.getBody());
-        assertEquals(entityRequestDTO.toString(), response.getBody().toString());
+        assertEquals(dto.getLinks(), response.getBody().getLinks());
+        assertEquals(dto.getId(), response.getBody().getId());
+        assertEquals("requestURL", response.getHeaders().getLocation().toString());
     }
 
     @Test
     public void deleteReasonFromRequest() {
         ExtensionRequestFullEntity dummyRequestEntity = dummyRequestEntity();
-        ExtensionRequestFullDTO entityRequestDTO = dummyRequestDTO();
 
         when(reasonsService.removeExtensionsReasonFromRequest(REQUEST_ID, REASON_ID)).thenReturn(dummyRequestEntity);
 
-        ResponseEntity<ExtensionRequestFullDTO> response = reasonsController.deleteReasonFromRequest
+        ResponseEntity<ExtensionReasonDTO> response = reasonsController.deleteReasonFromRequest
             (REQUEST_ID, REASON_ID);
 
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());

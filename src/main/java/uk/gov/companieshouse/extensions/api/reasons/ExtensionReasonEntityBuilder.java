@@ -14,12 +14,8 @@ public class ExtensionReasonEntityBuilder {
     private LocalDate startOn;
     private LocalDate endOn;
 
-    public static ExtensionReasonEntityBuilder getInstance() {
+    public static ExtensionReasonEntityBuilder builder() {
         return new ExtensionReasonEntityBuilder();
-    }
-
-    private ExtensionReasonEntityBuilder() {
-        this.id = UUID.randomUUID().toString();
     }
 
     public ExtensionReasonEntityBuilder withLinks(String requestURI) {
@@ -47,6 +43,11 @@ public class ExtensionReasonEntityBuilder {
 
     public ExtensionReasonEntityBuilder withEndOn(LocalDate endOn) {
         this.endOn = endOn;
+        return this;
+    }
+
+    public ExtensionReasonEntityBuilder withId(String id) {
+        this.id = id;
         return this;
     }
 
