@@ -7,6 +7,7 @@ import uk.gov.companieshouse.environment.EnvironmentReader;
 import uk.gov.companieshouse.environment.impl.EnvironmentReaderImpl;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 import java.util.function.Supplier;
 
 /**
@@ -35,7 +36,12 @@ public class ApplicationConfiguration {
     }
 
     @Bean
-    public Supplier<LocalDateTime> dateTimeNow () {
+    public Supplier<LocalDateTime> dateTimeNow() {
         return () -> LocalDateTime.now();
+    }
+
+    @Bean
+    public Supplier<String> randomUUID() {
+        return () -> UUID.randomUUID().toString();
     }
 }
