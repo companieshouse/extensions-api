@@ -80,17 +80,14 @@ public class ReasonsControllerUnitTest {
     @Test
     public void canPatchAReason() throws ServiceException {
         ExtensionReasonDTO dto = new ExtensionReasonDTO();
-        Links links = new Links();
-        links.setLink(() -> "self", "dummyUrl");
-        dto.setLinks(links);
 
         when(reasonsService.patchReason(any(ExtensionCreateReason.class), anyString(), anyString()))
-            .thenReturn(ServiceResult.created(dto));
+            .thenReturn(dto);
 
         ResponseEntity<ExtensionReasonDTO> response =
             reasonsController.patchReason(dummyCreateReason(), "1234", "");
-        assertEquals(HttpStatus.CREATED, response.getStatusCode());
-        assertEquals("dummyUrl", response.getHeaders().getLocation().toString());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(dto.toString(), response.getBody().toString());
     }
 
 }

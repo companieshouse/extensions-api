@@ -47,10 +47,9 @@ public class ReasonsController {
                                         @PathVariable String requestId,
                                         @PathVariable String reasonId) {
       try {
-          ServiceResult<ExtensionReasonDTO> serviceResult =
+          ExtensionReasonDTO serviceResult =
               reasonsService.patchReason(extensionCreateReason, requestId, reasonId);
-          return ResponseEntity.created(URI.create(serviceResult.getData().getLinks().getLink
-              (() -> "self"))).body(serviceResult.getData());
+          return ResponseEntity.ok(serviceResult);
       } catch(ServiceException ex) {
           return ResponseEntity.notFound().build();
       }

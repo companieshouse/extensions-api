@@ -94,7 +94,7 @@ public class ReasonsControllerIntegrationTest {
         ExtensionReasonDTO dto = new ExtensionReasonDTO();
         dto.setLinks(links);
         when(reasonsService.patchReason(any(ExtensionCreateReason.class), any(String.class), any(String.class)))
-            .thenReturn(ServiceResult.created(dto));
+            .thenReturn(dto);
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
         assertEquals(201, result.getResponse().getStatus());
     }

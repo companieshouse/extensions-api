@@ -14,7 +14,6 @@ import uk.gov.companieshouse.service.ServiceException;
 import uk.gov.companieshouse.service.ServiceResult;
 import uk.gov.companieshouse.service.ServiceResultStatus;
 
-import java.security.cert.Extension;
 import java.time.LocalDate;
 import java.util.function.Supplier;
 

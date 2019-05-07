@@ -101,7 +101,7 @@ public class ReasonsService {
         return extensionRequestFullEntity;
     }
 
-    public ServiceResult<ExtensionReasonDTO> patchReason(ExtensionCreateReason createReason,
+    public ExtensionReasonDTO patchReason(ExtensionCreateReason createReason,
                                                          String requestId,
                                                          String reasonId) throws ServiceException {
         ExtensionRequestFullEntity extensionRequestFullEntity = getRequest(requestId);
@@ -120,8 +120,7 @@ public class ReasonsService {
 
         extensionRequestsRepository.save(extensionRequestFullEntity);
 
-        ExtensionReasonDTO dto = reasonMapper.entityToDTO(newReason);
-        return ServiceResult.created(dto);
+        return reasonMapper.entityToDTO(newReason);
     }
 
     private Stream<ExtensionReasonEntity> filterReasonToStream(ExtensionRequestFullEntity fullEntity,
