@@ -2,22 +2,11 @@ package uk.gov.companieshouse.extensions.api.reasons;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestFullDTO;
-import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestFullEntity;
-import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestMapper;
+import org.springframework.web.bind.annotation.*;
 import uk.gov.companieshouse.service.ServiceException;
 import uk.gov.companieshouse.service.ServiceResult;
-import uk.gov.companieshouse.service.rest.response.PluggableResponseEntityFactory;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.xml.ws.Response;
 import java.net.URI;
 
 @RestController
@@ -27,8 +16,7 @@ public class ReasonsController {
     private ReasonsService reasonsService;
 
     @Autowired
-    public ReasonsController(ReasonsService reasonsService,
-                             ExtensionReasonMapper extensionReasonMapper) {
+    public ReasonsController(ReasonsService reasonsService) {
         this.reasonsService = reasonsService;
     }
 
