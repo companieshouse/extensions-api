@@ -113,7 +113,7 @@ public class ReasonsService {
                     "Request %s", reasonId, requestId)));
 
         final ExtensionReasonEntity newReason =
-            PatchReasonMapper.INSTANCE.mapPatchToEntity(createReason, reasonEntity);
+            PatchReasonMapper.INSTANCE.patchEntity(createReason, reasonEntity);
 
         filterReasonToStream(extensionRequestFullEntity, reasonId)
             .forEach(reason -> reason = newReason);

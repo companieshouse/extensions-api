@@ -10,6 +10,6 @@ public interface PatchReasonMapper {
 
     PatchReasonMapper INSTANCE = Mappers.getMapper(PatchReasonMapper.class);
 
-    ExtensionReasonEntity mapPatchToEntity(ExtensionCreateReason patchEntity,
-                                           @MappingTarget ExtensionReasonEntity databaseEntity);
+    ExtensionReasonEntity patchEntity(ExtensionCreateReason patchEntity,
+                                      @MappingTarget ExtensionReasonEntity databaseEntity);
 }
