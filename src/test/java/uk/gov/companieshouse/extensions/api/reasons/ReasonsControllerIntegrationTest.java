@@ -120,6 +120,9 @@ public class ReasonsControllerIntegrationTest {
             "\"attachments\":null," +
             "\"additional_text\":null," +
             "\"start_on\":null," +
-            "\"end_on\":null}";
+            "\"end_on\":null," +
+            "\"affected_person\":null," +
+            "\"reason_information\":null," +
+            "\"continued_illness\":null}";
     }
 }

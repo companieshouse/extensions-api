@@ -16,24 +16,21 @@ public class ExtensionCreateReason {
     @JsonProperty("end_on")
     private LocalDate endOn;
 
-    @JsonProperty("ill_person")
-    private String illPerson;
+    @JsonProperty("affected_person")
+    private String affectedPerson;
 
     @JsonProperty("continued_illness")
     private String continuedIllness;
 
-    @JsonProperty("illness_information")
-    private String illnessInformation;
+    @JsonProperty("reason_information")
+    private String reasonInformation;
 
-    @JsonProperty("other_information")
-    private String otherInformation;
-
-    public String getIllPerson() {
-        return illPerson;
+    public String getAffectedPerson() {
+        return affectedPerson;
     }
 
-    public void setIllPerson(String illPerson) {
-        this.illPerson = illPerson;
+    public void setAffectedPerson(String affectedPerson) {
+        this.affectedPerson = affectedPerson;
     }
 
     public String getContinuedIllness() {
@@ -44,20 +41,12 @@ public class ExtensionCreateReason {
         this.continuedIllness = continuedIllness;
     }
 
-    public String getIllnessInformation() {
-        return illnessInformation;
+    public String getReasonInformation() {
+        return reasonInformation;
     }
 
-    public void setIllnessInformation(String illnessInformation) {
-        this.illnessInformation = illnessInformation;
-    }
-
-    public String getOtherInformation() {
-        return otherInformation;
-    }
-
-    public void setOtherInformation(String otherInformation) {
-        this.otherInformation = otherInformation;
+    public void setReasonInformation(String reasonInformation) {
+        this.reasonInformation = reasonInformation;
     }
 
     public String getReason() {

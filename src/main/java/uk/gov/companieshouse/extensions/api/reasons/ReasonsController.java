@@ -44,8 +44,8 @@ public class ReasonsController {
 
     @PatchMapping("/{requestId}/reasons/{reasonId}")
     public ResponseEntity<ExtensionReasonDTO> patchReason(@RequestBody ExtensionCreateReason extensionCreateReason,
-                                        @PathVariable String requestId,
-                                        @PathVariable String reasonId) {
+                                                          @PathVariable String requestId,
+                                                          @PathVariable String reasonId) {
       try {
           ExtensionReasonDTO serviceResult =
               reasonsService.patchReason(extensionCreateReason, requestId, reasonId);

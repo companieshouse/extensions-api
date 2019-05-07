@@ -615,16 +615,13 @@
           "type": "string",
           "format": "date"
         },
-        "ill_person": {
+        "affected_person": {
           "type": "string"
         },
         "continued_illness": {
           "type": "string"
         },
-        "illness_information": {
-          "type": "string"
-        },
-        "other_information": {
+        "reason_information": {
           "type": "string"
         }
       }
