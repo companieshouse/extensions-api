@@ -3,6 +3,7 @@ package uk.gov.companieshouse.extensions.api.reasons;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.PatchMapping;
 import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestFullEntity;
 import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestsRepository;
 import uk.gov.companieshouse.extensions.api.requests.RequestsService;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Component
 public class ReasonsService {
@@ -38,10 +40,7 @@ public class ReasonsService {
     public ServiceResult<ExtensionReasonDTO> addExtensionsReasonToRequest(ExtensionCreateReason extensionCreateReason,
                                           String requestId, String requestURI) throws ServiceException {
 
-        ExtensionRequestFullEntity extensionRequestFullEntity = requestsService.getExtensionsRequestById(requestId);
-        if (extensionRequestFullEntity == null) {
-            throw new ServiceException(String.format("Request %s not found", requestId));
-        }
+        ExtensionRequestFullEntity extensionRequestFullEntity = getRequest(requestId);
         String uuid = randomUUid.get();
 
         ExtensionReasonEntityBuilder extensionReasonEntityBuilder =
@@ -98,6 +97,43 @@ public class ReasonsService {
             extensionRequestFullEntity.setReasons(extensionRequestReasons);
 
             return extensionRequestsRepository.save(extensionRequestFullEntity);
+        }
+        return extensionRequestFullEntity;
+    }
+
+    public ExtensionReasonDTO patchReason(ExtensionCreateReason createReason,
+                                                         String requestId,
+                                                         String reasonId) throws ServiceException {
+        ExtensionRequestFullEntity extensionRequestFullEntity = getRequest(requestId);
+
+        ExtensionReasonEntity reasonEntity =
+            filterReasonToStream(extensionRequestFullEntity, reasonId)
+                .findAny()
+                .orElseThrow(() -> new ServiceException(String.format("Reason id %s not found in " +
+                    "Request %s", reasonId, requestId)));
+
+        final ExtensionReasonEntity newReason =
+            PatchReasonMapper.INSTANCE.patchEntity(createReason, reasonEntity);
+
+        filterReasonToStream(extensionRequestFullEntity, reasonId)
+            .forEach(reason -> reason = newReason);
+
+        extensionRequestsRepository.save(extensionRequestFullEntity);
+
+        return reasonMapper.entityToDTO(newReason);
+    }
+
+    private Stream<ExtensionReasonEntity> filterReasonToStream(ExtensionRequestFullEntity fullEntity,
+                                                     String reasonId) {
+        return fullEntity.getReasons()
+            .stream()
+            .filter(reason -> reason.getId().equals(reasonId));
+    }
+
+    private ExtensionRequestFullEntity getRequest(String requestId) throws ServiceException {
+        ExtensionRequestFullEntity extensionRequestFullEntity = requestsService.getExtensionsRequestById(requestId);
+        if (extensionRequestFullEntity == null) {
+            throw new ServiceException(String.format("Request %s not found", requestId));
         }
         return extensionRequestFullEntity;
     }

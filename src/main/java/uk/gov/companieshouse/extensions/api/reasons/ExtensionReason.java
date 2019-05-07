@@ -22,7 +22,40 @@ public abstract class ExtensionReason {
     @JsonProperty("end_on")
     private LocalDate endOn;
 
+    @JsonProperty("affected_person")
+    private String affectedPerson;
+
+    @JsonProperty("reason_information")
+    private String reasonInformation;
+
+    @JsonProperty("continued_illness")
+    private String continuedIllness;
+
     private Links links;
+
+    public String getAffectedPerson() {
+        return affectedPerson;
+    }
+
+    public void setAffectedPerson(String affectedPerson) {
+        this.affectedPerson = affectedPerson;
+    }
+
+    public String getReasonInformation() {
+        return reasonInformation;
+    }
+
+    public void setReasonInformation(String reasonInformation) {
+        this.reasonInformation = reasonInformation;
+    }
+
+    public String getContinuedIllness() {
+        return continuedIllness;
+    }
+
+    public void setContinuedIllness(String continuedIllness) {
+        this.continuedIllness = continuedIllness;
+    }
 
     public String getReason() {
         return reason;
