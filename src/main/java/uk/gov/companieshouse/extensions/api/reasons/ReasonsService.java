@@ -112,7 +112,7 @@ public class ReasonsService {
                 .orElseThrow(() -> new ServiceException(String.format("Reason id %s not found in " +
                     "Request %s", reasonId, requestId)));
 
-        ExtensionReasonEntity newReason =
+        final ExtensionReasonEntity newReason =
             PatchReasonMapper.INSTANCE.mapPatchToEntity(createReason, reasonEntity);
 
         filterReasonToStream(extensionRequestFullEntity, reasonId)
