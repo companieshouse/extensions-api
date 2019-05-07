@@ -614,6 +614,18 @@
         "end_on": {
           "type": "string",
           "format": "date"
+        },
+        "ill_person": {
+          "type": "string"
+        },
+        "continued_illness": {
+          "type": "string"
+        },
+        "illness_information": {
+          "type": "string"
+        },
+        "other_information": {
+          "type": "string"
         }
       }
     },
