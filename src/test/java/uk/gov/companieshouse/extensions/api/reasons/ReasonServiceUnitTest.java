@@ -14,6 +14,8 @@ import uk.gov.companieshouse.service.ServiceException;
 import uk.gov.companieshouse.service.ServiceResult;
 import uk.gov.companieshouse.service.ServiceResultStatus;
 
+import java.security.cert.Extension;
+import java.time.LocalDate;
 import java.util.function.Supplier;
 
 import static org.junit.Assert.*;
@@ -106,5 +108,46 @@ public class ReasonServiceUnitTest {
         ExtensionRequestFullEntity extensionRequestResult = captor.getValue();
 
         assertEquals(0, extensionRequestResult.getReasons().size());
+    }
+
+    @Test
+    public void canPatchAReason() throws ServiceException {
+        ExtensionCreateReason reasonCreate = new ExtensionCreateReason();
+        reasonCreate.setAdditionalText("New text");
+        reasonCreate.setEndOn(null);
+
+        ExtensionRequestFullEntity requestEntity = new ExtensionRequestFullEntity();
+        ExtensionReasonEntity reasonEntity = new ExtensionReasonEntity();
+        requestEntity.setId("123");
+
+        reasonEntity.setEndOn(LocalDate.of(2018,1,1));
+        reasonEntity.setAdditionalText("Old text");
+        reasonEntity.setId("1234");
+
+        requestEntity.addReason(reasonEntity);
+
+        when(requestsService.getExtensionsRequestById("123"))
+            .thenReturn(requestEntity);
+
+        reasonsService.patchReason(reasonCreate,"123","1234");
+
+        assertEquals(reasonCreate.getAdditionalText(),
+            requestEntity.getReasons().get(0).getAdditionalText());
+        verify(extensionRequestsRepository).save(requestEntity);
+    }
+
+    @Test
+    public void willThrowIfNoReasonExists() {
+        ExtensionRequestFullEntity requestEntity = new ExtensionRequestFullEntity();
+        requestEntity.setId("123");
+
+        when(requestsService.getExtensionsRequestById("123"))
+            .thenReturn(requestEntity);
+        try {
+            reasonsService.patchReason(new ExtensionCreateReason(), "123", "1234");
+            fail();
+        } catch(ServiceException ex) {
+            assertEquals("Reason id 1234 not found in Request 123", ex.getMessage());
+        }
     }
 }

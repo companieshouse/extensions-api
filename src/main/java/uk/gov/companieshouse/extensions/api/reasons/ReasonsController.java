@@ -42,10 +42,17 @@ public class ReasonsController {
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping("/{requestId}/reasons/{reasonId}")
-    public String updateReasonOnRequest(@RequestBody ExtensionCreateReason extensionCreateReason,
+    @PatchMapping("/{requestId}/reasons/{reasonId}")
+    public ResponseEntity<ExtensionReasonDTO> patchReason(@RequestBody ExtensionCreateReason extensionCreateReason,
                                         @PathVariable String requestId,
                                         @PathVariable String reasonId) {
-      return "ExtensionReason updated: " + extensionCreateReason.toString();
+      try {
+          ServiceResult<ExtensionReasonDTO> serviceResult =
+              reasonsService.patchReason(extensionCreateReason, requestId, reasonId);
+          return ResponseEntity.created(URI.create(serviceResult.getData().getLinks().getLink
+              (() -> "self"))).body(serviceResult.getData());
+      } catch(ServiceException ex) {
+          return ResponseEntity.notFound().build();
+      }
     }
 }

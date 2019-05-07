@@ -11,12 +11,15 @@ import org.springframework.http.ResponseEntity;
 import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestFullEntity;
 import uk.gov.companieshouse.service.ServiceException;
 import uk.gov.companieshouse.service.ServiceResult;
+import uk.gov.companieshouse.service.ServiceResultStatus;
 import uk.gov.companieshouse.service.links.Links;
 
 import javax.servlet.http.HttpServletRequest;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static uk.gov.companieshouse.extensions.api.Utils.Utils.*;
 
@@ -75,10 +78,19 @@ public class ReasonsControllerUnitTest {
     }
 
     @Test
-    public void updateReasonPlaceholderTest() {
-        String response = reasonsController.updateReasonOnRequest(dummyCreateReason(), "1234", "");
-        assertEquals("ExtensionReason updated: Extension create reason illness Additional text: string  " +
-            "Date start: 2018-12-12  Date end: 2019-12-12", response);
+    public void canPatchAReason() throws ServiceException {
+        ExtensionReasonDTO dto = new ExtensionReasonDTO();
+        Links links = new Links();
+        links.setLink(() -> "self", "dummyUrl");
+        dto.setLinks(links);
+
+        when(reasonsService.patchReason(any(ExtensionCreateReason.class), anyString(), anyString()))
+            .thenReturn(ServiceResult.created(dto));
+
+        ResponseEntity<ExtensionReasonDTO> response =
+            reasonsController.patchReason(dummyCreateReason(), "1234", "");
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        assertEquals("dummyUrl", response.getHeaders().getLocation().toString());
     }
 
 }

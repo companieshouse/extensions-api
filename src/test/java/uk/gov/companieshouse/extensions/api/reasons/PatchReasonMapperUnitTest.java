@@ -11,8 +11,7 @@ public class PatchReasonMapperUnitTest {
 
     @Test
     public void canMergeAPatchEntityIntoADatabaseEntity() {
-        ExtensionReasonEntity patchEntity = new ExtensionReasonEntity();
-        patchEntity.setId("123");
+        ExtensionCreateReason patchEntity = new ExtensionCreateReason();
         patchEntity.setAdditionalText("replacement text");
         patchEntity.setStartOn(LocalDate.of(2018,2,2));
 
