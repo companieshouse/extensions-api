@@ -96,7 +96,7 @@ public class ReasonsControllerIntegrationTest {
         when(reasonsService.patchReason(any(ExtensionCreateReason.class), any(String.class), any(String.class)))
             .thenReturn(dto);
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
-        assertEquals(201, result.getResponse().getStatus());
+        assertEquals(200, result.getResponse().getStatus());
     }
 
     String buildMockReason() {
