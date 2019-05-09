@@ -82,9 +82,9 @@ public class RequestControllerIntegrationTest {
     
     @Test
     public void testGetSingleExtensionRequest() throws Exception {
-        RequestBuilder requestBuilder = MockMvcRequestBuilders.get(
-             REQUEST_BY_ID_URL).accept(
-                  MediaType.APPLICATION_JSON);
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+            .get(REQUEST_BY_ID_URL)
+            .accept(MediaType.APPLICATION_JSON);
 
         ExtensionRequestFullEntity extensionRequestFullEntity = Utils.dummyRequestEntity();
         ExtensionRequestFullDTO extensionRequestFullDTO = Utils.dummyRequestDTO();
