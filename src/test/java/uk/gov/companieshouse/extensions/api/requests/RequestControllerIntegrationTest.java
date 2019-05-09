@@ -1,9 +1,11 @@
 package uk.gov.companieshouse.extensions.api.requests;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.json.JsonContentAssert;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -12,6 +14,8 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import uk.gov.companieshouse.extensions.api.Utils.Utils;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.LocalDateTime;
 import java.util.function.Supplier;
@@ -84,10 +88,15 @@ public class RequestControllerIntegrationTest {
         RequestBuilder requestBuilder = MockMvcRequestBuilders.get(
              REQUEST_BY_ID_URL).accept(
                   MediaType.APPLICATION_JSON);
-      
-        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
 
-        assertEquals(200, result.getResponse().getStatus());
+        ExtensionRequestFullEntity extensionRequestFullEntity = Utils.dummyRequestEntity();
+        ExtensionRequestFullDTO extensionRequestFullDTO = Utils.dummyRequestDTO();
+
+        when(requestsService.getExtensionsRequestById("a1")).thenReturn(extensionRequestFullEntity);
+        when(extensionRequestMapper.entityToDTO(extensionRequestFullEntity)).thenReturn(extensionRequestFullDTO);
+
+        mockMvc.perform(requestBuilder)
+            .andExpect(status().isOk());
     }
 
     @Test
