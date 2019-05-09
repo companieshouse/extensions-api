@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import uk.gov.companieshouse.service.ServiceException;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -69,8 +68,7 @@ public class RequestsController {
     public ResponseEntity<ExtensionRequestFullDTO> getSingleExtensionRequestById(@PathVariable String
                                                                             requestId) {
         ExtensionRequestFullEntity extensionRequestFullEntity = requestsService
-            .getExtensionsRequestById
-            (requestId);
+            .getExtensionsRequestById(requestId);
 
         if (extensionRequestFullEntity == null) {
             return ResponseEntity.notFound().build();

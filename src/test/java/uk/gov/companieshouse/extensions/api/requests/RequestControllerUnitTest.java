@@ -8,7 +8,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import uk.gov.companieshouse.service.ServiceException;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
@@ -99,9 +98,9 @@ public class RequestControllerUnitTest {
         ExtensionRequestFullEntity extensionRequestFullEntity = new ExtensionRequestFullEntity();
         ExtensionRequestFullDTO extensionRequestFullDTO = dummyRequestDTO();
 
-        when(requestsService.getExtensionsRequestById("1234")).thenReturn
-            (extensionRequestFullEntity);
+        when(requestsService.getExtensionsRequestById("1234")).thenReturn(extensionRequestFullEntity);
         when(mockExtensionRequestMapper.entityToDTO(extensionRequestFullEntity)).thenReturn(extensionRequestFullDTO);
+
         ResponseEntity<ExtensionRequestFullDTO> response = controller.getSingleExtensionRequestById
             ("1234");
 
@@ -111,8 +110,7 @@ public class RequestControllerUnitTest {
 
     @Test
     public void canGetSingleExtensionRequest_NotFound() {
-        when(requestsService.getExtensionsRequestById("1234")).thenReturn
-            (null);
+        when(requestsService.getExtensionsRequestById("1234")).thenReturn(null);
         ResponseEntity<ExtensionRequestFullDTO> response = controller.getSingleExtensionRequestById
             ("1234");
 
