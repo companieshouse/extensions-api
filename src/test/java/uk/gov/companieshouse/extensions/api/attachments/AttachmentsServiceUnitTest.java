@@ -5,6 +5,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.companieshouse.extensions.api.Utils.Utils;
+import uk.gov.companieshouse.extensions.api.attachments.upload.FileUploader;
 import uk.gov.companieshouse.extensions.api.reasons.ExtensionReasonEntity;
 import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestFullEntity;
 import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestsRepository;
@@ -33,6 +34,9 @@ public class AttachmentsServiceUnitTest {
     @Mock
     private ExtensionRequestsRepository repo;
 
+    @Mock
+    private FileUploader fileUploader;
+
     @Test
     public void canAddAnAttachment() throws Exception {
         ExtensionRequestFullEntity entity = new ExtensionRequestFullEntity();
@@ -43,7 +47,7 @@ public class AttachmentsServiceUnitTest {
         entity.setReasons(Arrays.asList(reasonEntity));
         when(repo.findById(anyString())).thenReturn(Optional.of(entity));
 
-        AttachmentsService service = new AttachmentsService(repo);
+        AttachmentsService service = new AttachmentsService(repo, fileUploader);
 
         ServiceResult<AttachmentDTO> result =
             service.addAttachment(Utils.mockMultipartFile(),
@@ -88,7 +92,7 @@ public class AttachmentsServiceUnitTest {
         entity.setReasons(Arrays.asList(reasonEntity));
         when(repo.findById(anyString())).thenReturn(Optional.of(entity));
 
-        AttachmentsService service = new AttachmentsService(repo);
+        AttachmentsService service = new AttachmentsService(repo, fileUploader);
 
         service.addAttachment(Utils.mockMultipartFile(),
             ACCESS_URL, REQUEST_ID, REASON_ID);
@@ -109,7 +113,7 @@ public class AttachmentsServiceUnitTest {
         entity.setId(REQUEST_ID);
         when(repo.findById(anyString())).thenReturn(Optional.of(entity));
 
-        AttachmentsService service = new AttachmentsService(repo);
+        AttachmentsService service = new AttachmentsService(repo, fileUploader);
 
         try {
             service.addAttachment(Utils.mockMultipartFile(),
@@ -125,7 +129,7 @@ public class AttachmentsServiceUnitTest {
     public void willThrowServiceExceptionIfNoReason() throws Exception {
         when(repo.findById(anyString())).thenReturn(Optional.ofNullable(null));
 
-        AttachmentsService service = new AttachmentsService(repo);
+        AttachmentsService service = new AttachmentsService(repo, fileUploader);
 
         try {
             service.addAttachment(Utils.mockMultipartFile(),
@@ -152,7 +156,7 @@ public class AttachmentsServiceUnitTest {
         assertFalse(entity.getReasons().get(0).getAttachments().isEmpty());
         assertEquals(entity.getReasons().get(0).getAttachments().size(), 2);
 
-        AttachmentsService service = new AttachmentsService(repo);
+        AttachmentsService service = new AttachmentsService(repo, fileUploader);
         when(repo.findById(entity.getId()))
             .thenReturn(Optional.of(entity));
 
@@ -180,7 +184,7 @@ public class AttachmentsServiceUnitTest {
 
         assertTrue(entity.getReasons().get(0).getAttachments().isEmpty());
 
-        AttachmentsService service = new AttachmentsService(repo);
+        AttachmentsService service = new AttachmentsService(repo, fileUploader);
         when(repo.findById(entity.getId()))
             .thenReturn(Optional.of(entity));
 
@@ -211,7 +215,7 @@ public class AttachmentsServiceUnitTest {
 
         assertFalse(entity.getReasons().get(0).getAttachments().isEmpty());
 
-        AttachmentsService service = new AttachmentsService(repo);
+        AttachmentsService service = new AttachmentsService(repo, fileUploader);
         when(repo.findById(entity.getId()))
             .thenReturn(Optional.of(entity));
 
