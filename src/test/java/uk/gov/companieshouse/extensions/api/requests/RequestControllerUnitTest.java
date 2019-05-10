@@ -6,6 +6,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import javax.servlet.http.HttpServletRequest;
@@ -17,8 +18,8 @@ import java.util.function.Supplier;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -94,10 +95,27 @@ public class RequestControllerUnitTest {
 
     @Test
     public void canGetSingleExtensionRequest() {
-        ExtensionRequestFullEntity expected = new ExtensionRequestFullEntity();
-        when(requestsService.getExtensionsRequestById(anyString())).thenReturn(expected);
-        ExtensionRequestFull request = controller.getSingleExtensionRequestById("123");
-        assertEquals(expected, request);
+        ExtensionRequestFullEntity extensionRequestFullEntity = new ExtensionRequestFullEntity();
+        ExtensionRequestFullDTO extensionRequestFullDTO = dummyRequestDTO();
+
+        when(requestsService.getExtensionsRequestById("1234")).thenReturn(extensionRequestFullEntity);
+        when(mockExtensionRequestMapper.entityToDTO(extensionRequestFullEntity)).thenReturn(extensionRequestFullDTO);
+
+        ResponseEntity<ExtensionRequestFullDTO> response = controller.getSingleExtensionRequestById
+            ("1234");
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(extensionRequestFullDTO, response.getBody());
+    }
+
+    @Test
+    public void canGetSingleExtensionRequest_NotFound() {
+        when(requestsService.getExtensionsRequestById("1234")).thenReturn(null);
+        ResponseEntity<ExtensionRequestFullDTO> response = controller.getSingleExtensionRequestById
+            ("1234");
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertNull(response.getBody());
     }
 
     @Test

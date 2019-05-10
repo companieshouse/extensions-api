@@ -12,6 +12,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import uk.gov.companieshouse.extensions.api.Utils.Utils;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.LocalDateTime;
 import java.util.function.Supplier;
@@ -81,13 +82,18 @@ public class RequestControllerIntegrationTest {
     
     @Test
     public void testGetSingleExtensionRequest() throws Exception {
-        RequestBuilder requestBuilder = MockMvcRequestBuilders.get(
-             REQUEST_BY_ID_URL).accept(
-                  MediaType.APPLICATION_JSON);
-      
-        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+            .get(REQUEST_BY_ID_URL)
+            .accept(MediaType.APPLICATION_JSON);
 
-        assertEquals(200, result.getResponse().getStatus());
+        ExtensionRequestFullEntity extensionRequestFullEntity = Utils.dummyRequestEntity();
+        ExtensionRequestFullDTO extensionRequestFullDTO = Utils.dummyRequestDTO();
+
+        when(requestsService.getExtensionsRequestById("a1")).thenReturn(extensionRequestFullEntity);
+        when(extensionRequestMapper.entityToDTO(extensionRequestFullEntity)).thenReturn(extensionRequestFullDTO);
+
+        mockMvc.perform(requestBuilder)
+            .andExpect(status().isOk());
     }
 
     @Test

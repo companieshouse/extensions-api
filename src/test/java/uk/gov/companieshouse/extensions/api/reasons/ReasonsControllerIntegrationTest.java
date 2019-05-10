@@ -83,12 +83,18 @@ public class ReasonsControllerIntegrationTest {
     
     @Test
     public void canReachUpdateReasonEndpoint() throws Exception {
-        RequestBuilder requestBuilder = MockMvcRequestBuilders.put(
+        RequestBuilder requestBuilder = MockMvcRequestBuilders.patch(
                 SPECIFIC_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(buildMockReason())
                 .accept(MediaType.APPLICATION_JSON);
 
+        Links links = new Links();
+        links.setLink(() -> "self", "url");
+        ExtensionReasonDTO dto = new ExtensionReasonDTO();
+        dto.setLinks(links);
+        when(reasonsService.patchReason(any(ExtensionCreateReason.class), any(String.class), any(String.class)))
+            .thenReturn(dto);
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
         assertEquals(200, result.getResponse().getStatus());
     }
@@ -114,6 +120,9 @@ public class ReasonsControllerIntegrationTest {
             "\"attachments\":null," +
             "\"additional_text\":null," +
             "\"start_on\":null," +
-            "\"end_on\":null}";
+            "\"end_on\":null," +
+            "\"affected_person\":null," +
+            "\"reason_information\":null," +
+            "\"continued_illness\":null}";
     }
 }
