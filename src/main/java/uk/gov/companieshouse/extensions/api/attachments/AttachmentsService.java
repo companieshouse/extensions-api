@@ -36,18 +36,9 @@ public class AttachmentsService {
                           String attachmentsUri, String requestId,
                           String reasonId) throws ServiceException {
 
-        FileUploaderResponse fileUploaderResponse = fileUploader.upload(file);
-        if (fileUploaderResponse.isInError()) {
-            throw new ServiceException(fileUploaderResponse.getErrorMessage());
-        }
-        if (StringUtils.isBlank(fileUploaderResponse.getFileId())) {
-            throw new ServiceException("No file id returned from file upload");
-        }
-
-        System.out.println(">>>>>>>>>>> Finished file upload");
+        FileUploaderResponse fileUploaderResponse = uploadFile(file);
 
         String attachmentId = fileUploaderResponse.getFileId();
-
         Attachment attachment = getAttachment(file, attachmentId);
 
         ExtensionRequestFullEntity extension = requestsRepo.findById(requestId)
@@ -67,6 +58,17 @@ public class AttachmentsService {
             .withFile(file)
             .withLinks(links)
             .build());
+    }
+
+    private FileUploaderResponse uploadFile(@NotNull MultipartFile file) throws ServiceException {
+        FileUploaderResponse fileUploaderResponse = fileUploader.upload(file);
+        if (fileUploaderResponse.isInError()) {
+            throw new ServiceException(fileUploaderResponse.getErrorMessage());
+        }
+        if (StringUtils.isBlank(fileUploaderResponse.getFileId())) {
+            throw new ServiceException("No file id returned from file upload");
+        }
+        return fileUploaderResponse;
     }
 
     private Attachment getAttachment(@NotNull MultipartFile file, String attachmentId) {
@@ -95,18 +97,20 @@ public class AttachmentsService {
         ExtensionReasonEntity reason = extension.mapToReason(reasonId)
             .orElseThrow(missingReason(requestId, reasonId));
 
-        if(reason.getAttachments().isEmpty()) {
+        List<Attachment> reasonAttachments = reason.getAttachments();
+
+        if (reasonAttachments.isEmpty()) {
             throw new ServiceException(String.format("Reason %s contains no attachment to delete: %s",
                 reasonId, attachmentId));
         }
 
         List<Attachment> updatedAttachments =
-            reason.getAttachments()
+            reasonAttachments
                 .stream()
                 .filter(attachment -> !attachment.getId().equals(attachmentId))
                 .collect(Collectors.toList());
 
-        if(updatedAttachments.size() == reason.getAttachments().size()) {
+        if (updatedAttachments.size() == reasonAttachments.size()) {
             throw new ServiceException(String.format("Attachment %s does not exist in reason %s",
                 attachmentId, reasonId));
         }
