@@ -1,11 +1,14 @@
 package uk.gov.companieshouse.extensions.api.attachments;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.web.multipart.MultipartFile;
 import uk.gov.companieshouse.extensions.api.Utils.Utils;
 import uk.gov.companieshouse.extensions.api.attachments.upload.FileUploader;
+import uk.gov.companieshouse.extensions.api.attachments.upload.FileUploaderResponse;
 import uk.gov.companieshouse.extensions.api.reasons.ExtensionReasonEntity;
 import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestFullEntity;
 import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestsRepository;
@@ -30,12 +33,20 @@ public class AttachmentsServiceUnitTest {
     private static final String REASON_ID = "1234";
     private static final String ACCESS_URL = "/dummyUrl";
     private static final String FILENAME = "testMultipart.txt";
+    private static final String UPLOAD_ID = "sjhkjsdfhkdshf";
+    private static final String UPLOAD_FAILURE_MESSAGE = "Failure";
+    private static final String NO_FILE_ID_MESSAGE = "No file id returned from file upload";
 
     @Mock
     private ExtensionRequestsRepository repo;
 
     @Mock
     private FileUploader fileUploader;
+
+    @Before
+    public void setup() {
+        when(fileUploader.upload(any(MultipartFile.class))).thenReturn(getSuccessfulUploadResponse());
+    }
 
     @Test
     public void canAddAnAttachment() throws Exception {
@@ -141,6 +152,38 @@ public class AttachmentsServiceUnitTest {
     }
 
     @Test
+    public void willThrowServiceExceptionIfUploadFails() throws Exception {
+        when(fileUploader.upload(any(MultipartFile.class))).thenReturn(getUnsuccessfullUploadResponse());
+
+        AttachmentsService service = new AttachmentsService(repo, fileUploader);
+
+        try {
+            service.addAttachment(Utils.mockMultipartFile(),
+                ACCESS_URL, REQUEST_ID, REASON_ID);
+            fail();
+        } catch(ServiceException e) {
+            assertEquals(UPLOAD_FAILURE_MESSAGE, e.getMessage());
+        }
+    }
+
+    @Test
+    public void willThrowServiceExceptionIfNoFileIdReturned() throws Exception {
+        FileUploaderResponse response = getSuccessfulUploadResponse();
+        response.setFileId(null);
+        when(fileUploader.upload(any(MultipartFile.class))).thenReturn(response);
+
+        AttachmentsService service = new AttachmentsService(repo, fileUploader);
+
+        try {
+            service.addAttachment(Utils.mockMultipartFile(),
+                ACCESS_URL, REQUEST_ID, REASON_ID);
+            fail();
+        } catch(ServiceException e) {
+            assertEquals(NO_FILE_ID_MESSAGE, e.getMessage());
+        }
+    }
+
+    @Test
     public void willRemoveAttachmentFromReason() throws ServiceException {
         ExtensionRequestFullEntity entity = Utils.dummyRequestEntity();
         List<ExtensionReasonEntity> reasons = new ArrayList<>();
@@ -237,5 +280,21 @@ public class AttachmentsServiceUnitTest {
         attachment.setName("filename");
         attachment.setId(attachmentId);
         reason.addAttachment(attachment);
+    }
+
+    private FileUploaderResponse getSuccessfulUploadResponse() {
+        FileUploaderResponse fileUploaderResponse = new FileUploaderResponse();
+        fileUploaderResponse.setInError(false);
+        fileUploaderResponse.setFileId(UPLOAD_ID);
+        return fileUploaderResponse;
+    }
+
+    private FileUploaderResponse getUnsuccessfullUploadResponse() {
+        FileUploaderResponse fileUploaderResponse = new FileUploaderResponse();
+        fileUploaderResponse.setInError(true);
+        fileUploaderResponse.setErrorMessage(UPLOAD_FAILURE_MESSAGE);
+        fileUploaderResponse.setErrorStatusCode("500");
+        fileUploaderResponse.setErrorStatusText("Some failure");
+        return fileUploaderResponse;
     }
 }
