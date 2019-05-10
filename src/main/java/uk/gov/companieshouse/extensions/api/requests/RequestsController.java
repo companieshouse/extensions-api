@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import javax.servlet.http.HttpServletRequest;
 
 @RestController
@@ -64,8 +65,19 @@ public class RequestsController {
     }
 
     @GetMapping("/{requestId}")
-    public ExtensionRequestFull getSingleExtensionRequestById(@PathVariable String requestId) {
-        return requestsService.getExtensionsRequestById(requestId);
+    public ResponseEntity<ExtensionRequestFullDTO> getSingleExtensionRequestById(@PathVariable String
+                                                                            requestId) {
+        ExtensionRequestFullEntity extensionRequestFullEntity = requestsService
+            .getExtensionsRequestById(requestId);
+
+        if (extensionRequestFullEntity == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        ExtensionRequestFullDTO extensionRequestFullDTO = extensionRequestMapper.entityToDTO
+            (extensionRequestFullEntity);
+
+        return ResponseEntity.ok(extensionRequestFullDTO);
     }
 
     @DeleteMapping("/{requestId}")
