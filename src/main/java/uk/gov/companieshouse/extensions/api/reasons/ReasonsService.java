@@ -43,7 +43,7 @@ public class ReasonsService {
             .map(reasons -> reasons.stream()
                 .map(reasonMapper::entityToDTO)
                 .collect(Collectors.toList()))
-            .map(reasonDtos -> ServiceResult.found(reasonDtos))
+            .map(ServiceResult::found)
             .orElseThrow(() ->
                 new ServiceException(String.format("Extension request %s not found", requestId)));
     }
