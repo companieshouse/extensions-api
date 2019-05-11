@@ -37,6 +37,17 @@ public class ReasonsService {
         this.randomUUid = randomUUid;
     }
 
+    public ServiceResult<List<ExtensionReasonDTO>> getReasons(String requestId) throws ServiceException {
+        return requestsService.getExtensionsRequestById(requestId)
+            .map(ExtensionRequestFullEntity::getReasons)
+            .map(reasons -> reasons.stream()
+                .map(reasonMapper::entityToDTO)
+                .collect(Collectors.toList()))
+            .map(reasonDtos -> ServiceResult.found(reasonDtos))
+            .orElseThrow(() ->
+                new ServiceException(String.format("Extension request %s not found", requestId)));
+    }
+
     public ServiceResult<ExtensionReasonDTO> addExtensionsReasonToRequest(ExtensionCreateReason extensionCreateReason,
                                           String requestId, String requestURI) throws ServiceException {
 
@@ -88,7 +99,8 @@ public class ReasonsService {
     public ExtensionRequestFullEntity removeExtensionsReasonFromRequest(String requestId, String
         reasonId) {
 
-        ExtensionRequestFullEntity extensionRequestFullEntity = requestsService.getExtensionsRequestById(requestId);
+        ExtensionRequestFullEntity extensionRequestFullEntity = requestsService.getExtensionsRequestById(requestId)
+            .orElse(null);
 
         if (!extensionRequestFullEntity.getReasons().isEmpty()) {
             List<ExtensionReasonEntity> extensionRequestReasons = extensionRequestFullEntity
@@ -131,10 +143,8 @@ public class ReasonsService {
     }
 
     private ExtensionRequestFullEntity getRequest(String requestId) throws ServiceException {
-        ExtensionRequestFullEntity extensionRequestFullEntity = requestsService.getExtensionsRequestById(requestId);
-        if (extensionRequestFullEntity == null) {
-            throw new ServiceException(String.format("Request %s not found", requestId));
-        }
-        return extensionRequestFullEntity;
+        return requestsService.getExtensionsRequestById(requestId)
+            .orElseThrow(() ->
+                new ServiceException(String.format("Request %s not found", requestId)));
     }
 }

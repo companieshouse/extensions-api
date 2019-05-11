@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 import static org.junit.Assert.assertEquals;
@@ -98,7 +99,7 @@ public class RequestControllerUnitTest {
         ExtensionRequestFullEntity extensionRequestFullEntity = new ExtensionRequestFullEntity();
         ExtensionRequestFullDTO extensionRequestFullDTO = dummyRequestDTO();
 
-        when(requestsService.getExtensionsRequestById("1234")).thenReturn(extensionRequestFullEntity);
+        when(requestsService.getExtensionsRequestById("1234")).thenReturn(Optional.of(extensionRequestFullEntity));
         when(mockExtensionRequestMapper.entityToDTO(extensionRequestFullEntity)).thenReturn(extensionRequestFullDTO);
 
         ResponseEntity<ExtensionRequestFullDTO> response = controller.getSingleExtensionRequestById
@@ -110,7 +111,7 @@ public class RequestControllerUnitTest {
 
     @Test
     public void canGetSingleExtensionRequest_NotFound() {
-        when(requestsService.getExtensionsRequestById("1234")).thenReturn(null);
+        when(requestsService.getExtensionsRequestById("1234")).thenReturn(Optional.ofNullable(null));
         ResponseEntity<ExtensionRequestFullDTO> response = controller.getSingleExtensionRequestById
             ("1234");
 

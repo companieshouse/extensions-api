@@ -1,6 +1,8 @@
 package uk.gov.companieshouse.extensions.api.reasons;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -15,6 +17,8 @@ import uk.gov.companieshouse.service.ServiceResult;
 import uk.gov.companieshouse.service.ServiceResultStatus;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 import static org.junit.Assert.*;
@@ -40,14 +44,62 @@ public class ReasonServiceUnitTest {
     @Mock
     private Supplier<String> mockRandomUUid;
 
+    @Rule
+    public ExpectedException exception = ExpectedException.none();
+
     @Captor
     private ArgumentCaptor<ExtensionRequestFullEntity> captor;
+
+    @Test
+    public void canGetListOfReasons() throws ServiceException {
+        ExtensionReasonMapper mapper = new ExtensionReasonMapper();
+        ExtensionRequestFullEntity extensionRequestFullEntity = dummyRequestEntity();
+        ExtensionReasonEntity reason1 = dummyReasonEntity();
+        reason1.setId("reason1");
+        extensionRequestFullEntity.addReason(reason1);
+        ExtensionReasonEntity reason2 = dummyReasonEntity();
+        reason2.setId("reason2");
+        extensionRequestFullEntity.addReason(reason2);
+        when(requestsService.getExtensionsRequestById(REQUEST_ID)).thenReturn(Optional.of(extensionRequestFullEntity));
+        when(reasonMapper.entityToDTO(reason1))
+            .thenReturn(mapper.entityToDTO(reason1));
+        when(reasonMapper.entityToDTO(reason2))
+            .thenReturn(mapper.entityToDTO(reason2));
+
+        ServiceResult<List<ExtensionReasonDTO>> reasons = reasonsService.getReasons(REQUEST_ID);
+
+        assertEquals(2, reasons.getData().size());
+        assertEquals("reason1", reasons.getData().get(0).getId());
+        assertEquals("reason2", reasons.getData().get(1).getId());
+        assertEquals(ServiceResultStatus.FOUND, reasons.getStatus());
+    }
+
+    @Test
+    public void willThrowIfNoRequestExists() throws ServiceException {
+        exception.expect(ServiceException.class);
+        exception.expectMessage("Extension request 123 not found");
+
+        reasonsService.getReasons("123");
+    }
+
+    @Test
+    public void willReturnEmptyDataIfNoReasonsInRequest() throws ServiceException {
+        ExtensionReasonMapper mapper = new ExtensionReasonMapper();
+        ExtensionRequestFullEntity extensionRequestFullEntity = dummyRequestEntity();
+        when(requestsService.getExtensionsRequestById(REQUEST_ID)).thenReturn(Optional.of(extensionRequestFullEntity));
+
+        ServiceResult<List<ExtensionReasonDTO>> reasons = reasonsService.getReasons(REQUEST_ID);
+
+        assertNotNull(reasons.getData());
+        assertEquals(0, reasons.getData().size());
+        assertEquals(ServiceResultStatus.FOUND, reasons.getStatus());
+    }
 
     @Test
     public void testCorrectDataIsPassedToAddExtensionsReasonToRequest() throws ServiceException {
 
         ExtensionRequestFullEntity extensionRequestFullEntity = dummyRequestEntity();
-        when(requestsService.getExtensionsRequestById(REQUEST_ID)).thenReturn(extensionRequestFullEntity);
+        when(requestsService.getExtensionsRequestById(REQUEST_ID)).thenReturn(Optional.of(extensionRequestFullEntity));
         when(extensionRequestsRepository.save(any(ExtensionRequestFullEntity.class)))
             .thenReturn(extensionRequestFullEntity);
         when(mockRandomUUid.get())
@@ -80,15 +132,13 @@ public class ReasonServiceUnitTest {
     }
 
     @Test
-    public void exceptionThrownIfNoRequestFound() {
+    public void exceptionThrownIfNoRequestFound() throws ServiceException {
         when(requestsService.getExtensionsRequestById("123"))
-            .thenReturn(null);
-        try {
-            reasonsService.addExtensionsReasonToRequest(new ExtensionCreateReason(), "123", "url");
-            fail();
-        } catch (ServiceException e) {
-            assertEquals("Request 123 not found", e.getMessage());
-        }
+            .thenReturn(Optional.ofNullable(null));
+
+        exception.expect(ServiceException.class);
+        exception.expectMessage("Request 123 not found");
+        reasonsService.addExtensionsReasonToRequest(new ExtensionCreateReason(), "123", "url");
     }
 
     @Test
@@ -96,7 +146,7 @@ public class ReasonServiceUnitTest {
         ExtensionRequestFullEntity extensionRequestFullEntity = dummyRequestEntity();
         extensionRequestFullEntity.addReason(dummyReasonEntity());
 
-        when(requestsService.getExtensionsRequestById(extensionRequestFullEntity.getId())).thenReturn(extensionRequestFullEntity);
+        when(requestsService.getExtensionsRequestById(extensionRequestFullEntity.getId())).thenReturn(Optional.of(extensionRequestFullEntity));
         assertEquals(1, extensionRequestFullEntity.getReasons().size());
         when(extensionRequestsRepository.save(any(ExtensionRequestFullEntity.class))).thenReturn
             (extensionRequestFullEntity);
@@ -126,7 +176,7 @@ public class ReasonServiceUnitTest {
         requestEntity.addReason(reasonEntity);
 
         when(requestsService.getExtensionsRequestById("123"))
-            .thenReturn(requestEntity);
+            .thenReturn(Optional.of(requestEntity));
 
         reasonsService.patchReason(reasonCreate,"123","1234");
 
@@ -136,17 +186,15 @@ public class ReasonServiceUnitTest {
     }
 
     @Test
-    public void willThrowIfNoReasonExists() {
+    public void willThrowIfNoReasonExists() throws ServiceException {
         ExtensionRequestFullEntity requestEntity = new ExtensionRequestFullEntity();
         requestEntity.setId("123");
 
         when(requestsService.getExtensionsRequestById("123"))
-            .thenReturn(requestEntity);
-        try {
-            reasonsService.patchReason(new ExtensionCreateReason(), "123", "1234");
-            fail();
-        } catch(ServiceException ex) {
-            assertEquals("Reason id 1234 not found in Request 123", ex.getMessage());
-        }
+            .thenReturn(Optional.of(requestEntity));
+
+        exception.expect(ServiceException.class);
+        exception.expectMessage("Reason id 1234 not found in Request 123");
+        reasonsService.patchReason(new ExtensionCreateReason(), "123", "1234");
     }
 }

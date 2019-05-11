@@ -15,6 +15,7 @@ import uk.gov.companieshouse.extensions.api.Utils.Utils;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 import static org.junit.Assert.assertEquals;
@@ -89,7 +90,7 @@ public class RequestControllerIntegrationTest {
         ExtensionRequestFullEntity extensionRequestFullEntity = Utils.dummyRequestEntity();
         ExtensionRequestFullDTO extensionRequestFullDTO = Utils.dummyRequestDTO();
 
-        when(requestsService.getExtensionsRequestById("a1")).thenReturn(extensionRequestFullEntity);
+        when(requestsService.getExtensionsRequestById("a1")).thenReturn(Optional.of(extensionRequestFullEntity));
         when(extensionRequestMapper.entityToDTO(extensionRequestFullEntity)).thenReturn(extensionRequestFullDTO);
 
         mockMvc.perform(requestBuilder)
