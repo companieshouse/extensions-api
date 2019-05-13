@@ -36,8 +36,9 @@ public class RequestServiceUnitTest {
     public void testGetSingleRequest() {
       ExtensionRequestFullEntity entity = dummyRequestEntity();
       when(extensionRequestsRepository.findById(REQUEST_ID)).thenReturn(Optional.of(entity));
-      ExtensionRequestFull request = requestsService.getExtensionsRequestById(REQUEST_ID);
-      assertEquals("id 1234 Acc period start: 2018-12-12  Acc period end: 2019-12-12", request
+      Optional<ExtensionRequestFullEntity> request =
+          requestsService.getExtensionsRequestById(REQUEST_ID);
+      assertEquals("id 1234 Acc period start: 2018-12-12  Acc period end: 2019-12-12", request.get()
           .toString());
     }
 

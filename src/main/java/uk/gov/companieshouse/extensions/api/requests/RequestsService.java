@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.companieshouse.service.links.Links;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 @Component
@@ -16,8 +17,8 @@ public class RequestsService {
     @Autowired
     private ExtensionRequestsRepository extensionRequestsRepository;
 
-    public ExtensionRequestFullEntity getExtensionsRequestById(String id) {
-        return extensionRequestsRepository.findById(id).orElse(null);
+    public Optional<ExtensionRequestFullEntity> getExtensionsRequestById(String id) {
+        return extensionRequestsRepository.findById(id);
     }
 
     public ExtensionRequestFullEntity insertExtensionsRequest(ExtensionCreateRequest extensionCreateRequest, CreatedBy

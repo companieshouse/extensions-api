@@ -67,17 +67,10 @@ public class RequestsController {
     @GetMapping("/{requestId}")
     public ResponseEntity<ExtensionRequestFullDTO> getSingleExtensionRequestById(@PathVariable String
                                                                             requestId) {
-        ExtensionRequestFullEntity extensionRequestFullEntity = requestsService
-            .getExtensionsRequestById(requestId);
-
-        if (extensionRequestFullEntity == null) {
-            return ResponseEntity.notFound().build();
-        }
-
-        ExtensionRequestFullDTO extensionRequestFullDTO = extensionRequestMapper.entityToDTO
-            (extensionRequestFullEntity);
-
-        return ResponseEntity.ok(extensionRequestFullDTO);
+        return requestsService.getExtensionsRequestById(requestId)
+            .map(extensionRequestMapper::entityToDTO)
+            .map(ResponseEntity::ok)
+            .orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{requestId}")

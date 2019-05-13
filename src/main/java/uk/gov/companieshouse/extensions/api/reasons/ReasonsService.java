@@ -3,17 +3,15 @@ package uk.gov.companieshouse.extensions.api.reasons;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.PatchMapping;
 import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestFullEntity;
 import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestsRepository;
 import uk.gov.companieshouse.extensions.api.requests.RequestsService;
+import uk.gov.companieshouse.extensions.api.response.ListResponse;
 import uk.gov.companieshouse.service.ServiceException;
 import uk.gov.companieshouse.service.ServiceResult;
-import uk.gov.companieshouse.service.links.Links;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.UUID;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -35,6 +33,20 @@ public class ReasonsService {
         this.extensionRequestsRepository = extensionRequestsRepository;
         this.reasonMapper = reasonMapper;
         this.randomUUid = randomUUid;
+    }
+
+    public ServiceResult<ListResponse<ExtensionReasonDTO>> getReasons(String requestId) throws ServiceException {
+        return requestsService.getExtensionsRequestById(requestId)
+            .map(ExtensionRequestFullEntity::getReasons)
+            .map(reasons -> reasons.stream()
+                .map(reasonMapper::entityToDTO)
+                .collect(Collectors.toList()))
+            .map(reasonList -> ListResponse.<ExtensionReasonDTO>builder()
+                .withItems(reasonList)
+                .build())
+            .map(ServiceResult::found)
+            .orElseThrow(() ->
+                new ServiceException(String.format("Extension request %s not found", requestId)));
     }
 
     public ServiceResult<ExtensionReasonDTO> addExtensionsReasonToRequest(ExtensionCreateReason extensionCreateReason,
@@ -88,7 +100,8 @@ public class ReasonsService {
     public ExtensionRequestFullEntity removeExtensionsReasonFromRequest(String requestId, String
         reasonId) {
 
-        ExtensionRequestFullEntity extensionRequestFullEntity = requestsService.getExtensionsRequestById(requestId);
+        ExtensionRequestFullEntity extensionRequestFullEntity = requestsService.getExtensionsRequestById(requestId)
+            .orElse(null);
 
         if (!extensionRequestFullEntity.getReasons().isEmpty()) {
             List<ExtensionReasonEntity> extensionRequestReasons = extensionRequestFullEntity
@@ -131,10 +144,8 @@ public class ReasonsService {
     }
 
     private ExtensionRequestFullEntity getRequest(String requestId) throws ServiceException {
-        ExtensionRequestFullEntity extensionRequestFullEntity = requestsService.getExtensionsRequestById(requestId);
-        if (extensionRequestFullEntity == null) {
-            throw new ServiceException(String.format("Request %s not found", requestId));
-        }
-        return extensionRequestFullEntity;
+        return requestsService.getExtensionsRequestById(requestId)
+            .orElseThrow(() ->
+                new ServiceException(String.format("Request %s not found", requestId)));
     }
 }

@@ -3,6 +3,7 @@ package uk.gov.companieshouse.extensions.api.reasons;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import uk.gov.companieshouse.extensions.api.response.ListResponse;
 import uk.gov.companieshouse.service.ServiceException;
 import uk.gov.companieshouse.service.ServiceResult;
 
@@ -18,6 +19,17 @@ public class ReasonsController {
     @Autowired
     public ReasonsController(ReasonsService reasonsService) {
         this.reasonsService = reasonsService;
+    }
+
+    @GetMapping("/{requestId}/reasons")
+    public ResponseEntity<ListResponse<ExtensionReasonDTO>> getReasons(@PathVariable String requestId) {
+        try {
+            ServiceResult<ListResponse<ExtensionReasonDTO>> reasons =
+                reasonsService.getReasons(requestId);
+            return ResponseEntity.ok(reasons.getData());
+        } catch(ServiceException ex) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @PostMapping("/{requestId}/reasons")

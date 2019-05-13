@@ -9,17 +9,21 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestFullEntity;
+import uk.gov.companieshouse.extensions.api.response.ListResponse;
 import uk.gov.companieshouse.service.ServiceException;
 import uk.gov.companieshouse.service.ServiceResult;
-import uk.gov.companieshouse.service.ServiceResultStatus;
 import uk.gov.companieshouse.service.links.Links;
+import uk.gov.companieshouse.service.rest.response.ChResponseBody;
+import uk.gov.companieshouse.service.rest.response.PluggableResponseEntityFactory;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.companieshouse.extensions.api.Utils.Utils.*;
 
@@ -38,6 +42,24 @@ public class ReasonsControllerUnitTest {
     @Before
     public void setup() {
         when(mockHttpServletRequest.getRequestURI()).thenReturn(BASE_URL);
+    }
+
+    @Test
+    public void returns404IfServiceThrows() throws ServiceException {
+        PluggableResponseEntityFactory testFactory =
+            PluggableResponseEntityFactory.buildWithStandardFactories();
+        ResponseEntity<ChResponseBody<List<ExtensionReasonDTO>>> expectedEntity =
+            testFactory.createResponse(ServiceResult.notFound());
+
+        ReasonsController controller = new ReasonsController(reasonsService);
+        when(reasonsService.getReasons(REQUEST_ID))
+            .thenThrow(new ServiceException(""));
+        ResponseEntity<ListResponse<ExtensionReasonDTO>> response =
+            controller.getReasons(REQUEST_ID);
+
+        verify(reasonsService).getReasons(REQUEST_ID);
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertEquals(expectedEntity, response);
     }
 
     @Test
