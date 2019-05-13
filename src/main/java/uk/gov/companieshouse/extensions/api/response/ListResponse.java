@@ -55,11 +55,8 @@ public class ListResponse<T> {
     @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE)
     public static class Builder<T> {
         private String etag;
-        @JsonProperty("items_per_page")
         private int itemsPerPage;
-        @JsonProperty("start_index")
         private int startIndex;
-        @JsonProperty("total_results")
         private int totalResults;
         private List<T> items;
 
