@@ -11,11 +11,11 @@ public class ListResponse<T> {
 
     private String etag;
     @JsonProperty("items_per_page")
-    private Integer itemsPerPage;
+    private int itemsPerPage;
     @JsonProperty("start_index")
-    private Integer startIndex;
+    private int startIndex;
     @JsonProperty("total_results")
-    private Integer totalResults;
+    private int totalResults;
     private List<T> items;
 
     public ListResponse(String etag, Integer itemsPerPage, Integer startIndex,
@@ -35,15 +35,15 @@ public class ListResponse<T> {
         return etag;
     }
 
-    public Integer getItemsPerPage() {
+    public int getItemsPerPage() {
         return itemsPerPage;
     }
 
-    public Integer getStartIndex() {
+    public int getStartIndex() {
         return startIndex;
     }
 
-    public Integer getTotalResults() {
+    public int getTotalResults() {
         return totalResults;
     }
 
@@ -56,11 +56,11 @@ public class ListResponse<T> {
     public static class Builder<T> {
         private String etag;
         @JsonProperty("items_per_page")
-        private Integer itemsPerPage;
+        private int itemsPerPage;
         @JsonProperty("start_index")
-        private Integer startIndex;
+        private int startIndex;
         @JsonProperty("total_results")
-        private Integer totalResults;
+        private int totalResults;
         private List<T> items;
 
         public Builder<T> withEtag(String etag) {
@@ -68,12 +68,12 @@ public class ListResponse<T> {
             return this;
         }
 
-        public Builder<T> withItemsPerPage(Integer itemsPerPage) {
+        public Builder<T> withItemsPerPage(int itemsPerPage) {
             this.itemsPerPage = itemsPerPage;
             return this;
         }
 
-        public Builder<T> withStartIndex(Integer startIndex) {
+        public Builder<T> withStartIndex(int startIndex) {
             this.startIndex = startIndex;
             return this;
         }

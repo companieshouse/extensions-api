@@ -21,9 +21,9 @@ public class ListResponseUnitTest {
             .withItems(Arrays.asList("item1", "item2"))
             .build();
 
-        assertEquals(10, response.getItemsPerPage().intValue());
-        assertEquals(0, response.getStartIndex().intValue());
-        assertEquals(2, response.getTotalResults().intValue());
+        assertEquals(10, response.getItemsPerPage());
+        assertEquals(0, response.getStartIndex());
+        assertEquals(2, response.getTotalResults());
         assertEquals("etag", response.getEtag());
         assertArrayEquals("unmatched array", new String[]{"item1", "item2"},
             response.getItems().toArray());
@@ -33,7 +33,7 @@ public class ListResponseUnitTest {
     public void willReturnEmptyItemsIfNotSet() {
         ListResponse<String> response = ListResponse.<String>builder().build();
 
-        assertEquals(0, response.getTotalResults().intValue());
+        assertEquals(0, response.getTotalResults());
         assertTrue(response.getItems().isEmpty());
     }
 

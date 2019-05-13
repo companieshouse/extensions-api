@@ -164,8 +164,8 @@ public class ReasonsControllerIntegrationTest {
                 "\"reason_information\":null," +
                 "\"continued_illness\":null" +
             "}]," +
-            "\"items_per_page\":null," +
-            "\"start_index\":null," +
+            "\"items_per_page\":0," +
+            "\"start_index\":0," +
             "\"total_results\":1" +
             "}";
     }

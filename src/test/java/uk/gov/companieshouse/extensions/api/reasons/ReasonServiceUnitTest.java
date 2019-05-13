@@ -71,7 +71,7 @@ public class ReasonServiceUnitTest {
             reasonsService.getReasons(REQUEST_ID);
 
         assertEquals(2, reasons.getData().getItems().size());
-        assertEquals(2, reasons.getData().getTotalResults().intValue());
+        assertEquals(2, reasons.getData().getTotalResults());
         assertEquals("reason1", reasons.getData().getItems().get(0).getId());
         assertEquals("reason2", reasons.getData().getItems().get(1).getId());
         assertEquals(ServiceResultStatus.FOUND, reasons.getStatus());
