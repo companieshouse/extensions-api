@@ -8,6 +8,9 @@ public class ExtensionReasonMapper {
         ExtensionReasonDTO extensionReasonDTO = new ExtensionReasonDTO();
         extensionReasonDTO.setEtag(entity.getEtag());
         extensionReasonDTO.setAdditionalText(entity.getAdditionalText());
+        extensionReasonDTO.setReasonInformation(entity.getReasonInformation());
+        extensionReasonDTO.setContinuedIllness(entity.getContinuedIllness());
+        extensionReasonDTO.setAffectedPerson(entity.getAffectedPerson());
         extensionReasonDTO.setStartOn(entity.getStartOn());
         extensionReasonDTO.setEndOn(entity.getEndOn());
         extensionReasonDTO.setReason(entity.getReason());
