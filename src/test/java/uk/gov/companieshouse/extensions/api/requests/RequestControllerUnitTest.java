@@ -96,23 +96,22 @@ public class RequestControllerUnitTest {
 
     @Test
     public void canGetSingleExtensionRequest() {
-        ExtensionRequestFullEntity extensionRequestFullEntity = new ExtensionRequestFullEntity();
-        ExtensionRequestFullDTO extensionRequestFullDTO = dummyRequestDTO();
+        ExtensionRequestFullEntity extensionRequestFullEntity = dummyRequestEntity();
 
         when(requestsService.getExtensionsRequestById("1234")).thenReturn(Optional.of(extensionRequestFullEntity));
-        when(mockExtensionRequestMapper.entityToDTO(extensionRequestFullEntity)).thenReturn(extensionRequestFullDTO);
 
-        ResponseEntity<ExtensionRequestFullDTO> response = controller.getSingleExtensionRequestById
+        ResponseEntity<ExtensionRequestFullEntity> response =
+            controller.getSingleExtensionRequestById
             ("1234");
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(extensionRequestFullDTO, response.getBody());
+        assertEquals(extensionRequestFullEntity, response.getBody());
     }
 
     @Test
     public void canGetSingleExtensionRequest_NotFound() {
         when(requestsService.getExtensionsRequestById("1234")).thenReturn(Optional.ofNullable(null));
-        ResponseEntity<ExtensionRequestFullDTO> response = controller.getSingleExtensionRequestById
+        ResponseEntity<ExtensionRequestFullEntity> response = controller.getSingleExtensionRequestById
             ("1234");
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
