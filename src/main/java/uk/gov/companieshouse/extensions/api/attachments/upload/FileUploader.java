@@ -1,5 +1,6 @@
 package uk.gov.companieshouse.extensions.api.attachments.upload;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -14,6 +15,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Component
 public class FileUploader {
+
+    @Autowired
+    private RestTemplate restTemplate;
 
     @Value("${FILE_TRANSFER_API_URL}")
     private String fileTransferApiURL;
@@ -41,7 +45,6 @@ public class FileUploader {
 
             HttpEntity<LinkedMultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
 
-            RestTemplate restTemplate = new RestTemplate();
             ResponseEntity<FileTransferApiResponse> apiResponse = restTemplate.postForEntity(fileTransferApiURL, requestEntity, FileTransferApiResponse.class);
 
             fileUploaderResponse = getResponse(apiResponse);
