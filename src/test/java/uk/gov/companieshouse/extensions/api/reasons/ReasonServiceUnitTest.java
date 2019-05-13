@@ -12,16 +12,17 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestFullEntity;
 import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestsRepository;
 import uk.gov.companieshouse.extensions.api.requests.RequestsService;
+import uk.gov.companieshouse.extensions.api.response.ListResponse;
 import uk.gov.companieshouse.service.ServiceException;
 import uk.gov.companieshouse.service.ServiceResult;
 import uk.gov.companieshouse.service.ServiceResultStatus;
 
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.*;
 import static uk.gov.companieshouse.extensions.api.Utils.Utils.*;
 
@@ -66,11 +67,13 @@ public class ReasonServiceUnitTest {
         when(reasonMapper.entityToDTO(reason2))
             .thenReturn(mapper.entityToDTO(reason2));
 
-        ServiceResult<List<ExtensionReasonDTO>> reasons = reasonsService.getReasons(REQUEST_ID);
+        ServiceResult<ListResponse<ExtensionReasonDTO>> reasons =
+            reasonsService.getReasons(REQUEST_ID);
 
-        assertEquals(2, reasons.getData().size());
-        assertEquals("reason1", reasons.getData().get(0).getId());
-        assertEquals("reason2", reasons.getData().get(1).getId());
+        assertEquals(2, reasons.getData().getItems().size());
+        assertEquals(2, reasons.getData().getTotalResults().intValue());
+        assertEquals("reason1", reasons.getData().getItems().get(0).getId());
+        assertEquals("reason2", reasons.getData().getItems().get(1).getId());
         assertEquals(ServiceResultStatus.FOUND, reasons.getStatus());
     }
 
@@ -88,10 +91,11 @@ public class ReasonServiceUnitTest {
         ExtensionRequestFullEntity extensionRequestFullEntity = dummyRequestEntity();
         when(requestsService.getExtensionsRequestById(REQUEST_ID)).thenReturn(Optional.of(extensionRequestFullEntity));
 
-        ServiceResult<List<ExtensionReasonDTO>> reasons = reasonsService.getReasons(REQUEST_ID);
+        ServiceResult<ListResponse<ExtensionReasonDTO>> reasons =
+            reasonsService.getReasons(REQUEST_ID);
 
         assertNotNull(reasons.getData());
-        assertEquals(0, reasons.getData().size());
+        assertEquals(0, reasons.getData().getItems().size());
         assertEquals(ServiceResultStatus.FOUND, reasons.getStatus());
     }
 

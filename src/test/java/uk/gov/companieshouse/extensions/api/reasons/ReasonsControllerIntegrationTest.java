@@ -12,14 +12,18 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestFullEntity;
+import uk.gov.companieshouse.extensions.api.response.ListResponse;
 import uk.gov.companieshouse.service.ServiceResult;
 import uk.gov.companieshouse.service.links.Links;
 import uk.gov.companieshouse.service.rest.response.PluggableResponseEntityFactory;
 
 import javax.servlet.http.HttpServletRequest;
 
+import java.util.Arrays;
+
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyReasonEntity;
 import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyRequestEntity;
@@ -40,9 +44,6 @@ public class ReasonsControllerIntegrationTest {
 
     @MockBean
     private ExtensionReasonMapper mapper;
-
-    @MockBean
-    private PluggableResponseEntityFactory entityFactory;
 
     @MockBean
     private HttpServletRequest mockHttpServletRequest;
@@ -103,6 +104,23 @@ public class ReasonsControllerIntegrationTest {
         assertEquals(200, result.getResponse().getStatus());
     }
 
+    @Test
+    public void canReachGetReasonsEndPoint() throws Exception {
+        RequestBuilder requestBuilder = MockMvcRequestBuilders.get(ROOT_URL)
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON);
+
+        ServiceResult<ListResponse<ExtensionReasonDTO>> expectedResult =
+            ServiceResult.found(ListResponse.<ExtensionReasonDTO>builder()
+                .withItems(Arrays.asList(new ExtensionReasonDTO()))
+                .build());
+        when(reasonsService.getReasons(anyString()))
+            .thenReturn(expectedResult);
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+        assertEquals(200, result.getResponse().getStatus());
+        assertEquals(mockGetResponse(), result.getResponse().getContentAsString());
+    }
+
     String buildMockReason() {
         return "{\n" +
                 "  \"reason\": \"illness\",\n" +
@@ -128,5 +146,27 @@ public class ReasonsControllerIntegrationTest {
             "\"affected_person\":null," +
             "\"reason_information\":null," +
             "\"continued_illness\":null}";
+    }
+
+    String mockGetResponse() {
+        return "{" +
+            "\"etag\":null," +
+            "\"items\":[" +
+                "{\"etag\":null," +
+                "\"id\":null," +
+                "\"reason\":null," +
+                "\"links\":null," +
+                "\"attachments\":null," +
+                "\"additional_text\":null," +
+                "\"start_on\":null," +
+                "\"end_on\":null," +
+                "\"affected_person\":null," +
+                "\"reason_information\":null," +
+                "\"continued_illness\":null" +
+            "}]," +
+            "\"items_per_page\":null," +
+            "\"start_index\":null," +
+            "\"total_results\":1" +
+            "}";
     }
 }

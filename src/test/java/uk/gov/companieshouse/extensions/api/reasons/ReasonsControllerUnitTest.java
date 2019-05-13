@@ -9,6 +9,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestFullEntity;
+import uk.gov.companieshouse.extensions.api.response.ListResponse;
 import uk.gov.companieshouse.service.ServiceException;
 import uk.gov.companieshouse.service.ServiceResult;
 import uk.gov.companieshouse.service.links.Links;
@@ -36,22 +37,11 @@ public class ReasonsControllerUnitTest {
     private ReasonsService reasonsService;
 
     @Mock
-    private PluggableResponseEntityFactory entityFactory;
-
-    @Mock
     private HttpServletRequest mockHttpServletRequest;
 
     @Before
     public void setup() {
         when(mockHttpServletRequest.getRequestURI()).thenReturn(BASE_URL);
-    }
-
-    @Test
-    public void callsReasonsServiceAndEntityFactory() throws ServiceException {
-        reasonsController.getReasons(REQUEST_ID);
-
-        verify(reasonsService).getReasons(REQUEST_ID);
-        verify(entityFactory).createResponse(any());
     }
 
     @Test
@@ -61,10 +51,10 @@ public class ReasonsControllerUnitTest {
         ResponseEntity<ChResponseBody<List<ExtensionReasonDTO>>> expectedEntity =
             testFactory.createResponse(ServiceResult.notFound());
 
-        ReasonsController controller = new ReasonsController(reasonsService, testFactory);
+        ReasonsController controller = new ReasonsController(reasonsService);
         when(reasonsService.getReasons(REQUEST_ID))
             .thenThrow(new ServiceException(""));
-        ResponseEntity<ChResponseBody<List<ExtensionReasonDTO>>> response =
+        ResponseEntity<ListResponse<ExtensionReasonDTO>> response =
             controller.getReasons(REQUEST_ID);
 
         verify(reasonsService).getReasons(REQUEST_ID);
