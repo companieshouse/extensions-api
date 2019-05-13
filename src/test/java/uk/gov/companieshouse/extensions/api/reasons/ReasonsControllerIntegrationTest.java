@@ -14,6 +14,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestFullEntity;
 import uk.gov.companieshouse.service.ServiceResult;
 import uk.gov.companieshouse.service.links.Links;
+import uk.gov.companieshouse.service.rest.response.PluggableResponseEntityFactory;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -39,6 +40,9 @@ public class ReasonsControllerIntegrationTest {
 
     @MockBean
     private ExtensionReasonMapper mapper;
+
+    @MockBean
+    private PluggableResponseEntityFactory entityFactory;
 
     @MockBean
     private HttpServletRequest mockHttpServletRequest;
