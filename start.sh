@@ -3,6 +3,7 @@
 # Start script for extensions-api
 
 export APP_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+PROXY_ARGS=""
 
 if [[ -z "${MESOS_SLAVE_PID}" ]]; then
 
@@ -11,6 +12,7 @@ if [[ -z "${MESOS_SLAVE_PID}" ]]; then
     source ~/.chs_env/extensions-api/env
 
     PORT="${EXTENSIONS_API_PORT:=4047}"
+    PROXY_ARGS="-Dhttp.proxyHost=wsproxy.internal.ch -Dhttp.proxyPort=8080 -Dhttps.proxyHost=wsproxy.internal.ch -Dhttps.proxyPort=8080"
 
 else
 
@@ -31,4 +33,4 @@ else
 
 fi
 
-exec java ${JAVA_MEM_ARGS} -jar -Dserver.port="${PORT}" -Dspring.data.mongodb.uri="$EXTENSIONS_API_MONGODB_URL" "${APP_DIR}/extensions-api.jar"
+exec java ${JAVA_MEM_ARGS} -jar ${PROXY_ARGS} -Dserver.port="${PORT}" -Dspring.data.mongodb.uri="$EXTENSIONS_API_MONGODB_URL" "${APP_DIR}/extensions-api.jar"

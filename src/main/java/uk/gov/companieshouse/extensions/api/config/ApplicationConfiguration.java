@@ -1,8 +1,10 @@
 package uk.gov.companieshouse.extensions.api.config;
 
 import com.mongodb.MongoClientOptions;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.client.RestTemplate;
 import uk.gov.companieshouse.environment.EnvironmentReader;
 import uk.gov.companieshouse.environment.impl.EnvironmentReaderImpl;
 
@@ -43,5 +45,10 @@ public class ApplicationConfiguration {
     @Bean
     public Supplier<String> randomUUID() {
         return () -> UUID.randomUUID().toString();
+    }
+
+    @Bean
+    public RestTemplate restTemplate(RestTemplateBuilder builder) {
+        return builder.build();
     }
 }
