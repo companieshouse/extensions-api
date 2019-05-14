@@ -48,7 +48,7 @@
           "201": {
             "description": "request created",
             "schema": {
-              "$ref": "#/definitions/ExtensionRequestFull"
+              "$ref": "#/definitions/ExtensionRequest"
             }
           }
         }
@@ -320,7 +320,14 @@
             "in": "body",
             "name": "status",
             "schema": {
-              "$ref": "#/definitions/ExtensionRequestFull"
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid",
+                  "description": "the extension request id"
+                }
+              }
             }
           }
         ],
@@ -452,6 +459,68 @@
     "ExtensionRequestFull": {
       "allOf": [
         {
+          "$ref": "#/definitions/ExtensionRequest"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "reasons": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "reason": {
+                    "type": "string"
+                  },
+                  "additional_text": {
+                    "type": "string"
+                  },
+                  "start_on": {
+                    "type": "string",
+                    "format": "date"
+                  },
+                  "end_on": {
+                    "type": "string",
+                    "format": "date"
+                  },
+                  "affected_person": {
+                    "type": "string"
+                  },
+                  "reason_information": {
+                    "type": "string"
+                  },
+                  "continued_illness": {
+                    "type": "string"
+                  },
+                  "links": {
+                    "type": "object",
+                    "properties": {
+                      "self": {
+                        "type": "string",
+                        "format": "uri"
+                      }
+                    }
+                  },
+                  "attachments": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/definitions/AttachmentSummary"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "ExtensionRequest": {
+      "allOf": [
+        {
           "type": "object",
           "properties": {
             "etag": {
@@ -465,7 +534,6 @@
               "format": "date-time"
             },
             "created_by": {
-              "type": "object",
               "$ref": "#/definitions/CreatedBy"
             },
             "reasons": {
@@ -548,7 +616,7 @@
             "items": {
               "type": "array",
               "items": {
-                "$ref": "#/definitions/ExtensionRequestFull"
+                "$ref": "#/definitions/ExtensionRequest"
               }
             }
           }
@@ -667,28 +735,18 @@
               "format": "uri"
             }
           }
-          
         }
       }
     },
-    "Attachment": {
+    "AttachmentSummary": {
       "type": "object",
       "properties": {
-        "etag": {
-          "type": "string"
-        },
         "id": {
           "type": "string",
           "format": "uuid"
         },
         "name": {
           "type": "string"
-        },
-        "content_type": {
-          "type": "string"
-        },
-        "size": {
-          "type": "number"
         },
         "links": {
           "type": "object",
@@ -704,6 +762,27 @@
           }
         }
       }
+    },
+    "Attachment": {
+      "allOf": [
+        {
+          "$ref":"#/definitions/AttachmentSummary"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "etag": {
+              "type": "string"
+            },
+            "content_type": {
+              "type": "string"
+            },
+            "size": {
+              "type": "number"
+            }
+          }
+        }
+      ]
     }
   }
 }
