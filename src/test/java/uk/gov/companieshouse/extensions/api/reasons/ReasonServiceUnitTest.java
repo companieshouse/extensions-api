@@ -16,6 +16,7 @@ import uk.gov.companieshouse.extensions.api.response.ListResponse;
 import uk.gov.companieshouse.service.ServiceException;
 import uk.gov.companieshouse.service.ServiceResult;
 import uk.gov.companieshouse.service.ServiceResultStatus;
+import uk.gov.companieshouse.service.links.Links;
 
 import java.time.LocalDate;
 import java.util.Optional;
@@ -108,15 +109,14 @@ public class ReasonServiceUnitTest {
             .thenReturn(extensionRequestFullEntity);
         when(mockRandomUUid.get())
             .thenReturn("abc");
-        ExtensionReasonDTO dto = new ExtensionReasonDTO();
-        dto.setId("abc");
-        when(reasonMapper.entityToDTO(any(ExtensionReasonEntity.class)))
-            .thenReturn(dto);
 
         ExtensionCreateReason dummyCreateReason = dummyCreateReason();
+
+        ReasonsService service = new ReasonsService(requestsService, extensionRequestsRepository,
+            new ExtensionReasonMapper(), mockRandomUUid);
         ServiceResult<ExtensionReasonDTO> result =
-            reasonsService.addExtensionsReasonToRequest(dummyCreateReason,
-            REQUEST_ID, "");
+            service.addExtensionsReasonToRequest(dummyCreateReason,
+                REQUEST_ID, "dummyUri");
         verify(extensionRequestsRepository).save(captor.capture());
         verify(mockRandomUUid).get();
         ExtensionRequestFullEntity extensionRequestResult = captor.getValue();
@@ -129,6 +129,10 @@ public class ReasonServiceUnitTest {
         assertEquals(dummyCreateReason.getStartOn(), extensionReasonResult.getStartOn());
         assertEquals(dummyCreateReason.getEndOn(), extensionReasonResult.getEndOn());
         assertEquals(dummyCreateReason.getReason(), extensionReasonResult.getReason());
+
+        Links expectedLinks = new Links();
+        expectedLinks.setLink(() -> "self", "dummyUri/abc");
+        assertEquals(expectedLinks, result.getData().getLinks());
 
         assertEquals(ServiceResultStatus.CREATED, result.getStatus());
         assertNotNull(result.getData());
