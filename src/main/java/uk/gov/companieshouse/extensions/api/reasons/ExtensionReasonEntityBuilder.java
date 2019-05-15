@@ -3,7 +3,6 @@ package uk.gov.companieshouse.extensions.api.reasons;
 import uk.gov.companieshouse.service.links.Links;
 
 import java.time.LocalDate;
-import java.util.UUID;
 
 public class ExtensionReasonEntityBuilder {
 
@@ -19,6 +18,9 @@ public class ExtensionReasonEntityBuilder {
     }
 
     public ExtensionReasonEntityBuilder withLinks(String requestURI) {
+        if (this.id == null) {
+            throw new UnsupportedOperationException("Links cannot be set before ID");
+        }
         String linkToSelf = requestURI + "/" + this.id;
         Links links = new Links();
         links.setLink(() ->  "self", linkToSelf);
