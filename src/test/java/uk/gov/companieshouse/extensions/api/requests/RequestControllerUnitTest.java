@@ -9,6 +9,9 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import uk.gov.companieshouse.extensions.api.attachments.Attachment;
+import uk.gov.companieshouse.extensions.api.reasons.ExtensionReasonEntity;
+
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -87,8 +90,8 @@ public class RequestControllerUnitTest {
 
     @Test
     public void canGetExtensionRequestList() {
-        final ExtensionRequestFull expectedRequest = new ExtensionRequestFullDTO();
         List<ExtensionRequestFullDTO> response = controller.getExtensionRequestsList();
+        assertFalse(response.isEmpty());
         response.forEach(request -> {
            assertNotNull(request.getId());
         });
@@ -97,22 +100,26 @@ public class RequestControllerUnitTest {
     @Test
     public void canGetSingleExtensionRequest() {
         ExtensionRequestFullEntity extensionRequestFullEntity = new ExtensionRequestFullEntity();
-        ExtensionRequestFullDTO extensionRequestFullDTO = dummyRequestDTO();
-
+        extensionRequestFullEntity.setId("1234");
+        ExtensionReasonEntity reasonEntity = new ExtensionReasonEntity();
+        reasonEntity.setId("reason1");
+        Attachment attachment = new Attachment();
+        attachment.setId("attachment1");
+        reasonEntity.addAttachment(attachment);
+        extensionRequestFullEntity.addReason(reasonEntity);
         when(requestsService.getExtensionsRequestById("1234")).thenReturn(Optional.of(extensionRequestFullEntity));
-        when(mockExtensionRequestMapper.entityToDTO(extensionRequestFullEntity)).thenReturn(extensionRequestFullDTO);
 
-        ResponseEntity<ExtensionRequestFullDTO> response = controller.getSingleExtensionRequestById
+        ResponseEntity<ExtensionRequestFullEntity> response = controller.getSingleExtensionRequestById
             ("1234");
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(extensionRequestFullDTO, response.getBody());
+        assertEquals(extensionRequestFullEntity, response.getBody());
     }
 
     @Test
     public void canGetSingleExtensionRequest_NotFound() {
         when(requestsService.getExtensionsRequestById("1234")).thenReturn(Optional.ofNullable(null));
-        ResponseEntity<ExtensionRequestFullDTO> response = controller.getSingleExtensionRequestById
+        ResponseEntity<ExtensionRequestFullEntity> response = controller.getSingleExtensionRequestById
             ("1234");
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());

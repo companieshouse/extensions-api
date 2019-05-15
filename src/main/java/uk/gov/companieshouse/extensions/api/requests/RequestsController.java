@@ -65,10 +65,9 @@ public class RequestsController {
     }
 
     @GetMapping("/{requestId}")
-    public ResponseEntity<ExtensionRequestFullDTO> getSingleExtensionRequestById(@PathVariable String
+    public ResponseEntity<ExtensionRequestFullEntity> getSingleExtensionRequestById(@PathVariable String
                                                                             requestId) {
         return requestsService.getExtensionsRequestById(requestId)
-            .map(extensionRequestMapper::entityToDTO)
             .map(ResponseEntity::ok)
             .orElse(ResponseEntity.notFound().build());
     }
