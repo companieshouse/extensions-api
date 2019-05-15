@@ -20,7 +20,8 @@ public class ExtensionReasonEntityBuilderUnitTest {
     expectedException.expect(UnsupportedOperationException.class);
     expectedException.expectMessage("Links cannot be set before ID");
     ExtensionReasonEntityBuilder builder = new ExtensionReasonEntityBuilder();
-    builder.withLinks("requestURI");
+    builder.withLinks("requestURI")
+      .withId("id");
   }
 
   @Test
