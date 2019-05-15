@@ -1,12 +1,12 @@
 package uk.gov.companieshouse.extensions.api.requests;
 
-import org.springframework.data.mongodb.core.mapping.Document;
-import uk.gov.companieshouse.extensions.api.reasons.ExtensionReasonEntity;
-import uk.gov.companieshouse.service.ServiceException;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import org.springframework.data.mongodb.core.mapping.Document;
+
+import uk.gov.companieshouse.extensions.api.reasons.ExtensionReasonEntity;
 
 @Document(collection = "extension_requests")
 public class ExtensionRequestFullEntity extends ExtensionRequestFull {
