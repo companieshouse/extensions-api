@@ -2,6 +2,7 @@ package uk.gov.companieshouse.extensions.api.requests;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.companieshouse.extensions.api.logger.LogMethodCall;
 import uk.gov.companieshouse.service.links.Links;
 
 import java.time.LocalDateTime;
@@ -17,10 +18,12 @@ public class RequestsService {
     @Autowired
     private ExtensionRequestsRepository extensionRequestsRepository;
 
+    @LogMethodCall
     public Optional<ExtensionRequestFullEntity> getExtensionsRequestById(String id) {
         return extensionRequestsRepository.findById(id);
     }
 
+    @LogMethodCall
     public ExtensionRequestFullEntity insertExtensionsRequest(ExtensionCreateRequest extensionCreateRequest, CreatedBy
         createdBy, String reqUri) {
 

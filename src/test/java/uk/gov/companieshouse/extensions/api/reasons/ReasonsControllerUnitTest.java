@@ -8,6 +8,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
 import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestFullEntity;
 import uk.gov.companieshouse.extensions.api.response.ListResponse;
 import uk.gov.companieshouse.service.ServiceException;
@@ -39,6 +40,9 @@ public class ReasonsControllerUnitTest {
     @Mock
     private HttpServletRequest mockHttpServletRequest;
 
+    @Mock
+    private ApiLogger logger;
+
     @Before
     public void setup() {
         when(mockHttpServletRequest.getRequestURI()).thenReturn(BASE_URL);
@@ -51,13 +55,15 @@ public class ReasonsControllerUnitTest {
         ResponseEntity<ChResponseBody<List<ExtensionReasonDTO>>> expectedEntity =
             testFactory.createResponse(ServiceResult.notFound());
 
-        ReasonsController controller = new ReasonsController(reasonsService);
+        ReasonsController controller = new ReasonsController(reasonsService, logger);
+        ServiceException serviceException = new ServiceException("");
         when(reasonsService.getReasons(REQUEST_ID))
-            .thenThrow(new ServiceException(""));
+            .thenThrow(serviceException);
         ResponseEntity<ListResponse<ExtensionReasonDTO>> response =
             controller.getReasons(REQUEST_ID);
 
         verify(reasonsService).getReasons(REQUEST_ID);
+        verify(logger).info(serviceException.getMessage());
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         assertEquals(expectedEntity, response);
     }

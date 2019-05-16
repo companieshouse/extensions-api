@@ -1,10 +1,12 @@
 package uk.gov.companieshouse.extensions.api.requests;
 
 import org.springframework.stereotype.Component;
+import uk.gov.companieshouse.extensions.api.logger.LogMethodCall;
 
 @Component
 public class ExtensionRequestMapper {
 
+    @LogMethodCall
     public ExtensionRequestFullDTO entityToDTO(ExtensionRequestFullEntity entity) {
 
         ExtensionRequestFullDTO dto = new ExtensionRequestFullDTO();

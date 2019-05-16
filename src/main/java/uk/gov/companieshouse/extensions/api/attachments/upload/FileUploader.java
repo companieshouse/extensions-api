@@ -13,6 +13,7 @@ import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
+import uk.gov.companieshouse.extensions.api.logger.LogMethodCall;
 
 @Component
 public class FileUploader {
@@ -34,6 +35,7 @@ public class FileUploader {
     private static final String HEADER_CONTENT_DISPOSITION = "Content-disposition";
     private static final String CONTENT_DISPOSITION_VALUE = "form-data; name=%s; filename=%s";
 
+    @LogMethodCall
     public FileUploaderResponse upload(MultipartFile fileToUpload) {
 
         FileUploaderResponse fileUploaderResponse;
