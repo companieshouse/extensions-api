@@ -3,6 +3,7 @@ package uk.gov.companieshouse.extensions.api.reasons;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.companieshouse.extensions.api.logger.LogMethodCall;
 import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestFullEntity;
 import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestsRepository;
 import uk.gov.companieshouse.extensions.api.requests.RequestsService;
@@ -35,6 +36,7 @@ public class ReasonsService {
         this.randomUUid = randomUUid;
     }
 
+    @LogMethodCall
     public ServiceResult<ListResponse<ExtensionReasonDTO>> getReasons(String requestId) throws ServiceException {
         return requestsService.getExtensionsRequestById(requestId)
             .map(ExtensionRequestFullEntity::getReasons)
@@ -49,6 +51,7 @@ public class ReasonsService {
                 new ServiceException(String.format("Extension request %s not found", requestId)));
     }
 
+    @LogMethodCall
     public ServiceResult<ExtensionReasonDTO> addExtensionsReasonToRequest(ExtensionCreateReason extensionCreateReason,
                                           String requestId, String requestURI) throws ServiceException {
 
@@ -97,6 +100,7 @@ public class ReasonsService {
         return ServiceResult.created(reasonMapper.entityToDTO(savedEntity));
     }
 
+    @LogMethodCall
     public ExtensionRequestFullEntity removeExtensionsReasonFromRequest(String requestId, String
         reasonId) {
 
@@ -114,6 +118,7 @@ public class ReasonsService {
         return extensionRequestFullEntity;
     }
 
+    @LogMethodCall
     public ExtensionReasonDTO patchReason(ExtensionCreateReason createReason,
                                                          String requestId,
                                                          String reasonId) throws ServiceException {

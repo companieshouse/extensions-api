@@ -147,7 +147,7 @@ public class AttachmentsServiceUnitTest {
                 ACCESS_URL, REQUEST_ID, REASON_ID);
             fail();
         } catch(ServiceException e) {
-            assertEquals(String.format("No request found: %s", REQUEST_ID), e.getMessage());
+            assertEquals(String.format("No request found with request id %s", REQUEST_ID), e.getMessage());
         }
     }
 

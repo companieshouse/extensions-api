@@ -3,6 +3,8 @@ package uk.gov.companieshouse.extensions.api.reasons;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
+import uk.gov.companieshouse.extensions.api.logger.LogMethodCall;
 import uk.gov.companieshouse.extensions.api.response.ListResponse;
 import uk.gov.companieshouse.service.ServiceException;
 import uk.gov.companieshouse.service.ServiceResult;
@@ -15,12 +17,15 @@ import java.net.URI;
 public class ReasonsController {
 
     private ReasonsService reasonsService;
+    private ApiLogger logger;
 
     @Autowired
-    public ReasonsController(ReasonsService reasonsService) {
+    public ReasonsController(ReasonsService reasonsService, ApiLogger logger) {
         this.reasonsService = reasonsService;
+        this.logger = logger;
     }
 
+    @LogMethodCall
     @GetMapping("/{requestId}/reasons")
     public ResponseEntity<ListResponse<ExtensionReasonDTO>> getReasons(@PathVariable String requestId) {
         try {
@@ -28,10 +33,12 @@ public class ReasonsController {
                 reasonsService.getReasons(requestId);
             return ResponseEntity.ok(reasons.getData());
         } catch(ServiceException ex) {
+            logger.info(ex.getMessage());
             return ResponseEntity.notFound().build();
         }
     }
 
+    @LogMethodCall
     @PostMapping("/{requestId}/reasons")
     public ResponseEntity<ExtensionReasonDTO> addReasonToRequest(@RequestBody ExtensionCreateReason extensionCreateReason,
                                                                  @PathVariable String requestId,
@@ -42,10 +49,12 @@ public class ReasonsController {
             return ResponseEntity.created(URI.create(serviceResult.getData().getLinks().getLink
                 (() -> "self"))).body(serviceResult.getData());
         } catch(ServiceException e) {
+            logger.info(e.getMessage());
             return ResponseEntity.notFound().build();
         }
     }
 
+    @LogMethodCall
     @DeleteMapping("/{requestId}/reasons/{reasonId}")
     public ResponseEntity<ExtensionReasonDTO> deleteReasonFromRequest(@PathVariable String requestId,
                                                                       @PathVariable String reasonId) {
@@ -54,6 +63,7 @@ public class ReasonsController {
         return ResponseEntity.noContent().build();
     }
 
+    @LogMethodCall
     @PatchMapping("/{requestId}/reasons/{reasonId}")
     public ResponseEntity<ExtensionReasonDTO> patchReason(@RequestBody ExtensionCreateReason extensionCreateReason,
                                                           @PathVariable String requestId,
@@ -63,6 +73,7 @@ public class ReasonsController {
               reasonsService.patchReason(extensionCreateReason, requestId, reasonId);
           return ResponseEntity.ok(serviceResult);
       } catch(ServiceException ex) {
+          logger.info(ex.getMessage());
           return ResponseEntity.notFound().build();
       }
     }
