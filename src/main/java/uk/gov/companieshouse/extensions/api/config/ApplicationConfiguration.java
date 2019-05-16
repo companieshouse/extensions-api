@@ -5,8 +5,11 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import uk.gov.companieshouse.environment.EnvironmentReader;
 import uk.gov.companieshouse.environment.impl.EnvironmentReaderImpl;
+import uk.gov.companieshouse.extensions.api.logger.RequestLoggerInterceptor;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -16,7 +19,7 @@ import java.util.function.Supplier;
  * MongoDB Properties .
  */
 @Configuration
-public class ApplicationConfiguration {
+public class ApplicationConfiguration implements WebMvcConfigurer {
 
     @Bean
     public EnvironmentReader environmentReader() {
@@ -50,5 +53,15 @@ public class ApplicationConfiguration {
     @Bean
     public RestTemplate restTemplate(RestTemplateBuilder builder) {
         return builder.build();
+    }
+
+    @Bean
+    public RequestLoggerInterceptor requestLoggerInterceptor() {
+        return new RequestLoggerInterceptor();
+    }
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(requestLoggerInterceptor());
     }
 }

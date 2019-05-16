@@ -12,9 +12,13 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
+import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
 
 @Component
 public class FileUploader {
+
+    @Autowired
+    private ApiLogger logger;
 
     @Autowired
     private RestTemplate restTemplate;
@@ -49,12 +53,12 @@ public class FileUploader {
 
             fileUploaderResponse = getResponse(apiResponse);
         } catch (HttpClientErrorException | HttpServerErrorException httpEx) {
-            //TODO log
+            logger.info(httpEx.getMessage());
             fileUploaderResponse = getResponse(httpEx);
             fileUploaderResponse.setErrorStatusCode(String.valueOf(httpEx.getRawStatusCode()));
             fileUploaderResponse.setErrorStatusText(httpEx.getStatusText());
         } catch (Exception e) {
-            //TODO log
+            logger.error(e);
             fileUploaderResponse = getResponse(e);
         }
         return fileUploaderResponse;

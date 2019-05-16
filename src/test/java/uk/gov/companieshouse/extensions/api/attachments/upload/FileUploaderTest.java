@@ -1,7 +1,6 @@
 package uk.gov.companieshouse.extensions.api.attachments.upload;
 
 import org.apache.commons.lang.StringUtils;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,6 +16,7 @@ import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
+import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
 
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -35,6 +35,9 @@ public class FileUploaderTest {
 
     @Mock
     private RestTemplate restTemplate;
+
+    @Mock
+    private ApiLogger apiLogger;
 
     private MultipartFile file;
 

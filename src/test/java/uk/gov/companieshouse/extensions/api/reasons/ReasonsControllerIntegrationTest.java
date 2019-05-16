@@ -11,6 +11,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.web.client.RestTemplate;
+import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
 import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestFullEntity;
 import uk.gov.companieshouse.extensions.api.response.ListResponse;
 import uk.gov.companieshouse.service.ServiceResult;
@@ -47,6 +49,12 @@ public class ReasonsControllerIntegrationTest {
 
     @MockBean
     private HttpServletRequest mockHttpServletRequest;
+
+    @MockBean
+    private RestTemplate restTemplate;
+
+    @MockBean
+    private ApiLogger apiLogger;
 
     @Test
     public void canReachPostReasonEndpoint() throws Exception {

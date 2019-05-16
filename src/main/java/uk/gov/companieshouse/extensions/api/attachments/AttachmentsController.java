@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import uk.gov.companieshouse.extensions.api.logger.LogMethodCall;
 import uk.gov.companieshouse.service.ServiceException;
 import uk.gov.companieshouse.service.ServiceResult;
 import uk.gov.companieshouse.service.rest.response.ChResponseBody;
@@ -31,6 +32,7 @@ public class AttachmentsController {
         this.attachmentsService = attachmentsService;
     }
 
+    @LogMethodCall
     @PostMapping("/{requestId}/reasons/{reasonId}/attachments")
     public ResponseEntity<ChResponseBody<AttachmentDTO>> uploadAttachmentToRequest(
             @RequestParam("file") MultipartFile file, @PathVariable String requestId,
@@ -44,6 +46,7 @@ public class AttachmentsController {
         }
     }
 
+    @LogMethodCall
     @DeleteMapping("/{requestId}/reasons/{reasonId}/attachments/{attachmentId}")
     public ResponseEntity<ChResponseBody<Void>> deleteAttachmentFromRequest(@PathVariable String requestId,
           @PathVariable String reasonId, @PathVariable String attachmentId) {
@@ -56,6 +59,7 @@ public class AttachmentsController {
       }
     }
 
+    @LogMethodCall
     @GetMapping("/{requestId}/reasons/{reasonId}/attachments/{attachmentId}")
     public String downloadAttachmentFromRequest(@PathVariable String requestId, @PathVariable String attachmentId) {
       return "Getting attachment";

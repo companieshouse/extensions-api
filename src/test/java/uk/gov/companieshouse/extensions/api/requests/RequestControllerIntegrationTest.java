@@ -11,7 +11,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.web.client.RestTemplate;
 import uk.gov.companieshouse.extensions.api.Utils.Utils;
+import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
+
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.LocalDateTime;
@@ -46,6 +49,12 @@ public class RequestControllerIntegrationTest {
 
     @MockBean
     private ExtensionRequestMapper extensionRequestMapper;
+
+    @MockBean
+    private RestTemplate restTemplate;
+
+    @MockBean
+    private ApiLogger apiLogger;
 
     @Test
     public void testCreateExtensionRequestResource() throws Exception {
