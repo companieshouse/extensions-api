@@ -10,9 +10,18 @@ import java.util.Map;
 @Component
 public class ApiLogger {
     private static final Logger LOG = LoggerFactory.getLogger(Application.APP_NAMESPACE);
+    private static final ThreadLocal<String> COMPANY_NUMBER = new ThreadLocal<>();
+
+    public void setCompanyNumber(String companyNumber) {
+        COMPANY_NUMBER.set(companyNumber);
+    }
+
+    public void removeCompanyNumber() {
+        COMPANY_NUMBER.remove();
+    }
 
     private String prefix(String message) {
-        return "Thread id " + Thread.currentThread().getId() + " - " + message;
+        return "CompanyNumber = " + COMPANY_NUMBER.get() + " - Thread id " + Thread.currentThread().getId() + " - " + message;
     }
 
     public void debug(String message) {

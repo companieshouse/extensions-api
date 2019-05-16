@@ -28,13 +28,14 @@ public class RequestLoggerInterceptorTest {
         response = new MockHttpServletResponse();
         request = new MockHttpServletRequest();
         request.setMethod("POST");
-        request.setRequestURI("some uri");
+        request.setRequestURI("/company/00006400/extensions/requests");
     }
 
     @Test
     public void testPreHandler() {
         interceptor.preHandle(request, response, new Object());
 
+        Mockito.verify(logger).setCompanyNumber("00006400");
         Mockito.verify(logger).info("Request received - " + request.getMethod() + " " + request.getRequestURI());
     }
 
@@ -43,6 +44,7 @@ public class RequestLoggerInterceptorTest {
         interceptor.afterCompletion(request, response, new Object(), null);
 
         Mockito.verify(logger).info("Request finished - " + request.getMethod() + " " + request.getRequestURI());
+        Mockito.verify(logger).removeCompanyNumber();
     }
 
     @Test
