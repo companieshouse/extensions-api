@@ -18,6 +18,7 @@ import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.multipart.MultipartFile;
+import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
 import uk.gov.companieshouse.service.ServiceResult;
 import uk.gov.companieshouse.service.rest.response.PluggableResponseEntityFactory;
 
@@ -45,6 +46,9 @@ public class AttachmentsControllerIntegrationTest {
     @Mock
     private AttachmentsService attachmentsService;
 
+    @Mock
+    private ApiLogger logger;
+
     private AttachmentsController controller;
 
     @Autowired
@@ -52,7 +56,7 @@ public class AttachmentsControllerIntegrationTest {
 
     @Before
     public void setup() {
-        controller = new AttachmentsController(responseEntityFactory, attachmentsService);
+        controller = new AttachmentsController(responseEntityFactory, attachmentsService, logger);
         this.mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
     }
 

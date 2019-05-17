@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import uk.gov.companieshouse.extensions.api.logger.LogMethodCall;
 import uk.gov.companieshouse.extensions.api.response.ListResponse;
 
 import javax.servlet.http.HttpServletRequest;
@@ -30,6 +31,7 @@ public class RequestsController {
     @Autowired
     private ExtensionRequestMapper extensionRequestMapper;
 
+    @LogMethodCall
     @PostMapping("/")
     public ResponseEntity<ExtensionRequestFullDTO> createExtensionRequestResource(
         @RequestBody ExtensionCreateRequest extensionCreateRequest,
@@ -58,6 +60,7 @@ public class RequestsController {
             .body(extensionRequestFullDTO);
     }
 
+    @LogMethodCall
     @GetMapping("/")
     public ResponseEntity<ListResponse<ExtensionRequestFullDTO>> getExtensionRequestsListByCompanyNumber(
         @PathVariable String companyNumber) {
@@ -72,6 +75,7 @@ public class RequestsController {
         return ResponseEntity.ok(extensionRequestList);
     }
 
+    @LogMethodCall
     @GetMapping("/{requestId}")
     public ResponseEntity<ExtensionRequestFullEntity> getSingleExtensionRequestById(@PathVariable String
                                                                             requestId) {
@@ -80,6 +84,7 @@ public class RequestsController {
             .orElse(ResponseEntity.notFound().build());
     }
 
+    @LogMethodCall
     @DeleteMapping("/{requestId}")
     public boolean deleteExtensionRequestById(@PathVariable String requestId) {
       return false;

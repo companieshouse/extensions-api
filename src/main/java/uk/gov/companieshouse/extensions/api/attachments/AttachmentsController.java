@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
+import uk.gov.companieshouse.extensions.api.logger.LogMethodCall;
 import uk.gov.companieshouse.service.ServiceException;
 import uk.gov.companieshouse.service.ServiceResult;
 import uk.gov.companieshouse.service.rest.response.ChResponseBody;
@@ -23,14 +25,17 @@ public class AttachmentsController {
 
     private PluggableResponseEntityFactory responseEntityFactory;
     private AttachmentsService attachmentsService;
+    private ApiLogger logger;
 
     @Autowired
     public AttachmentsController(PluggableResponseEntityFactory responseEntityFactory,
-                                 AttachmentsService attachmentsService) {
+                                 AttachmentsService attachmentsService, ApiLogger logger) {
         this.responseEntityFactory = responseEntityFactory;
         this.attachmentsService = attachmentsService;
+        this.logger = logger;
     }
 
+    @LogMethodCall
     @PostMapping("/{requestId}/reasons/{reasonId}/attachments")
     public ResponseEntity<ChResponseBody<AttachmentDTO>> uploadAttachmentToRequest(
             @RequestParam("file") MultipartFile file, @PathVariable String requestId,
@@ -40,10 +45,12 @@ public class AttachmentsController {
                 servletRequest.getRequestURI(), requestId, reasonId);
             return responseEntityFactory.createResponse(result);
         } catch(ServiceException e) {
+            logger.info(e.getMessage());
             return responseEntityFactory.createResponse(ServiceResult.notFound());
         }
     }
 
+    @LogMethodCall
     @DeleteMapping("/{requestId}/reasons/{reasonId}/attachments/{attachmentId}")
     public ResponseEntity<ChResponseBody<Void>> deleteAttachmentFromRequest(@PathVariable String requestId,
           @PathVariable String reasonId, @PathVariable String attachmentId) {
@@ -52,10 +59,12 @@ public class AttachmentsController {
               attachmentId);
           return responseEntityFactory.createResponse(result);
       } catch(ServiceException e) {
+          logger.info(e.getMessage());
           return responseEntityFactory.createResponse(ServiceResult.notFound());
       }
     }
 
+    @LogMethodCall
     @GetMapping("/{requestId}/reasons/{reasonId}/attachments/{attachmentId}")
     public String downloadAttachmentFromRequest(@PathVariable String requestId, @PathVariable String attachmentId) {
       return "Getting attachment";

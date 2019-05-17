@@ -5,3 +5,4 @@ target/
 .idea/
 *.iml
 *.jar
+.DS_Store

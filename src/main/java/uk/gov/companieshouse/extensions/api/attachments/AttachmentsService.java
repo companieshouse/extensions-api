@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import uk.gov.companieshouse.extensions.api.attachments.upload.FileUploader;
 import uk.gov.companieshouse.extensions.api.attachments.upload.FileUploaderResponse;
+import uk.gov.companieshouse.extensions.api.logger.LogMethodCall;
 import uk.gov.companieshouse.extensions.api.reasons.ExtensionReasonEntity;
 import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestFullEntity;
 import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestsRepository;
@@ -31,6 +32,7 @@ public class AttachmentsService {
         this.fileUploader = fileUploader;
     }
 
+    @LogMethodCall
     public ServiceResult<AttachmentDTO>
             addAttachment(@NotNull MultipartFile file,
                           String attachmentsUri, String requestId,
@@ -89,6 +91,7 @@ public class AttachmentsService {
         return links;
     }
 
+    @LogMethodCall
     public ServiceResult<Void> removeAttachment(String requestId,
             String reasonId, String attachmentId) throws ServiceException {
         ExtensionRequestFullEntity extension = requestsRepo.findById(requestId)
@@ -122,7 +125,7 @@ public class AttachmentsService {
     }
 
     private Supplier<ServiceException> missingRequest(String requestId) {
-        return () -> new ServiceException(String.format("No request found: %s", requestId));
+        return () -> new ServiceException(String.format("No request found with request id %s", requestId));
     }
 
     private Supplier<ServiceException> missingReason(String requestId, String reasonId) {
