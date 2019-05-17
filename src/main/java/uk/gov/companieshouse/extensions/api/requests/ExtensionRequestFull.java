@@ -14,6 +14,8 @@ public abstract class ExtensionRequestFull {
 
     private String id;
 
+    private String companyNumber;
+
     @JsonProperty("created_on")
     private LocalDateTime createdOn;
 
@@ -45,6 +47,14 @@ public abstract class ExtensionRequestFull {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getCompanyNumber() {
+        return companyNumber;
+    }
+
+    public void setCompanyNumber(String companyNumber) {
+        this.companyNumber = companyNumber;
     }
 
     public LocalDateTime getCreatedOn() {

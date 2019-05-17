@@ -35,9 +35,10 @@ public class RequestServiceUnitTest {
     @Test
     public void testGetSingleRequest() {
       ExtensionRequestFullEntity entity = dummyRequestEntity();
+
       when(extensionRequestsRepository.findById(REQUEST_ID)).thenReturn(Optional.of(entity));
-      Optional<ExtensionRequestFullEntity> request =
-          requestsService.getExtensionsRequestById(REQUEST_ID);
+
+      Optional<ExtensionRequestFullEntity> request = requestsService.getExtensionsRequestById(REQUEST_ID);
       assertEquals("id 1234 Acc period start: 2018-12-12  Acc period end: 2019-12-12", request.get()
           .toString());
     }
@@ -51,7 +52,7 @@ public class RequestServiceUnitTest {
         ExtensionRequestFullEntity extensionRequestFullEntity = dummyRequestEntity();
         when(extensionRequestsRepository.insert(any(ExtensionRequestFullEntity.class))).thenReturn(extensionRequestFullEntity);
 
-        requestsService.insertExtensionsRequest(extensionCreateRequest, createdBy, TESTURI);
+        requestsService.insertExtensionsRequest(extensionCreateRequest, createdBy, TESTURI, COMPANY_NUMBER);
         verify(extensionRequestsRepository, times(1)).insert(captor.capture());
 
         ExtensionRequestFullEntity extensionRequestResult = captor.getValue();

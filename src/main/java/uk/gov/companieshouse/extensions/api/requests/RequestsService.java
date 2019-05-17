@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.companieshouse.service.links.Links;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 
@@ -21,11 +22,16 @@ public class RequestsService {
         return extensionRequestsRepository.findById(id);
     }
 
+    public List<ExtensionRequestFullEntity> getExtensionsRequestListByCompanyNumber(String companyNumber) {
+        return extensionRequestsRepository.findAllByCompanyNumber(companyNumber);
+    }
+
     public ExtensionRequestFullEntity insertExtensionsRequest(ExtensionCreateRequest extensionCreateRequest, CreatedBy
-        createdBy, String reqUri) {
+        createdBy, String reqUri, String companyNumber) {
 
         ExtensionRequestFullEntity extensionRequestFullEntity = ExtensionRequestFullEntityBuilder
             .newInstance()
+            .withCompanyNumber(companyNumber)
             .withCreatedOn(dateTimeSupplierNow)
             .withCreatedBy(createdBy)
             .withAccountingPeriodStartOn(extensionCreateRequest.getAccountingPeriodStartOn())
