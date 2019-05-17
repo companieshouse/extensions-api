@@ -22,11 +22,13 @@ public class RequestLoggerInterceptor extends HandlerInterceptorAdapter {
 
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
+        String responseStatus = "response status = " + response.getStatus();
         if (ex == null) {
-            logger.info("Request finished - " + getRequestMessage(request));
+            logger.info("Request finished - " + responseStatus + " - " + getRequestMessage(request));
         } else {
-            logger.error(ex);
+            logger.error(responseStatus, ex);
         }
+        //remove the company number from the threadlocal var in the logger
         logger.removeCompanyNumber();
     }
 

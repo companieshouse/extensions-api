@@ -26,6 +26,8 @@ public class RequestLoggerInterceptorTest {
     @Before
     public void setup() {
         response = new MockHttpServletResponse();
+        response.setStatus(200);
+
         request = new MockHttpServletRequest();
         request.setMethod("POST");
         request.setRequestURI("/company/00006400/extensions/requests");
@@ -43,7 +45,7 @@ public class RequestLoggerInterceptorTest {
     public void testAfterCompletion_noException() {
         interceptor.afterCompletion(request, response, new Object(), null);
 
-        Mockito.verify(logger).info("Request finished - " + request.getMethod() + " " + request.getRequestURI());
+        Mockito.verify(logger).info("Request finished - response status = " + response.getStatus() + " - " + request.getMethod() + " " + request.getRequestURI());
         Mockito.verify(logger).removeCompanyNumber();
     }
 
@@ -52,6 +54,6 @@ public class RequestLoggerInterceptorTest {
         Exception e = new Exception();
         interceptor.afterCompletion(request, response, new Object(), e);
 
-        Mockito.verify(logger).error(e);
+        Mockito.verify(logger).error("response status = " + response.getStatus(), e);
     }
 }
