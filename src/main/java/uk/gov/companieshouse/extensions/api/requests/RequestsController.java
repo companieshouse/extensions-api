@@ -1,9 +1,8 @@
 package uk.gov.companieshouse.extensions.api.requests;
 
 import java.net.URI;
-import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.companieshouse.extensions.api.logger.LogMethodCall;
+import uk.gov.companieshouse.extensions.api.response.ListResponse;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -33,9 +33,10 @@ public class RequestsController {
 
     @LogMethodCall
     @PostMapping("/")
-    public ResponseEntity<ExtensionRequestFullDTO> createExtensionRequestResource(@RequestBody
-                                                                                        ExtensionCreateRequest extensionCreateRequest,
-                                                                               HttpServletRequest request) {
+    public ResponseEntity<ExtensionRequestFullDTO> createExtensionRequestResource(
+        @RequestBody ExtensionCreateRequest extensionCreateRequest,
+        HttpServletRequest request,
+        @PathVariable String companyNumber) {
 
         CreatedBy createdBy = new CreatedBy();
         createdBy.setId(ericHeaderParser.getUserId(request));
@@ -47,7 +48,7 @@ public class RequestsController {
 
         ExtensionRequestFullEntity extensionRequestFullEntity = requestsService
             .insertExtensionsRequest
-            (extensionCreateRequest, createdBy, reqUri);
+            (extensionCreateRequest, createdBy, reqUri, companyNumber);
 
         ExtensionRequestFullDTO extensionRequestFullDTO = extensionRequestMapper.entityToDTO
             (extensionRequestFullEntity);
@@ -61,10 +62,17 @@ public class RequestsController {
 
     @LogMethodCall
     @GetMapping("/")
-    public List<ExtensionRequestFullDTO> getExtensionRequestsList() {
-        ExtensionRequestFullDTO er = new ExtensionRequestFullDTO();
-        er.setId(UUID.randomUUID().toString());
-        return Arrays.asList(er);
+    public ResponseEntity<ListResponse<ExtensionRequestFullDTO>> getExtensionRequestsListByCompanyNumber(
+        @PathVariable String companyNumber) {
+
+        List<ExtensionRequestFullDTO> requestFullDTOList = requestsService
+            .getExtensionsRequestListByCompanyNumber(companyNumber).stream().map
+                (extensionRequestMapper::entityToDTO).collect(Collectors.toList());
+
+        ListResponse<ExtensionRequestFullDTO> extensionRequestList = ListResponse.<ExtensionRequestFullDTO>builder()
+            .withItems(requestFullDTOList)
+            .build();
+        return ResponseEntity.ok(extensionRequestList);
     }
 
     @LogMethodCall

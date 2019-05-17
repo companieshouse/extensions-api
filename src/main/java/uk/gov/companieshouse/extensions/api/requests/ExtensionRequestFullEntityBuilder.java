@@ -12,6 +12,8 @@ public class ExtensionRequestFullEntityBuilder {
 
     private LocalDateTime createdOn;
 
+    private String companyNumber;
+
     private CreatedBy createdBy;
 
     private LocalDate accountingPeriodStartOn;
@@ -21,6 +23,11 @@ public class ExtensionRequestFullEntityBuilder {
     private Status status;
 
     private List<ExtensionReasonEntity> reasons = new ArrayList<>();
+
+    public ExtensionRequestFullEntityBuilder withCompanyNumber(String companyNumber) {
+        this.companyNumber = companyNumber;
+        return this;
+    }
 
     public ExtensionRequestFullEntityBuilder withCreatedOn(Supplier<LocalDateTime> localDateTimeSupplier) {
         this.createdOn = localDateTimeSupplier.get();
@@ -55,6 +62,7 @@ public class ExtensionRequestFullEntityBuilder {
 
     public ExtensionRequestFullEntity build() {
         ExtensionRequestFullEntity extensionRequestFullEntity = new ExtensionRequestFullEntity();
+        extensionRequestFullEntity.setCompanyNumber(this.companyNumber);
         extensionRequestFullEntity.setCreatedOn(this.createdOn);
         extensionRequestFullEntity.setCreatedBy(this.createdBy);
         extensionRequestFullEntity.setAccountingPeriodStartOn(this.accountingPeriodStartOn);

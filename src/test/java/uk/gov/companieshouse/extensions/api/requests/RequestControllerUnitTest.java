@@ -11,10 +11,12 @@ import org.springframework.http.ResponseEntity;
 
 import uk.gov.companieshouse.extensions.api.attachments.Attachment;
 import uk.gov.companieshouse.extensions.api.reasons.ExtensionReasonEntity;
+import uk.gov.companieshouse.extensions.api.response.ListResponse;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -28,6 +30,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.companieshouse.extensions.api.Utils.Utils.BASE_URL;
+import static uk.gov.companieshouse.extensions.api.Utils.Utils.COMPANY_NUMBER;
 import static uk.gov.companieshouse.extensions.api.Utils.Utils.EMAIL;
 import static uk.gov.companieshouse.extensions.api.Utils.Utils.FORENAME;
 import static uk.gov.companieshouse.extensions.api.Utils.Utils.SURNAME;
@@ -74,15 +77,15 @@ public class RequestControllerUnitTest {
         ExtensionRequestFullDTO entityRequestDTO = dummyRequestDTO();
 
         when(requestsService.insertExtensionsRequest(eq(createRequest), any(CreatedBy.class),
-        eq(requestUri))).thenReturn(entity);
+        eq(requestUri), any(String.class))).thenReturn(entity);
 
         when(mockExtensionRequestMapper.entityToDTO(entity)).thenReturn(entityRequestDTO);
 
         ResponseEntity<ExtensionRequestFullDTO> response =
-            controller.createExtensionRequestResource(createRequest, mockHttpServletRequest);
+            controller.createExtensionRequestResource(createRequest, mockHttpServletRequest, COMPANY_NUMBER);
 
         verify(requestsService).insertExtensionsRequest(eq(createRequest), any(CreatedBy.class),
-            eq(requestUri));
+            eq(requestUri), any(String.class));
 
         assertNotNull(entityRequestDTO);
         assertEquals(entityRequestDTO.toString(), response.getBody().toString());
@@ -90,11 +93,22 @@ public class RequestControllerUnitTest {
 
     @Test
     public void canGetExtensionRequestList() {
-        List<ExtensionRequestFullDTO> response = controller.getExtensionRequestsList();
-        assertFalse(response.isEmpty());
-        response.forEach(request -> {
-           assertNotNull(request.getId());
-        });
+        ExtensionRequestFullEntity extensionRequestFullEntity = dummyRequestEntity();
+        ExtensionRequestFullDTO extensionRequestFullDTO = dummyRequestDTO();
+        List<ExtensionRequestFullEntity> extensionRequestFullEntityList = new ArrayList<>();
+        extensionRequestFullEntityList.add(extensionRequestFullEntity);
+
+        when(requestsService.getExtensionsRequestListByCompanyNumber(COMPANY_NUMBER))
+            .thenReturn(extensionRequestFullEntityList);
+        when(mockExtensionRequestMapper.entityToDTO(extensionRequestFullEntity))
+            .thenReturn(extensionRequestFullDTO);
+
+        ResponseEntity<ListResponse<ExtensionRequestFullDTO>> response =
+            controller.getExtensionRequestsListByCompanyNumber(COMPANY_NUMBER);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(1, response.getBody().getItems().size());
+        assertEquals(extensionRequestFullDTO, response.getBody().getItems().get(0));
     }
 
     @Test

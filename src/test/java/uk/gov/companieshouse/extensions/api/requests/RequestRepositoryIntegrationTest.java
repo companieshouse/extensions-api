@@ -13,6 +13,7 @@ import uk.gov.companieshouse.service.links.Links;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -120,5 +121,24 @@ public class RequestRepositoryIntegrationTest {
         assertEquals(expectedAttachment.getContentType(), attachment.getContentType());
         assertEquals(expectedAttachment.getSize(), attachment.getSize());
         assertEquals(links, attachment.getLinks());
+    }
+
+    @Test
+    public void canGetMultipleRequestsFromDB() throws Exception {
+        ExtensionRequestFullEntity dummyEntity = requestsRepository.findById(REQUEST_1)
+                .orElseThrow(() -> new Exception("Request not found in DB"));
+
+        List<ExtensionRequestFullEntity> entityList = requestsRepository
+            .findAllByCompanyNumber("00008787");
+
+        assertEquals(2, entityList.size());
+        assertEquals(dummyEntity.getId(), entityList.get(0).getId());
+        assertEquals(dummyEntity.getCreatedOn(), entityList.get(0).getCreatedOn());
+        assertEquals(dummyEntity.getCreatedBy(), entityList.get(0).getCreatedBy());
+        assertEquals(dummyEntity.getCreatedBy(), entityList.get(0).getCreatedBy());
+        assertEquals(dummyEntity.getLinks(), entityList.get(0).getLinks());
+        assertEquals(dummyEntity.getStatus(), entityList.get(0).getStatus());
+        assertEquals(dummyEntity.getClass(), entityList.get(0).getClass());
+        assertEquals(dummyEntity.getReasons(), entityList.get(0).getReasons());
     }
 }

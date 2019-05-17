@@ -13,6 +13,7 @@ public class ExtensionRequestMapper {
 
         dto.setEtag(entity.getEtag());
         dto.setId(entity.getId());
+        dto.setCompanyNumber(entity.getCompanyNumber());
         dto.setCreatedOn(entity.getCreatedOn());
         dto.setCreatedBy(entity.getCreatedBy());
         dto.setLinks(entity.getLinks());

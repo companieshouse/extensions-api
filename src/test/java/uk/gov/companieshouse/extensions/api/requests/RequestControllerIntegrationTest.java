@@ -18,12 +18,15 @@ import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static uk.gov.companieshouse.extensions.api.Utils.Utils.COMPANY_NUMBER;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(value = RequestsController.class)
@@ -66,6 +69,7 @@ public class RequestControllerIntegrationTest {
         when(requestsService.insertExtensionsRequest(
             any(ExtensionCreateRequest.class),
             any(CreatedBy.class),
+            any(String.class),
             any(String.class)))
             .thenReturn(Utils.dummyRequestEntity());
 
@@ -84,6 +88,15 @@ public class RequestControllerIntegrationTest {
         RequestBuilder requestBuilder = MockMvcRequestBuilders
             .get(ROOT_URL)
             .accept(MediaType.APPLICATION_JSON);
+
+        ExtensionRequestFullEntity extensionRequestFullEntity = Utils.dummyRequestEntity();
+        ExtensionRequestFullDTO extensionRequestFullDTO = Utils.dummyRequestDTO();
+        List<ExtensionRequestFullEntity> extensionRequestFullEntityList = new ArrayList<>();
+        extensionRequestFullEntityList.add(extensionRequestFullEntity);
+
+        when(requestsService.getExtensionsRequestListByCompanyNumber(COMPANY_NUMBER)).thenReturn(extensionRequestFullEntityList);
+        when(extensionRequestMapper.entityToDTO(extensionRequestFullEntity)).thenReturn
+            (extensionRequestFullDTO);
 
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
         assertEquals(200, result.getResponse().getStatus());

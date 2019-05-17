@@ -1,6 +1,7 @@
 [
   {
     "_id" : ObjectId("aaaaaaaaaaaaaaaaaaaaaaa1"),
+    "companyNumber" : "00008787",
     "createdOn" : ISODate("2019-01-02T11:38:44Z"),
     "createdBy" : {
         "_id" : "Y2VkZWVlMzhlZWFjY2M4MzQ3MT",
@@ -16,6 +17,7 @@
   },
   {
     "_id" : ObjectId("aaaaaaaaaaaaaaaaaaaaaaa2"),
+    "companyNumber" : "00008787",
     "createdOn" : ISODate("2019-01-01T11:38:44.085Z"),
     "createdBy" : {
       "_id" : "qwe",
@@ -31,6 +33,7 @@
   },
   {
     "_id" : ObjectId("aaaaaaaaaaaaaaaaaaaaaaa3"),
+    "companyNumber" : "00006400",
     "reasons" : [
       {
         "_id" : "reason3",
