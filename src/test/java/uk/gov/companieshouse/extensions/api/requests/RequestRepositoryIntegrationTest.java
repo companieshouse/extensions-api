@@ -4,6 +4,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.companieshouse.extensions.api.Utils.Utils;
 import uk.gov.companieshouse.extensions.api.attachments.Attachment;
@@ -129,7 +130,7 @@ public class RequestRepositoryIntegrationTest {
                 .orElseThrow(() -> new Exception("Request not found in DB"));
 
         List<ExtensionRequestFullEntity> entityList = requestsRepository
-            .findAllByCompanyNumber("00008787");
+            .findAllByCompanyNumber("00008787", Sort.by("_id"));
 
         assertEquals(2, entityList.size());
         assertEquals(dummyEntity.getId(), entityList.get(0).getId());

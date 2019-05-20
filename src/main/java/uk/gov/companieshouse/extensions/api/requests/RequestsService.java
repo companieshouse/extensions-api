@@ -1,6 +1,7 @@
 package uk.gov.companieshouse.extensions.api.requests;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import uk.gov.companieshouse.extensions.api.logger.LogMethodCall;
 import uk.gov.companieshouse.service.links.Links;
@@ -26,7 +27,7 @@ public class RequestsService {
 
     @LogMethodCall
     public List<ExtensionRequestFullEntity> getExtensionsRequestListByCompanyNumber(String companyNumber) {
-        return extensionRequestsRepository.findAllByCompanyNumber(companyNumber);
+        return extensionRequestsRepository.findAllByCompanyNumber(companyNumber, Sort.unsorted());
     }
 
     public ExtensionRequestFullEntity insertExtensionsRequest(ExtensionCreateRequest extensionCreateRequest, CreatedBy
