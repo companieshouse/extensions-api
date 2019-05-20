@@ -27,7 +27,7 @@ public class RequestsService {
 
     @LogMethodCall
     public List<ExtensionRequestFullEntity> getExtensionsRequestListByCompanyNumber(String companyNumber) {
-        return extensionRequestsRepository.findAllByCompanyNumber(companyNumber, Sort.unsorted());
+        return extensionRequestsRepository.findAllByCompanyNumber(companyNumber, Sort.by("_id"));
     }
 
     public ExtensionRequestFullEntity insertExtensionsRequest(ExtensionCreateRequest extensionCreateRequest, CreatedBy
