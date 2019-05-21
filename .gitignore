@@ -6,3 +6,5 @@ target/
 *.iml
 *.jar
 .DS_Store
+.factorypath
+.vscode/
