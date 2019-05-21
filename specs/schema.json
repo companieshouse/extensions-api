@@ -315,22 +315,6 @@
         }
       ],
       "post": {
-        "parameters": [
-          {
-            "in": "body",
-            "name": "status",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "id": {
-                  "type": "string",
-                  "format": "uuid",
-                  "description": "the extension request id"
-                }
-              }
-            }
-          }
-        ],
         "tags": [
           "Processor API"
         ],
