@@ -6,10 +6,13 @@ import java.time.LocalDate;
 
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.rules.ExpectedException;
 
+import uk.gov.companieshouse.extensions.api.groups.Unit;
 import uk.gov.companieshouse.service.links.Links;
 
+@Category(Unit.class)
 public class ExtensionReasonEntityBuilderUnitTest {
 
   @Rule

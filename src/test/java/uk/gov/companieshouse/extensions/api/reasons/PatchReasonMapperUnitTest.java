@@ -1,12 +1,16 @@
 package uk.gov.companieshouse.extensions.api.reasons;
 
-import org.junit.Test;
-import uk.gov.companieshouse.service.links.Links;
+import static org.junit.Assert.assertEquals;
 
 import java.time.LocalDate;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
+import uk.gov.companieshouse.extensions.api.groups.Unit;
+import uk.gov.companieshouse.service.links.Links;
+
+@Category(Unit.class)
 public class PatchReasonMapperUnitTest {
 
     @Test

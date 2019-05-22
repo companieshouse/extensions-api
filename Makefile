@@ -21,11 +21,19 @@ test: clean
 
 .PHONY: test-unit
 test-unit: clean
-	mvn verify -Punit-test
+	mvn test -Dgroups="uk.gov.companieshouse.extensions.api.groups.Unit"
 
 .PHONY: test-integration
 test-integration: clean
-	mvn verify -Pintegration-test
+	mvn verify -Dgroups="uk.gov.companieshouse.extensions.api.groups.Integration"
+
+.PHONY: test-contract-consumer
+test-contract-consumer: clean
+	mvn verify -Dgroups="uk.gov.companieshouse.extensions.api.groups.ContractConsumer"
+
+.PHONY: test-contract-provider
+test-contract-provider: clean
+	mvn verify -Dgroups="uk.gov.companieshouse.extensions.api.groups.ContractProvider"
 
 .PHONY: dev
 dev: clean

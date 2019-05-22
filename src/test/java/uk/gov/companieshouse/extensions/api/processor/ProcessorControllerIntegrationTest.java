@@ -3,6 +3,7 @@ package uk.gov.companieshouse.extensions.api.processor;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -13,11 +14,12 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-
 import org.springframework.web.client.RestTemplate;
-import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
-import uk.gov.companieshouse.extensions.api.processor.ProcessorController;
 
+import uk.gov.companieshouse.extensions.api.groups.Integration;
+import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
+
+@Category(Integration.class)
 @RunWith(SpringRunner.class)
 @WebMvcTest(value = ProcessorController.class)
 public class ProcessorControllerIntegrationTest {

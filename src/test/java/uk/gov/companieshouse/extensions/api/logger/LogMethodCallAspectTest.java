@@ -1,16 +1,20 @@
 package uk.gov.companieshouse.extensions.api.logger;
 
+import java.lang.reflect.Method;
+
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.lang.reflect.Method;
+import uk.gov.companieshouse.extensions.api.groups.Unit;
 
+@Category(Unit.class)
 @RunWith(MockitoJUnitRunner.class)
 public class LogMethodCallAspectTest {
 

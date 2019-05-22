@@ -1,20 +1,15 @@
 package uk.gov.companieshouse.extensions.api.attachments;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.web.multipart.MultipartFile;
-import uk.gov.companieshouse.extensions.api.Utils.Utils;
-import uk.gov.companieshouse.extensions.api.attachments.upload.FileUploader;
-import uk.gov.companieshouse.extensions.api.attachments.upload.FileUploaderResponse;
-import uk.gov.companieshouse.extensions.api.reasons.ExtensionReasonEntity;
-import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestFullEntity;
-import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestsRepository;
-import uk.gov.companieshouse.service.ServiceException;
-import uk.gov.companieshouse.service.ServiceResult;
-import uk.gov.companieshouse.service.ServiceResultStatus;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,10 +17,26 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.web.multipart.MultipartFile;
 
+import uk.gov.companieshouse.extensions.api.Utils.Utils;
+import uk.gov.companieshouse.extensions.api.attachments.upload.FileUploader;
+import uk.gov.companieshouse.extensions.api.attachments.upload.FileUploaderResponse;
+import uk.gov.companieshouse.extensions.api.groups.Unit;
+import uk.gov.companieshouse.extensions.api.reasons.ExtensionReasonEntity;
+import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestFullEntity;
+import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestsRepository;
+import uk.gov.companieshouse.service.ServiceException;
+import uk.gov.companieshouse.service.ServiceResult;
+import uk.gov.companieshouse.service.ServiceResultStatus;
+
+@Category(Unit.class)
 @RunWith(MockitoJUnitRunner.class)
 public class AttachmentsServiceUnitTest {
 

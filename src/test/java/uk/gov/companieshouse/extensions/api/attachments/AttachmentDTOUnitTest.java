@@ -1,15 +1,20 @@
 package uk.gov.companieshouse.extensions.api.attachments;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.Test;
-import org.springframework.web.multipart.MultipartFile;
-import uk.gov.companieshouse.extensions.api.Utils.Utils;
-import uk.gov.companieshouse.service.links.Links;
+import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 
-import static org.junit.Assert.assertEquals;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
+import org.springframework.web.multipart.MultipartFile;
+
+import uk.gov.companieshouse.extensions.api.Utils.Utils;
+import uk.gov.companieshouse.extensions.api.groups.Unit;
+import uk.gov.companieshouse.service.links.Links;
+
+@Category(Unit.class)
 public class AttachmentDTOUnitTest {
 
     @Test

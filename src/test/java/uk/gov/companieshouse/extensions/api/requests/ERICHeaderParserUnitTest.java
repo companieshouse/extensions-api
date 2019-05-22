@@ -1,13 +1,19 @@
 package uk.gov.companieshouse.extensions.api.requests;
 
 import static org.mockito.Mockito.when;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import javax.servlet.http.HttpServletRequest;
 
+import uk.gov.companieshouse.extensions.api.groups.Unit;
+
+@Category(Unit.class)
 @RunWith(MockitoJUnitRunner.class)
 public class ERICHeaderParserUnitTest {
 

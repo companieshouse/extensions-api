@@ -2,10 +2,23 @@ package uk.gov.companieshouse.extensions.api.requests;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.*;
-import static uk.gov.companieshouse.extensions.api.Utils.Utils.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static uk.gov.companieshouse.extensions.api.Utils.Utils.COMPANY_NUMBER;
+import static uk.gov.companieshouse.extensions.api.Utils.Utils.REQUEST_ID;
+import static uk.gov.companieshouse.extensions.api.Utils.Utils.TESTURI;
+import static uk.gov.companieshouse.extensions.api.Utils.Utils.createdBy;
+import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyCreateRequestEntity;
+import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyRequestEntity;
+
+import java.time.LocalDateTime;
+import java.util.Optional;
+import java.util.function.Supplier;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -13,10 +26,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.time.LocalDateTime;
-import java.util.Optional;
-import java.util.function.Supplier;
+import uk.gov.companieshouse.extensions.api.groups.Unit;
 
+@Category(Unit.class)
 @RunWith(MockitoJUnitRunner.class)
 public class RequestServiceUnitTest {
 

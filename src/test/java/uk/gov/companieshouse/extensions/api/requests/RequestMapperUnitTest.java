@@ -1,17 +1,21 @@
 package uk.gov.companieshouse.extensions.api.requests;
 
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static uk.gov.companieshouse.extensions.api.Utils.Utils.REQUEST_ID;
+import static uk.gov.companieshouse.extensions.api.Utils.Utils.TESTURI;
+import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyReasonEntity;
+import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyRequestEntity;
 
-import uk.gov.companieshouse.extensions.api.Utils.Utils;
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
+
+import uk.gov.companieshouse.extensions.api.groups.Unit;
 import uk.gov.companieshouse.extensions.api.reasons.ExtensionReasonEntity;
-import uk.gov.companieshouse.service.links.LinkKey;
 import uk.gov.companieshouse.service.links.Links;
 
-import java.util.Map;
-
-import static org.junit.Assert.*;
-import static uk.gov.companieshouse.extensions.api.Utils.Utils.*;
-
+@Category(Unit.class)
 public class RequestMapperUnitTest {
 
 
