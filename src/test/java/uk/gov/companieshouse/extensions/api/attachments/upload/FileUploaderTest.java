@@ -3,6 +3,7 @@ package uk.gov.companieshouse.extensions.api.attachments.upload;
 import org.apache.commons.lang.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -16,13 +17,16 @@ import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
+
 import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
 
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
+import uk.gov.companieshouse.extensions.api.groups.Unit;
 
+@Category(Unit.class)
 @RunWith(MockitoJUnitRunner.class)
 public class FileUploaderTest {
 

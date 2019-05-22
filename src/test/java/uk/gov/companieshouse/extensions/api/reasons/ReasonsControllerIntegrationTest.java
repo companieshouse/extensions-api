@@ -1,6 +1,18 @@
 package uk.gov.companieshouse.extensions.api.reasons;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
+import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyReasonEntity;
+import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyRequestEntity;
+
+import java.util.Arrays;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -12,24 +24,15 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.web.client.RestTemplate;
+
+import uk.gov.companieshouse.extensions.api.groups.Integration;
 import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
 import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestFullEntity;
 import uk.gov.companieshouse.extensions.api.response.ListResponse;
 import uk.gov.companieshouse.service.ServiceResult;
 import uk.gov.companieshouse.service.links.Links;
-import uk.gov.companieshouse.service.rest.response.PluggableResponseEntityFactory;
 
-import javax.servlet.http.HttpServletRequest;
-
-import java.util.Arrays;
-
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
-import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyReasonEntity;
-import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyRequestEntity;
-
+@Category(Integration.class)
 @RunWith(SpringRunner.class)
 @WebMvcTest(value = ReasonsController.class)
 public class ReasonsControllerIntegrationTest {

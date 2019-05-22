@@ -1,7 +1,10 @@
 package uk.gov.companieshouse.extensions.api.logger;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -9,8 +12,10 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
-import javax.servlet.http.HttpServletResponse;
 
+import uk.gov.companieshouse.extensions.api.groups.Unit;
+
+@Category(Unit.class)
 @RunWith(MockitoJUnitRunner.class)
 public class RequestLoggerInterceptorTest {
 

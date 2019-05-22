@@ -1,11 +1,15 @@
 package uk.gov.companieshouse.extensions.api.reasons;
 
-import org.junit.Test;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyReasonEntity;
 
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
+
+import uk.gov.companieshouse.extensions.api.groups.Unit;
+
+@Category(Unit.class)
 public class ReasonMapperUnitTest {
 
 

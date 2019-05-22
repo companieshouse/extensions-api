@@ -1,7 +1,23 @@
 package uk.gov.companieshouse.extensions.api.reasons;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static uk.gov.companieshouse.extensions.api.Utils.Utils.REQUEST_ID;
+import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyCreateReason;
+import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyReasonEntity;
+import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyRequestEntity;
+
+import java.time.LocalDate;
+import java.util.Optional;
+import java.util.function.Supplier;
+
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -9,6 +25,8 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+
+import uk.gov.companieshouse.extensions.api.groups.Unit;
 import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestFullEntity;
 import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestsRepository;
 import uk.gov.companieshouse.extensions.api.requests.RequestsService;
@@ -18,16 +36,7 @@ import uk.gov.companieshouse.service.ServiceResult;
 import uk.gov.companieshouse.service.ServiceResultStatus;
 import uk.gov.companieshouse.service.links.Links;
 
-import java.time.LocalDate;
-import java.util.Optional;
-import java.util.function.Supplier;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.*;
-import static uk.gov.companieshouse.extensions.api.Utils.Utils.*;
-
-
+@Category(Unit.class)
 @RunWith(MockitoJUnitRunner.class)
 public class ReasonServiceUnitTest {
 
