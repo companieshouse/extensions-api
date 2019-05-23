@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import uk.gov.companieshouse.service.links.Links;
 
 @JsonPropertyOrder({"etag", "id", "reason", "links", "attachments", "additional_text", "start_on", "end_on", "affected_person", "reason_information", "continued_illness"})
-public abstract class ExtensionReason extends ExtensionCreateReason {
+public abstract class ExtensionReason extends ExtensionReasonCommon {
 
     private String etag;
 
