@@ -107,7 +107,7 @@ public class ReasonsService {
         ExtensionRequestFullEntity extensionRequestFullEntity = requestsService.getExtensionsRequestById(requestId)
             .orElse(null);
 
-        if (!extensionRequestFullEntity.getReasons().isEmpty()) {
+        if (extensionRequestFullEntity != null && !extensionRequestFullEntity.getReasons().isEmpty()) {
             List<ExtensionReasonEntity> extensionRequestReasons = extensionRequestFullEntity
                 .getReasons().stream().filter(reason -> !reason.getId().equals(reasonId)).collect(Collectors.toList());
 
