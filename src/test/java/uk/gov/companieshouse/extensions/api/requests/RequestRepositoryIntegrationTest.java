@@ -24,6 +24,7 @@ import uk.gov.companieshouse.extensions.api.Utils.Utils;
 import uk.gov.companieshouse.extensions.api.attachments.Attachment;
 import uk.gov.companieshouse.extensions.api.groups.Integration;
 import uk.gov.companieshouse.extensions.api.reasons.ExtensionReasonEntity;
+import uk.gov.companieshouse.service.links.CoreLinkKeys;
 import uk.gov.companieshouse.service.links.Links;
 
 @Category(Integration.class)
@@ -108,8 +109,8 @@ public class RequestRepositoryIntegrationTest {
         expectedAttachment.setSize(1L);
 
         Links links = new Links();
-        links.setLink(() -> "self", "selfLink");
-        links.setLink(() -> "download", "downloadLink");
+        links.setLink(ExtensionsLinkKeys.SELF, "selfLink");
+        links.setLink(ExtensionsLinkKeys.DOWNLOAD, "downloadLink");
         expectedAttachment.setLinks(links);
 
         entity.getReasons()

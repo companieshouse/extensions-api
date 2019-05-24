@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
 import uk.gov.companieshouse.extensions.api.logger.LogMethodCall;
+import uk.gov.companieshouse.extensions.api.requests.ExtensionsLinkKeys;
 import uk.gov.companieshouse.extensions.api.response.ListResponse;
 import uk.gov.companieshouse.service.ServiceException;
 import uk.gov.companieshouse.service.ServiceResult;
@@ -46,8 +47,8 @@ public class ReasonsController {
         try {
             ServiceResult<ExtensionReasonDTO> serviceResult
                 = reasonsService.addExtensionsReasonToRequest(extensionCreateReason, requestId, request.getRequestURI());
-            return ResponseEntity.created(URI.create(serviceResult.getData().getLinks().getLink
-                (() -> "self"))).body(serviceResult.getData());
+            return ResponseEntity.created(URI.create(serviceResult.getData().getLinks().getLink(ExtensionsLinkKeys.SELF)))
+                                 .body(serviceResult.getData());
         } catch(ServiceException e) {
             logger.info(e.getMessage());
             return ResponseEntity.notFound().build();

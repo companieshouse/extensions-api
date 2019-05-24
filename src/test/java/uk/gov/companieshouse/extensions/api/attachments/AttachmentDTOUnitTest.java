@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import uk.gov.companieshouse.extensions.api.Utils.Utils;
 import uk.gov.companieshouse.extensions.api.groups.Unit;
+import uk.gov.companieshouse.extensions.api.requests.ExtensionsLinkKeys;
 import uk.gov.companieshouse.service.links.Links;
 
 @Category(Unit.class)
@@ -36,7 +37,7 @@ public class AttachmentDTOUnitTest {
         Attachment attachment = new Attachment();
         attachment.setId("12345");
         Links links = new Links();
-        links.setLink(() -> "self", "linkToSelf");
+        links.setLink(ExtensionsLinkKeys.SELF, "linkToSelf");
         MultipartFile file = Utils.mockMultipartFile();
 
         AttachmentDTO attachmentDTO = AttachmentDTO
@@ -48,6 +49,6 @@ public class AttachmentDTOUnitTest {
 
         assertEquals("12345", attachmentDTO.getId());
         assertEquals("testMultipart.txt", attachmentDTO.getName());
-        assertEquals("linkToSelf", attachmentDTO.getLinks().getLink(() -> "self"));
+        assertEquals("linkToSelf", attachmentDTO.getLinks().getLink(ExtensionsLinkKeys.SELF));
     }
 }

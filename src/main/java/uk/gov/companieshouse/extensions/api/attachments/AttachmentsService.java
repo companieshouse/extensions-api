@@ -10,8 +10,10 @@ import uk.gov.companieshouse.extensions.api.logger.LogMethodCall;
 import uk.gov.companieshouse.extensions.api.reasons.ExtensionReasonEntity;
 import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestFullEntity;
 import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestsRepository;
+import uk.gov.companieshouse.extensions.api.requests.ExtensionsLinkKeys;
 import uk.gov.companieshouse.service.ServiceException;
 import uk.gov.companieshouse.service.ServiceResult;
+import uk.gov.companieshouse.service.links.CoreLinkKeys;
 import uk.gov.companieshouse.service.links.Links;
 
 import javax.validation.constraints.NotNull;
@@ -86,8 +88,8 @@ public class AttachmentsService {
     private Links getLinks(String attachmentsUri, String attachmentId) {
         String linkToSelf = attachmentsUri + "/" + attachmentId;
         Links links = new Links();
-        links.setLink(() ->  "self", linkToSelf);
-        links.setLink(() -> "download", linkToSelf + "/download");
+        links.setLink(ExtensionsLinkKeys.SELF, linkToSelf);
+        links.setLink(ExtensionsLinkKeys.DOWNLOAD, linkToSelf + "/download");
         return links;
     }
 

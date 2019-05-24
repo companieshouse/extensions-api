@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import uk.gov.companieshouse.extensions.api.groups.Unit;
+import uk.gov.companieshouse.extensions.api.requests.ExtensionsLinkKeys;
 import uk.gov.companieshouse.service.links.Links;
 
 @Category(Unit.class)
@@ -24,7 +25,7 @@ public class PatchReasonMapperUnitTest {
         dbEntity.setAdditionalText("old text");
         dbEntity.setEndOn(LocalDate.of(2018,1,1));
         Links links = new Links();
-        links.setLink(() -> "self", "something");
+        links.setLink(ExtensionsLinkKeys.SELF, "something");
         dbEntity.setLinks(links);
 
         ExtensionReasonEntity mappedEntity = PatchReasonMapper.INSTANCE

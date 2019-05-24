@@ -10,6 +10,7 @@ import org.junit.experimental.categories.Category;
 import org.junit.rules.ExpectedException;
 
 import uk.gov.companieshouse.extensions.api.groups.Unit;
+import uk.gov.companieshouse.extensions.api.requests.ExtensionsLinkKeys;
 import uk.gov.companieshouse.service.links.Links;
 
 @Category(Unit.class)
@@ -39,7 +40,7 @@ public class ExtensionReasonEntityBuilderUnitTest {
 
 
     Links expectedLinks = new Links();
-    expectedLinks.setLink(() -> "self", "requestURI/123");
+    expectedLinks.setLink(ExtensionsLinkKeys.SELF, "requestURI/123");
     assertEquals("123", entity.getId());
     assertEquals(expectedLinks, entity.getLinks());
     assertEquals("reason", entity.getReason());

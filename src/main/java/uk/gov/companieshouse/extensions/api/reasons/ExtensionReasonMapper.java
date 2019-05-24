@@ -1,6 +1,7 @@
 package uk.gov.companieshouse.extensions.api.reasons;
 
 import org.springframework.stereotype.Component;
+import uk.gov.companieshouse.extensions.api.requests.ExtensionsLinkKeys;
 import uk.gov.companieshouse.service.links.Links;
 
 import java.util.HashMap;
@@ -24,7 +25,7 @@ public class ExtensionReasonMapper {
         Links attachments = new Links();
         Map<String, String> linksMap = new HashMap<>();
         entity.getAttachments().forEach(
-            attachment -> linksMap.put(attachment.getName(), attachment.getLinks().getLinks().get("self")));
+            attachment -> linksMap.put(attachment.getName(), attachment.getLinks().getLink(ExtensionsLinkKeys.SELF)));
         attachments.setLinks(linksMap);
         extensionReasonDTO.setAttachments(attachments);
 

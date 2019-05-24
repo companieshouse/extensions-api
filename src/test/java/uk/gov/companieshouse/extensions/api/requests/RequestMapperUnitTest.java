@@ -13,6 +13,7 @@ import org.junit.experimental.categories.Category;
 
 import uk.gov.companieshouse.extensions.api.groups.Unit;
 import uk.gov.companieshouse.extensions.api.reasons.ExtensionReasonEntity;
+import uk.gov.companieshouse.service.links.CoreLinkKeys;
 import uk.gov.companieshouse.service.links.Links;
 
 @Category(Unit.class)
@@ -28,13 +29,13 @@ public class RequestMapperUnitTest {
         dummyRequest.addReason(dummyReason);
         String linkToSelf = TESTURI  + "/" + REQUEST_ID;
         Links links = new Links();
-        links.setLink(() ->  "self", linkToSelf);
+        links.setLink(ExtensionsLinkKeys.SELF, linkToSelf);
         dummyReason.setLinks(links);
 
         ExtensionRequestFullDTO dto = extensionRequestMapper.entityToDTO(dummyRequest);
         assertNotEquals(dto.getReasons().size(), 0);
         Links reasonLinks = dto.getReasons().get(0);
-        String linkValue = reasonLinks.getLinks().get("self");
+        String linkValue = reasonLinks.getLink(ExtensionsLinkKeys.SELF);
 
         assertNotNull(dto);
         assertEquals(dummyRequest.getEtag(), dto.getEtag());

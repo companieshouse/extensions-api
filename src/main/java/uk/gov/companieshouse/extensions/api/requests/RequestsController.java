@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.companieshouse.extensions.api.logger.LogMethodCall;
 import uk.gov.companieshouse.extensions.api.response.ListResponse;
+import uk.gov.companieshouse.service.links.CoreLinkKeys;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -56,7 +57,7 @@ public class RequestsController {
         return ResponseEntity.created(
             URI.create(extensionRequestFullEntity
                 .getLinks()
-                .getLink(() -> "self")))
+                .getLink(ExtensionsLinkKeys.SELF)))
             .body(extensionRequestFullDTO);
     }
 
