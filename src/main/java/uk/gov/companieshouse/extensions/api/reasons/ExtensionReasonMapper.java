@@ -1,6 +1,10 @@
 package uk.gov.companieshouse.extensions.api.reasons;
 
 import org.springframework.stereotype.Component;
+import uk.gov.companieshouse.service.links.Links;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Component
 public class ExtensionReasonMapper {
@@ -17,7 +21,12 @@ public class ExtensionReasonMapper {
         extensionReasonDTO.setId(entity.getId());
         extensionReasonDTO.setLinks(entity.getLinks());
 
-        // TODO map attachment links
+        Links attachments = new Links();
+        Map<String, String> linksMap = new HashMap<>();
+        entity.getAttachments().forEach(
+            a -> linksMap.put(a.getId(), a.getLinks().getLinks().get("self")));
+        attachments.setLinks(linksMap);
+        extensionReasonDTO.setAttachments(attachments);
 
         return extensionReasonDTO;
     }

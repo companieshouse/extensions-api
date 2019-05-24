@@ -208,7 +208,7 @@ public class AttachmentsServiceUnitTest {
             });
 
         assertFalse(entity.getReasons().get(0).getAttachments().isEmpty());
-        assertEquals(entity.getReasons().get(0).getAttachments().size(), 2);
+        assertEquals(2, entity.getReasons().get(0).getAttachments().size());
 
         AttachmentsService service = new AttachmentsService(repo, fileUploader);
         when(repo.findById(entity.getId()))

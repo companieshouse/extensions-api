@@ -2,21 +2,28 @@ package uk.gov.companieshouse.extensions.api.reasons;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyAttachment;
 import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyReasonEntity;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import uk.gov.companieshouse.extensions.api.attachments.Attachment;
 import uk.gov.companieshouse.extensions.api.groups.Unit;
 
-@Category(Unit.class)
-public class ReasonMapperUnitTest {
+import java.util.Map;
 
+@Category(Unit.class)
+public class ExtensionReasonMapperUnitTest {
 
     @Test
     public void canMapEntityToDTO() {
         ExtensionReasonMapper extensionReasonMapper = new ExtensionReasonMapper();
         ExtensionReasonEntity extensionReasonEntity = dummyReasonEntity();
+        Attachment attachment = dummyAttachment();
+        extensionReasonEntity.addAttachment(attachment);
+
         ExtensionReasonDTO extensionReasonDTO = extensionReasonMapper.entityToDTO(extensionReasonEntity);
 
         assertNotNull(extensionReasonDTO);
@@ -24,5 +31,10 @@ public class ReasonMapperUnitTest {
         assertEquals(extensionReasonEntity.getStartOn(), extensionReasonDTO.getStartOn());
         assertEquals(extensionReasonEntity.getEndOn(), extensionReasonDTO.getEndOn());
         assertEquals(extensionReasonEntity.getReason(), extensionReasonDTO.getReason());
+
+        String attachmentId = attachment.getId();
+        Map<String, String> dtoAttachmentLinks = extensionReasonDTO.getAttachments().getLinks();
+        assertTrue(dtoAttachmentLinks.containsKey(attachmentId));
+        assertEquals(attachment.getLinks().getLinks().get("self"), dtoAttachmentLinks.get(attachmentId));
     }
 }
