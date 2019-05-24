@@ -42,7 +42,7 @@ public class ApplicationConfiguration implements WebMvcConfigurer {
 
     @Bean
     public Supplier<LocalDateTime> dateTimeNow() {
-        return () -> LocalDateTime.now();
+        return LocalDateTime::now;
     }
 
     @Bean
