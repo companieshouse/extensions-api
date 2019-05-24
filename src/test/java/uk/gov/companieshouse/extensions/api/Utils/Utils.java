@@ -46,6 +46,7 @@ public class Utils {
     public static final String REASON_ID = "abc";
     public static final String ATTACHMENT_SELF_LINK = "/some/link/to/somewhere";
     public static final String ATTACHMENT_ID = "abdkskksd";
+    public static final String ATTACHMENT_NAME = "certificate.pdf";
 
     public static CreatedBy createdBy() {
         CreatedBy createdBy = new CreatedBy();
@@ -139,6 +140,7 @@ public class Utils {
     public static Attachment dummyAttachment() {
         Attachment attachment = new Attachment();
         attachment.setId(ATTACHMENT_ID);
+        attachment.setId(ATTACHMENT_NAME);
         Links attachmentLinks = new Links();
         Map<String, String> map = new HashMap<>();
         map.put("self", ATTACHMENT_SELF_LINK);

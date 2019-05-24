@@ -32,9 +32,9 @@ public class ExtensionReasonMapperUnitTest {
         assertEquals(extensionReasonEntity.getEndOn(), extensionReasonDTO.getEndOn());
         assertEquals(extensionReasonEntity.getReason(), extensionReasonDTO.getReason());
 
-        String attachmentId = attachment.getId();
+        String attachmentName = attachment.getName();
         Map<String, String> dtoAttachmentLinks = extensionReasonDTO.getAttachments().getLinks();
-        assertTrue(dtoAttachmentLinks.containsKey(attachmentId));
-        assertEquals(attachment.getLinks().getLinks().get("self"), dtoAttachmentLinks.get(attachmentId));
+        assertTrue(dtoAttachmentLinks.containsKey(attachmentName));
+        assertEquals(attachment.getLinks().getLinks().get("self"), dtoAttachmentLinks.get(attachmentName));
     }
 }

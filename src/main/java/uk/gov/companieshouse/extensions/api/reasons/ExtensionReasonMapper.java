@@ -24,7 +24,7 @@ public class ExtensionReasonMapper {
         Links attachments = new Links();
         Map<String, String> linksMap = new HashMap<>();
         entity.getAttachments().forEach(
-            a -> linksMap.put(a.getId(), a.getLinks().getLinks().get("self")));
+            a -> linksMap.put(a.getName(), a.getLinks().getLinks().get("self")));
         attachments.setLinks(linksMap);
         extensionReasonDTO.setAttachments(attachments);
 
