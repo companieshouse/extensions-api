@@ -22,9 +22,9 @@ public class ExtensionReasonEntityBuilder {
             throw new UnsupportedOperationException("Links cannot be set before ID");
         }
         String linkToSelf = requestURI + "/" + this.id;
-        Links selfLink = new Links();
-        selfLink.setLink(() ->  "self", linkToSelf);
-        this.links = selfLink;
+        Links links = new Links();
+        links.setLink(() ->  "self", linkToSelf);
+        this.links = links;
         return this;
     }
 
