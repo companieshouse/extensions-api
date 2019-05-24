@@ -21,9 +21,9 @@ public class ExtensionRequestMapper {
         dto.setAccountingPeriodEndOn(entity.getAccountingPeriodEndOn());
         dto.setStatus(entity.getStatus());
 
-        entity.getReasons().forEach((reason) -> {
-            dto.addReason(reason.getLinks());
-        });
+        entity.getReasons().forEach(
+            reason -> dto.addReason(reason.getLinks())
+        );
 
         return dto;
     }

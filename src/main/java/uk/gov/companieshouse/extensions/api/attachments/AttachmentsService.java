@@ -13,7 +13,6 @@ import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestsRepository
 import uk.gov.companieshouse.extensions.api.requests.ExtensionsLinkKeys;
 import uk.gov.companieshouse.service.ServiceException;
 import uk.gov.companieshouse.service.ServiceResult;
-import uk.gov.companieshouse.service.links.CoreLinkKeys;
 import uk.gov.companieshouse.service.links.Links;
 
 import javax.validation.constraints.NotNull;

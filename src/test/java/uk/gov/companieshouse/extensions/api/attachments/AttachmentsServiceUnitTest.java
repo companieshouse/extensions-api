@@ -77,9 +77,9 @@ public class AttachmentsServiceUnitTest {
             service.addAttachment(Utils.mockMultipartFile(),
                 ACCESS_URL, REQUEST_ID, REASON_ID);
 
-        assertEquals(result.getData().getContentType(), "text/plain");
+        assertEquals("text/plain", result.getData().getContentType());
         assertNotNull(result.getData().getId());
-        assertEquals(result.getData().getName(), FILENAME);
+        assertEquals(FILENAME, result.getData().getName());
         assertEquals(ServiceResultStatus.ACCEPTED, result.getStatus());
 
         Optional<Attachment> entityAttachment = entity.getReasons()
@@ -224,8 +224,8 @@ public class AttachmentsServiceUnitTest {
             .stream()
             .forEach(reason -> {
                 assertFalse(reason.getAttachments().isEmpty());
-                assertEquals(reason.getAttachments().size(), 1);
-                assertEquals(reason.getAttachments().get(0).getId(), "123456");
+                assertEquals(1, reason.getAttachments().size());
+                assertEquals("123456", reason.getAttachments().get(0).getId());
             });
 
         verify(repo).save(entity);
