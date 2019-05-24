@@ -57,7 +57,6 @@ public class ListResponse<T> {
         private String etag;
         private int itemsPerPage;
         private int startIndex;
-        private int totalResults;
         private List<T> items;
 
         public Builder<T> withEtag(String etag) {
@@ -84,8 +83,7 @@ public class ListResponse<T> {
             if (items == null) {
                 items = new ArrayList<>();
             }
-            totalResults = items.size();
-            return new ListResponse<T>(etag, itemsPerPage, startIndex, totalResults, items);
+            return new ListResponse<>(etag, itemsPerPage, startIndex, items.size(), items);
         }
     }
 }

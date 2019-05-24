@@ -1,7 +1,10 @@
 package uk.gov.companieshouse.extensions.api.requests;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
+
 import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -16,6 +19,9 @@ public class ERICHeaderParser {
     private static final String DELIMITER = ";";
     private static final String ERIC_AUTHORISED_USER = "ERIC-Authorised-User";
     private static final String EMAIL_IDENTIFIER = "@";
+
+    @Autowired
+    private ApiLogger logger;
 
     public String getUserId(HttpServletRequest request) {
         String userId = request.getHeader(ERIC_IDENTITY);
@@ -96,7 +102,7 @@ public class ERICHeaderParser {
         try {
             decoded = URLDecoder.decode(utf8String, "UTF-8");
         } catch (UnsupportedEncodingException e) {
-            // TODO log exception - this should never happen if the "UTF-8" encoding type is correct
+           logger.error(e);
         }
         return decoded;
     }
