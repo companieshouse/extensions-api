@@ -28,6 +28,7 @@ import org.springframework.web.client.RestTemplate;
 import uk.gov.companieshouse.extensions.api.groups.Integration;
 import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
 import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestFullEntity;
+import uk.gov.companieshouse.extensions.api.requests.ExtensionsLinkKeys;
 import uk.gov.companieshouse.extensions.api.response.ListResponse;
 import uk.gov.companieshouse.service.ServiceResult;
 import uk.gov.companieshouse.service.links.Links;
@@ -66,7 +67,7 @@ public class ReasonsControllerIntegrationTest {
          dto.setId("123");
 
          Links links = new Links();
-         links.setLink(() -> "self", "url");
+         links.setLink(ExtensionsLinkKeys.SELF, "url");
          dto.setLinks(links);
          when(reasonsService.addExtensionsReasonToRequest(any(ExtensionCreateReason.class), any(String.class), any(String.class)))
              .thenReturn(ServiceResult.created(dto));
@@ -106,7 +107,7 @@ public class ReasonsControllerIntegrationTest {
                 .accept(MediaType.APPLICATION_JSON);
 
         Links links = new Links();
-        links.setLink(() -> "self", "url");
+        links.setLink(ExtensionsLinkKeys.SELF, "url");
         ExtensionReasonDTO dto = new ExtensionReasonDTO();
         dto.setLinks(links);
         when(reasonsService.patchReason(any(ExtensionCreateReason.class), any(String.class), any(String.class)))

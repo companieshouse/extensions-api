@@ -29,6 +29,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.companieshouse.extensions.api.groups.Unit;
 import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestFullEntity;
 import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestsRepository;
+import uk.gov.companieshouse.extensions.api.requests.ExtensionsLinkKeys;
 import uk.gov.companieshouse.extensions.api.requests.RequestsService;
 import uk.gov.companieshouse.extensions.api.response.ListResponse;
 import uk.gov.companieshouse.service.ServiceException;
@@ -140,7 +141,7 @@ public class ReasonServiceUnitTest {
         assertEquals(dummyCreateReason.getReason(), extensionReasonResult.getReason());
 
         Links expectedLinks = new Links();
-        expectedLinks.setLink(() -> "self", "dummyUri/abc");
+        expectedLinks.setLink(ExtensionsLinkKeys.SELF, "dummyUri/abc");
         assertEquals(expectedLinks, result.getData().getLinks());
 
         assertEquals(ServiceResultStatus.CREATED, result.getStatus());

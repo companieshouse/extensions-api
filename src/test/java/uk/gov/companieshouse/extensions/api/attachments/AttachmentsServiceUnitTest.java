@@ -32,9 +32,11 @@ import uk.gov.companieshouse.extensions.api.groups.Unit;
 import uk.gov.companieshouse.extensions.api.reasons.ExtensionReasonEntity;
 import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestFullEntity;
 import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestsRepository;
+import uk.gov.companieshouse.extensions.api.requests.ExtensionsLinkKeys;
 import uk.gov.companieshouse.service.ServiceException;
 import uk.gov.companieshouse.service.ServiceResult;
 import uk.gov.companieshouse.service.ServiceResultStatus;
+import uk.gov.companieshouse.service.links.CoreLinkKeys;
 
 @Category(Unit.class)
 @RunWith(MockitoJUnitRunner.class)
@@ -85,8 +87,8 @@ public class AttachmentsServiceUnitTest {
             .flatMap(reason -> reason.getAttachments().stream())
             .findAny();
         assertTrue(entityAttachment.isPresent());
-        String linkUrl = entityAttachment.get().getLinks().getLinks().get("self");
-        String downloadUrl = entityAttachment.get().getLinks().getLinks().get("download");
+        String linkUrl = entityAttachment.get().getLinks().getLink(ExtensionsLinkKeys.SELF);
+        String downloadUrl = entityAttachment.get().getLinks().getLink(ExtensionsLinkKeys.DOWNLOAD);
         assertEquals(linkUrl + "/download", downloadUrl);
         assertTrue(linkUrl.startsWith(ACCESS_URL));
         assertFalse(linkUrl.endsWith(ACCESS_URL + "/"));

@@ -11,6 +11,7 @@ import org.junit.experimental.categories.Category;
 
 import uk.gov.companieshouse.extensions.api.attachments.Attachment;
 import uk.gov.companieshouse.extensions.api.groups.Unit;
+import uk.gov.companieshouse.extensions.api.requests.ExtensionsLinkKeys;
 
 import java.util.Map;
 
@@ -35,6 +36,6 @@ public class ExtensionReasonMapperUnitTest {
         String attachmentName = attachment.getName();
         Map<String, String> dtoAttachmentLinks = extensionReasonDTO.getAttachments().getLinks();
         assertTrue(dtoAttachmentLinks.containsKey(attachmentName));
-        assertEquals(attachment.getLinks().getLinks().get("self"), dtoAttachmentLinks.get(attachmentName));
+        assertEquals(attachment.getLinks().getLink(ExtensionsLinkKeys.SELF), dtoAttachmentLinks.get(attachmentName));
     }
 }

@@ -1,5 +1,6 @@
 package uk.gov.companieshouse.extensions.api.reasons;
 
+import uk.gov.companieshouse.extensions.api.requests.ExtensionsLinkKeys;
 import uk.gov.companieshouse.service.links.Links;
 
 import java.time.LocalDate;
@@ -23,7 +24,7 @@ public class ExtensionReasonEntityBuilder {
         }
         String linkToSelf = requestURI + "/" + this.id;
         Links links = new Links();
-        links.setLink(() ->  "self", linkToSelf);
+        links.setLink(ExtensionsLinkKeys.SELF, linkToSelf);
         this.links = links;
         return this;
     }

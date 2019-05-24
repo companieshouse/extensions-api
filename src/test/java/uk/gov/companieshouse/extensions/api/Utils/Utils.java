@@ -9,6 +9,7 @@ import uk.gov.companieshouse.extensions.api.reasons.ExtensionCreateReason;
 import uk.gov.companieshouse.extensions.api.reasons.ExtensionReasonDTO;
 import uk.gov.companieshouse.extensions.api.reasons.ExtensionReasonEntity;
 import uk.gov.companieshouse.extensions.api.requests.*;
+import uk.gov.companieshouse.service.links.CoreLinkKeys;
 import uk.gov.companieshouse.service.links.Links;
 
 import java.io.IOException;
@@ -61,7 +62,7 @@ public class Utils {
     private static Links links() {
         String linkToSelf = BASE_URL + REQUEST_ID;
         Links links = new Links();
-        links.setLink(() ->  "self", linkToSelf);
+        links.setLink(ExtensionsLinkKeys.SELF, linkToSelf);
         return links;
     }
 
@@ -142,9 +143,7 @@ public class Utils {
         attachment.setId(ATTACHMENT_ID);
         attachment.setId(ATTACHMENT_NAME);
         Links attachmentLinks = new Links();
-        Map<String, String> map = new HashMap<>();
-        map.put("self", ATTACHMENT_SELF_LINK);
-        attachmentLinks.setLinks(map);
+        attachmentLinks.setLink(ExtensionsLinkKeys.SELF, ATTACHMENT_SELF_LINK);
         attachment.setLinks(attachmentLinks);
         return attachment;
     }

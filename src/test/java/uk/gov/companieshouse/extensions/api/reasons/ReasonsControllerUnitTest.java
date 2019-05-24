@@ -30,6 +30,7 @@ import org.springframework.http.ResponseEntity;
 import uk.gov.companieshouse.extensions.api.groups.Unit;
 import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
 import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestFullEntity;
+import uk.gov.companieshouse.extensions.api.requests.ExtensionsLinkKeys;
 import uk.gov.companieshouse.extensions.api.response.ListResponse;
 import uk.gov.companieshouse.service.ServiceException;
 import uk.gov.companieshouse.service.ServiceResult;
@@ -89,7 +90,7 @@ public class ReasonsControllerUnitTest {
         dto.setId("123");
 
         Links links = new Links();
-        links.setLink(() -> "self", "requestURL");
+        links.setLink(ExtensionsLinkKeys.SELF, "requestURL");
         dto.setLinks(links);
 
         when(reasonsService.addExtensionsReasonToRequest(dummyCreateReason, REQUEST_ID,
