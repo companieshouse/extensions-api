@@ -28,7 +28,7 @@ public class ExtensionReasonMapperUnitTest {
         ExtensionReasonDTO extensionReasonDTO = extensionReasonMapper.entityToDTO(extensionReasonEntity);
 
         assertNotNull(extensionReasonDTO);
-        assertEquals(extensionReasonEntity.getAdditionalText(), extensionReasonDTO.getAdditionalText());
+        assertEquals(extensionReasonEntity.getReasonInformation(), extensionReasonDTO.getReasonInformation());
         assertEquals(extensionReasonEntity.getStartOn(), extensionReasonDTO.getStartOn());
         assertEquals(extensionReasonEntity.getEndOn(), extensionReasonDTO.getEndOn());
         assertEquals(extensionReasonEntity.getReason(), extensionReasonDTO.getReason());

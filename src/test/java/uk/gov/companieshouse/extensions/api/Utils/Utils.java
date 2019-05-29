@@ -42,7 +42,7 @@ public class Utils {
     public static final LocalDate REASON_END_ON = LocalDate.of(
         2019, 12, 12);
     public static final String REASON = "illness";
-    public static final String ADDITIONAL_TEXT = "string";
+    public static final String REASON_INFORMATION = "string";
     public static final String TESTURI = "testuri";
     public static final String REASON_ID = "abc";
     public static final String ATTACHMENT_SELF_LINK = "/some/link/to/somewhere";
@@ -110,7 +110,7 @@ public class Utils {
         ExtensionReasonDTO extensionReasonDTO = new ExtensionReasonDTO();
         extensionReasonDTO.setEtag(ETAG);
         extensionReasonDTO.setId(REASON_ID);
-        extensionReasonDTO.setAdditionalText(ADDITIONAL_TEXT);
+        extensionReasonDTO.setReasonInformation(REASON_INFORMATION);
         extensionReasonDTO.setStartOn(REASON_START_ON);
         extensionReasonDTO.setEndOn(REASON_END_ON);
         extensionReasonDTO.setReason(REASON);
@@ -121,7 +121,7 @@ public class Utils {
         ExtensionReasonEntity extensionReasonEntity = new ExtensionReasonEntity();
         extensionReasonEntity.setEtag(ETAG);
         extensionReasonEntity.setId(REASON_ID);
-        extensionReasonEntity.setAdditionalText(ADDITIONAL_TEXT);
+        extensionReasonEntity.setReasonInformation(REASON_INFORMATION);
         extensionReasonEntity.setStartOn(REASON_START_ON);
         extensionReasonEntity.setEndOn(REASON_END_ON);
         extensionReasonEntity.setReason(REASON);
@@ -131,7 +131,7 @@ public class Utils {
 
     public static ExtensionCreateReason dummyCreateReason() {
         ExtensionCreateReason reason = new ExtensionCreateReason();
-        reason.setAdditionalText(ADDITIONAL_TEXT);
+        reason.setReasonInformation(REASON_INFORMATION);
         reason.setStartOn(REASON_START_ON);
         reason.setEndOn(REASON_END_ON);
         reason.setReason(REASON);

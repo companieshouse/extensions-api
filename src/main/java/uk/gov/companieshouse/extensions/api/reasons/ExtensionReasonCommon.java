@@ -7,9 +7,6 @@ import java.time.LocalDate;
 public abstract class ExtensionReasonCommon {
     private String reason;
 
-    @JsonProperty("additional_text")
-    private String additionalText;
-
     @JsonProperty("start_on")
     private LocalDate startOn;
 
@@ -55,14 +52,6 @@ public abstract class ExtensionReasonCommon {
 
     public void setReason(String reason) {
         this.reason = reason;
-    }
-
-    public String getAdditionalText() {
-        return additionalText;
-    }
-
-    public void setAdditionalText(String additionalText) {
-        this.additionalText = additionalText;
     }
 
     public LocalDate getStartOn() {

@@ -38,7 +38,7 @@
       {
         "_id" : "reason3",
         "reason" : "illness",
-        "additionalText" : "I was ill",
+        "reasonInformation" : "I was ill",
         "startOn" : ISODate("2018-01-01T23:00:00.000Z"),
         "endOn" : ISODate("2019-01-01T00:00:00.000Z"),
         "links" : {
