@@ -133,9 +133,9 @@ public class ReasonServiceUnitTest {
         ExtensionReasonEntity extensionReasonResult = extensionRequestResult.getReasons().get(0);
 
         assertNotNull(extensionReasonResult);
-        assertEquals("string", extensionReasonResult.getAdditionalText());
+        assertEquals("string", extensionReasonResult.getReasonInformation());
         assertEquals("abc", extensionReasonResult.getId());
-        assertEquals(dummyCreateReason.getAdditionalText(), extensionReasonResult.getAdditionalText());
+        assertEquals(dummyCreateReason.getReasonInformation(), extensionReasonResult.getReasonInformation());
         assertEquals(dummyCreateReason.getStartOn(), extensionReasonResult.getStartOn());
         assertEquals(dummyCreateReason.getEndOn(), extensionReasonResult.getEndOn());
         assertEquals(dummyCreateReason.getReason(), extensionReasonResult.getReason());
@@ -180,7 +180,7 @@ public class ReasonServiceUnitTest {
     @Test
     public void canPatchAReason() throws ServiceException {
         ExtensionCreateReason reasonCreate = new ExtensionCreateReason();
-        reasonCreate.setAdditionalText("New text");
+        reasonCreate.setReasonInformation("New text");
         reasonCreate.setEndOn(null);
 
         ExtensionRequestFullEntity requestEntity = new ExtensionRequestFullEntity();
@@ -188,7 +188,7 @@ public class ReasonServiceUnitTest {
         requestEntity.setId("123");
 
         reasonEntity.setEndOn(LocalDate.of(2018,1,1));
-        reasonEntity.setAdditionalText("Old text");
+        reasonEntity.setReasonInformation("Old text");
         reasonEntity.setId("1234");
 
         requestEntity.addReason(reasonEntity);
@@ -198,8 +198,8 @@ public class ReasonServiceUnitTest {
 
         reasonsService.patchReason(reasonCreate,"123","1234");
 
-        assertEquals(reasonCreate.getAdditionalText(),
-            requestEntity.getReasons().get(0).getAdditionalText());
+        assertEquals(reasonCreate.getReasonInformation(),
+            requestEntity.getReasons().get(0).getReasonInformation());
         verify(extensionRequestsRepository).save(requestEntity);
     }
 

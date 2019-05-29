@@ -17,12 +17,12 @@ public class PatchReasonMapperUnitTest {
     @Test
     public void canMergeAPatchEntityIntoADatabaseEntity() {
         ExtensionCreateReason patchEntity = new ExtensionCreateReason();
-        patchEntity.setAdditionalText("replacement text");
+        patchEntity.setReasonInformation("replacement text");
         patchEntity.setStartOn(LocalDate.of(2018,2,2));
 
         ExtensionReasonEntity dbEntity = new ExtensionReasonEntity();
         dbEntity.setId("12345");
-        dbEntity.setAdditionalText("old text");
+        dbEntity.setReasonInformation("old text");
         dbEntity.setEndOn(LocalDate.of(2018,1,1));
         Links links = new Links();
         links.setLink(ExtensionsLinkKeys.SELF, "something");
@@ -31,7 +31,7 @@ public class PatchReasonMapperUnitTest {
         ExtensionReasonEntity mappedEntity = PatchReasonMapper.INSTANCE
             .patchEntity(patchEntity, dbEntity);
 
-        assertEquals("replacement text", mappedEntity.getAdditionalText());
+        assertEquals("replacement text", mappedEntity.getReasonInformation());
         assertEquals("12345", mappedEntity.getId());
         assertEquals(LocalDate.of(2018,1,1), mappedEntity.getEndOn());
         assertEquals(links, mappedEntity.getLinks());

@@ -89,7 +89,7 @@ public class RequestRepositoryIntegrationTest {
             .findAny()
             .orElseThrow(() -> new Exception("Reason expected in request object"));
 
-        assertEquals("string", actualReason.getAdditionalText());
+        assertEquals("string", actualReason.getReasonInformation());
         assertNotNull(actualReason.getId());
         assertTrue(actualReason.getAttachments().isEmpty());
         assertEquals("illness", actualReason.getReason());

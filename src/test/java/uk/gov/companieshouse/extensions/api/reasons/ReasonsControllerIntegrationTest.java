@@ -136,7 +136,7 @@ public class ReasonsControllerIntegrationTest {
     String buildMockReason() {
         return "{\n" +
                 "  \"reason\": \"illness\",\n" +
-                "  \"additional_text\": \"string\",\n" +
+                "  \"reason_information\": \"string\",\n" +
                 "  \"date_start\": \"2019-02-15\",\n" +
                 "  \"date_end\": \"2019-02-15\"\n" +
                 "}";
@@ -152,7 +152,6 @@ public class ReasonsControllerIntegrationTest {
                 "}" +
             "}," +
             "\"attachments\":null," +
-            "\"additional_text\":null," +
             "\"start_on\":null," +
             "\"end_on\":null," +
             "\"affected_person\":null," +
@@ -169,7 +168,6 @@ public class ReasonsControllerIntegrationTest {
                 "\"reason\":null," +
                 "\"links\":null," +
                 "\"attachments\":null," +
-                "\"additional_text\":null," +
                 "\"start_on\":null," +
                 "\"end_on\":null," +
                 "\"affected_person\":null," +

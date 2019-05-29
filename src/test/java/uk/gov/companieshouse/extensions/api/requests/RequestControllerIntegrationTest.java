@@ -140,7 +140,7 @@ public class RequestControllerIntegrationTest {
                "  \"extensionReasons\": [\n" +
                "    {\n" +
                "      \"reason\": \"string\",\n" +
-               "      \"additional_text\": \"string\",\n" +
+               "      \"reason_information\": \"string\",\n" +
                "      \"date_start\": \"2019-02-15\",\n" +
                "      \"date_end\": \"2019-02-15\"\n" +
                "    }\n" +
