@@ -147,11 +147,8 @@ public class ReasonsControllerIntegrationTest {
             "\"id\":\"123\"," +
             "\"reason\":null," +
             "\"links\":{" +
-                "\"links\":{" +
-                    "\"self\":\"url\"" +
-                "}" +
+                "\"self\":\"url\"" +
             "}," +
-            "\"attachments\":null," +
             "\"start_on\":null," +
             "\"end_on\":null," +
             "\"affected_person\":null," +
@@ -166,8 +163,6 @@ public class ReasonsControllerIntegrationTest {
                 "{\"etag\":null," +
                 "\"id\":null," +
                 "\"reason\":null," +
-                "\"links\":null," +
-                "\"attachments\":null," +
                 "\"start_on\":null," +
                 "\"end_on\":null," +
                 "\"affected_person\":null," +
