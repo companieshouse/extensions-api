@@ -1,6 +1,6 @@
 package uk.gov.companieshouse.extensions.api.attachments.upload;
 
-public class FileUploaderResponse {
+public class FileTransferGatewayResponse {
 
     private String fileId;
     private boolean inError;
