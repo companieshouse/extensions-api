@@ -7,6 +7,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -15,6 +16,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.web.multipart.MultipartFile;
 
 import uk.gov.companieshouse.extensions.api.Utils.Utils;
@@ -69,5 +71,16 @@ public class AttachmentsControllerUnitTest {
 
         verify(logger).info(serviceException.getMessage());
         assertEquals(HttpStatus.NOT_FOUND, entity.getStatusCode());
+    }
+
+    @Test
+    public void willReturn200ForSuccessfulDownload() {
+        AttachmentsController controller =
+            new AttachmentsController(PluggableResponseEntityFactory.buildWithStandardFactories(),
+                attachmentsService, logger);
+        String attachmentId = "123";
+        HttpServletResponse response = new MockHttpServletResponse();
+        ResponseEntity responseEntity = controller.downloadAttachmentFromRequest(attachmentId, response);
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
     }
 }

@@ -1,6 +1,7 @@
 package uk.gov.companieshouse.extensions.api.attachments;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,6 +19,8 @@ import uk.gov.companieshouse.service.rest.response.ChResponseBody;
 import uk.gov.companieshouse.service.rest.response.PluggableResponseEntityFactory;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/company/{companyNumber}/extensions/requests")
@@ -65,8 +68,15 @@ public class AttachmentsController {
     }
 
     @LogMethodCall
-    @GetMapping("/{requestId}/reasons/{reasonId}/attachments/{attachmentId}")
-    public String downloadAttachmentFromRequest(@PathVariable String requestId, @PathVariable String attachmentId) {
-      return "Getting attachment";
+    @GetMapping("/{requestId}/reasons/{reasonId}/attachments/{attachmentId}/download")
+    public ResponseEntity<Void> downloadAttachmentFromRequest(@PathVariable String attachmentId, HttpServletResponse response) {
+       // response.setStatus(HttpStatus.OK.value());
+        try {
+            attachmentsService.downloadAttachment(attachmentId, response.getOutputStream());
+        } catch (IOException e) {
+            response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            logger.error(e);
+        }
+        return ResponseEntity.ok().build();
     }	
 }

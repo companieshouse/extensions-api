@@ -4,8 +4,8 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import uk.gov.companieshouse.extensions.api.attachments.upload.FileUploader;
-import uk.gov.companieshouse.extensions.api.attachments.upload.FileUploaderResponse;
+import uk.gov.companieshouse.extensions.api.attachments.upload.FileTransferGateway;
+import uk.gov.companieshouse.extensions.api.attachments.upload.FileTransferGatewayResponse;
 import uk.gov.companieshouse.extensions.api.logger.LogMethodCall;
 import uk.gov.companieshouse.extensions.api.reasons.ExtensionReasonEntity;
 import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestFullEntity;
@@ -16,6 +16,7 @@ import uk.gov.companieshouse.service.ServiceResult;
 import uk.gov.companieshouse.service.links.Links;
 
 import javax.validation.constraints.NotNull;
+import java.io.OutputStream;
 import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -25,12 +26,12 @@ public class AttachmentsService {
 
     private ExtensionRequestsRepository requestsRepo;
 
-    private FileUploader fileUploader;
+    private FileTransferGateway fileTransferGateway;
 
     @Autowired
-    public AttachmentsService(ExtensionRequestsRepository requestsRepo, FileUploader fileUploader) {
+    public AttachmentsService(ExtensionRequestsRepository requestsRepo, FileTransferGateway fileTransferGateway) {
         this.requestsRepo = requestsRepo;
-        this.fileUploader = fileUploader;
+        this.fileTransferGateway = fileTransferGateway;
     }
 
     @LogMethodCall
@@ -39,10 +40,10 @@ public class AttachmentsService {
                           String attachmentsUri, String requestId,
                           String reasonId) throws ServiceException {
 
-        FileUploaderResponse fileUploaderResponse = uploadFile(file);
+        FileTransferGatewayResponse fileTransferGatewayResponse = uploadFile(file);
 
-        String attachmentId = fileUploaderResponse.getFileId();
-        Attachment attachment = getAttachment(file, attachmentId);
+        String attachmentId = fileTransferGatewayResponse.getFileId();
+        Attachment attachment = createAttachment(file, attachmentId);
 
         ExtensionRequestFullEntity extension = requestsRepo.findById(requestId)
             .orElseThrow(missingRequest(requestId));
@@ -51,7 +52,7 @@ public class AttachmentsService {
             .orElseThrow(missingReason(requestId, reasonId))
             .addAttachment(attachment);
 
-        Links links = getLinks(attachmentsUri, attachmentId);
+        Links links = createLinks(attachmentsUri, attachmentId);
         attachment.setLinks(links);
 
         requestsRepo.save(extension);
@@ -63,18 +64,18 @@ public class AttachmentsService {
             .build());
     }
 
-    private FileUploaderResponse uploadFile(@NotNull MultipartFile file) throws ServiceException {
-        FileUploaderResponse fileUploaderResponse = fileUploader.upload(file);
-        if (fileUploaderResponse.isInError()) {
-            throw new ServiceException(fileUploaderResponse.getErrorMessage());
+    private FileTransferGatewayResponse uploadFile(@NotNull MultipartFile file) throws ServiceException {
+        FileTransferGatewayResponse fileTransferGatewayResponse = fileTransferGateway.upload(file);
+        if (fileTransferGatewayResponse.isInError()) {
+            throw new ServiceException(fileTransferGatewayResponse.getErrorMessage());
         }
-        if (StringUtils.isBlank(fileUploaderResponse.getFileId())) {
+        if (StringUtils.isBlank(fileTransferGatewayResponse.getFileId())) {
             throw new ServiceException("No file id returned from file upload");
         }
-        return fileUploaderResponse;
+        return fileTransferGatewayResponse;
     }
 
-    private Attachment getAttachment(@NotNull MultipartFile file, String attachmentId) {
+    private Attachment createAttachment(@NotNull MultipartFile file, String attachmentId) {
         Attachment attachment = new Attachment();
         attachment.setId(attachmentId);
         String filename = file.getOriginalFilename();
@@ -84,7 +85,7 @@ public class AttachmentsService {
         return attachment;
     }
 
-    private Links getLinks(String attachmentsUri, String attachmentId) {
+    private Links createLinks(String attachmentsUri, String attachmentId) {
         String linkToSelf = attachmentsUri + "/" + attachmentId;
         Links links = new Links();
         links.setLink(ExtensionsLinkKeys.SELF, linkToSelf);
@@ -132,5 +133,9 @@ public class AttachmentsService {
     private Supplier<ServiceException> missingReason(String requestId, String reasonId) {
         return () -> new ServiceException(String.format("Reason %s not found in " +
             "Request %s", reasonId, requestId));
+    }
+
+    public void downloadAttachment(String attachmentId, OutputStream responseOutputStream) {
+        fileTransferGateway.download(attachmentId, responseOutputStream);
     }
 }

@@ -45,6 +45,7 @@ public class AttachmentsControllerIntegrationTest {
         "/reasons/a2/attachments";
     private static final String SPECIFIC_URL = "/company/00006400/extensions/requests/a1/reasons" +
         "/a2/attachments/a3";
+    private static final String DOWNLOAD_URL = SPECIFIC_URL + "/download";
 
     private MockMvc mockMvc;
 
@@ -109,11 +110,9 @@ public class AttachmentsControllerIntegrationTest {
 
     @Test
     public void testDownloadAttachmentFromRequest() throws Exception {
-        RequestBuilder requestBuilder = MockMvcRequestBuilders
-            .get(SPECIFIC_URL)
-            .accept(MediaType.APPLICATION_JSON);
+        RequestBuilder requestBuilder = MockMvcRequestBuilders.get(DOWNLOAD_URL);
 
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
-        assertEquals("Getting attachment", result.getResponse().getContentAsString());
+        assertEquals(HttpStatus.OK.value(), result.getResponse().getStatus());
     }
 }

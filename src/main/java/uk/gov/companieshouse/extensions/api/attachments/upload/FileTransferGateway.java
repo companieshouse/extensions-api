@@ -1,9 +1,11 @@
 package uk.gov.companieshouse.extensions.api.attachments.upload;
 
+import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -15,8 +17,11 @@ import org.springframework.web.multipart.MultipartFile;
 import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
 import uk.gov.companieshouse.extensions.api.logger.LogMethodCall;
 
+import java.io.OutputStream;
+import java.util.Collections;
+
 @Component
-public class FileUploader {
+public class FileTransferGateway {
 
     @Autowired
     private ApiLogger logger;
@@ -34,11 +39,12 @@ public class FileUploader {
     private static final String FILE_TRANSFER_API_FIELD_NAME = "upload";
     private static final String HEADER_CONTENT_DISPOSITION = "Content-disposition";
     private static final String CONTENT_DISPOSITION_VALUE = "form-data; name=%s; filename=%s";
+    private static final String DOWNLOAD_URI = "%s/%s/download";
 
     @LogMethodCall
-    public FileUploaderResponse upload(MultipartFile fileToUpload) {
+    public FileTransferGatewayResponse upload(MultipartFile fileToUpload) {
 
-        FileUploaderResponse fileUploaderResponse;
+        FileTransferGatewayResponse fileTransferGatewayResponse;
 
         HttpHeaders headers = getHttpHeaders();
 
@@ -53,17 +59,33 @@ public class FileUploader {
 
             ResponseEntity<FileTransferApiResponse> apiResponse = restTemplate.postForEntity(fileTransferApiURL, requestEntity, FileTransferApiResponse.class);
 
-            fileUploaderResponse = getResponse(apiResponse);
+            fileTransferGatewayResponse = getResponse(apiResponse);
         } catch (HttpClientErrorException | HttpServerErrorException httpEx) {
             logger.info(httpEx.getMessage());
-            fileUploaderResponse = getResponse(httpEx);
-            fileUploaderResponse.setErrorStatusCode(String.valueOf(httpEx.getRawStatusCode()));
-            fileUploaderResponse.setErrorStatusText(httpEx.getStatusText());
+            fileTransferGatewayResponse = getResponse(httpEx);
+            fileTransferGatewayResponse.setErrorStatusCode(String.valueOf(httpEx.getRawStatusCode()));
+            fileTransferGatewayResponse.setErrorStatusText(httpEx.getStatusText());
         } catch (Exception e) {
             logger.error(e);
-            fileUploaderResponse = getResponse(e);
+            fileTransferGatewayResponse = getResponse(e);
         }
-        return fileUploaderResponse;
+        return fileTransferGatewayResponse;
+    }
+
+    @LogMethodCall
+    public void download(String fileId, OutputStream outputStream) {
+        String downloadUri = String.format(DOWNLOAD_URI, fileTransferApiURL, fileId);
+
+        restTemplate.execute(
+            downloadUri,
+            HttpMethod.GET,
+            requestCallback -> {
+                requestCallback.getHeaders().setAccept(Collections.singletonList(MediaType.APPLICATION_OCTET_STREAM));
+                requestCallback.getHeaders().add(HEADER_API_KEY, fileTransferApiKey);
+            },
+            responseExtractor -> IOUtils.copy(responseExtractor.getBody(), outputStream)
+        );
+        //TODO - error handling
     }
 
     private HttpHeaders getHttpHeaders() {
@@ -85,25 +107,25 @@ public class FileUploader {
         return multipartReqMap;
     }
 
-    private FileUploaderResponse getResponse(Exception e) {
-        FileUploaderResponse fileUploaderResponse = new FileUploaderResponse();
-        fileUploaderResponse.setInError(true);
-        fileUploaderResponse.setErrorMessage(e.getMessage());
-        return fileUploaderResponse;
+    private FileTransferGatewayResponse getResponse(Exception e) {
+        FileTransferGatewayResponse fileTransferGatewayResponse = new FileTransferGatewayResponse();
+        fileTransferGatewayResponse.setInError(true);
+        fileTransferGatewayResponse.setErrorMessage(e.getMessage());
+        return fileTransferGatewayResponse;
     }
 
-    private FileUploaderResponse getResponse(ResponseEntity<FileTransferApiResponse> response) {
-        FileUploaderResponse fileUploaderResponse = new FileUploaderResponse();
+    private FileTransferGatewayResponse getResponse(ResponseEntity<FileTransferApiResponse> response) {
+        FileTransferGatewayResponse fileTransferGatewayResponse = new FileTransferGatewayResponse();
         if (response.getStatusCode().isError()) {
-            fileUploaderResponse.setInError(true);
-            fileUploaderResponse.setErrorMessage(response.getStatusCode().toString());
+            fileTransferGatewayResponse.setInError(true);
+            fileTransferGatewayResponse.setErrorMessage(response.getStatusCode().toString());
         } else {
-            fileUploaderResponse.setInError(false);
+            fileTransferGatewayResponse.setInError(false);
             FileTransferApiResponse apiResponse = response.getBody();
             if (apiResponse != null) {
-                fileUploaderResponse.setFileId(apiResponse.getId());
+                fileTransferGatewayResponse.setFileId(apiResponse.getId());
             }
         }
-        return fileUploaderResponse;
+        return fileTransferGatewayResponse;
     }
 }
