@@ -11,7 +11,7 @@ if [[ -z "${MESOS_SLAVE_PID}" ]]; then
     source ~/.chs_env/global_env
     source ~/.chs_env/extensions-api/env
 
-    PORT="${EXTENSIONS_API_PORT:=4047}"
+    PORT="${EXTENSIONS_API_PORT:=4056}"
     PROXY_ARGS="-Dhttp.proxyHost=wsproxy.internal.ch -Dhttp.proxyPort=8080 -Dhttps.proxyHost=wsproxy.internal.ch -Dhttps.proxyPort=8080"
 
 else
