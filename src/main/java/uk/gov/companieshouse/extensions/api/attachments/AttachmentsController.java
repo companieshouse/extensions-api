@@ -1,6 +1,7 @@
 package uk.gov.companieshouse.extensions.api.attachments;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import uk.gov.companieshouse.extensions.api.attachments.file.FileDownloaderResponse;
 import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
 import uk.gov.companieshouse.extensions.api.logger.LogMethodCall;
 import uk.gov.companieshouse.service.ServiceException;
@@ -70,13 +72,26 @@ public class AttachmentsController {
     @LogMethodCall
     @GetMapping("/{requestId}/reasons/{reasonId}/attachments/{attachmentId}/download")
     public ResponseEntity<Void> downloadAttachmentFromRequest(@PathVariable String attachmentId, HttpServletResponse response) {
-       // response.setStatus(HttpStatus.OK.value());
         try {
-            attachmentsService.downloadAttachment(attachmentId, response.getOutputStream());
+            FileDownloaderResponse downloaderResponse = attachmentsService.downloadAttachment(attachmentId, response.getOutputStream());
+
+            ResponseEntity.BodyBuilder responseEntityBuilder = ResponseEntity.status(downloaderResponse.getHttpStatus());
+
+            HttpStatus downloaderHttpStatus = downloaderResponse.getHttpStatus();
+            if (downloaderHttpStatus != null && !downloaderHttpStatus.isError()) {
+                HttpHeaders downloaderHttpHeaders = downloaderResponse.getHttpHeaders();
+                HttpHeaders newHeaders = new HttpHeaders();
+                newHeaders.setContentType(downloaderHttpHeaders.getContentType());
+                newHeaders.setContentLength(downloaderHttpHeaders.getContentLength());
+                newHeaders.setContentDisposition(downloaderHttpHeaders.getContentDisposition());
+                responseEntityBuilder = responseEntityBuilder.headers(newHeaders);
+            }
+
+            return responseEntityBuilder.build();
+
         } catch (IOException e) {
-            response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
             logger.error(e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-        return ResponseEntity.ok().build();
     }	
 }
