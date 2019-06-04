@@ -5,11 +5,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import uk.gov.companieshouse.extensions.api.attachments.file.FileDownloader;
-import uk.gov.companieshouse.extensions.api.attachments.file.FileDownloaderResponse;
+import uk.gov.companieshouse.extensions.api.attachments.file.DownloadResponse;
 import uk.gov.companieshouse.extensions.api.attachments.file.FileTransferApiClient;
-import uk.gov.companieshouse.extensions.api.attachments.file.FileUploader;
-import uk.gov.companieshouse.extensions.api.attachments.file.FileUploaderResponse;
+import uk.gov.companieshouse.extensions.api.attachments.file.UploadResponse;
 import uk.gov.companieshouse.extensions.api.logger.LogMethodCall;
 import uk.gov.companieshouse.extensions.api.reasons.ExtensionReasonEntity;
 import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestFullEntity;
@@ -69,14 +67,13 @@ public class AttachmentsService {
     }
 
     private String uploadFile(@NotNull MultipartFile file) throws ServiceException {
-        //FileUploaderResponse fileUploaderResponse = fileUploader.upload(file);
-        FileUploaderResponse fileUploaderResponse = fileTransferApiClient.upload(file);
+        UploadResponse uploadResponse = fileTransferApiClient.upload(file);
 
-        HttpStatus responseHttpStatus = fileUploaderResponse.getHttpStatus();
+        HttpStatus responseHttpStatus = uploadResponse.getHttpStatus();
         if (responseHttpStatus != null && responseHttpStatus.isError()) {
             throw new ServiceException(responseHttpStatus.toString());
         }
-        String fileId = fileUploaderResponse.getFileId();
+        String fileId = uploadResponse.getFileId();
         if (StringUtils.isBlank(fileId)) {
             throw new ServiceException("No file id returned from file upload");
         } else {
@@ -144,9 +141,8 @@ public class AttachmentsService {
             "Request %s", reasonId, requestId));
     }
 
-    public FileDownloaderResponse downloadAttachment(String attachmentId, OutputStream responseOutputStream) {
-       // return fileDownloader.download(attachmentId, responseOutputStream);
-       // FileTransferApiClient client = new FileTransferApiClient();
-        return fileTransferApiClient.download(attachmentId, responseOutputStream);
+    public ServiceResult<DownloadResponse> downloadAttachment(String attachmentId, OutputStream responseOutputStream) {
+        DownloadResponse downloadResponse = fileTransferApiClient.download(attachmentId, responseOutputStream);
+        return ServiceResult.accepted(downloadResponse);
     }
 }

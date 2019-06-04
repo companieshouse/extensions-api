@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import uk.gov.companieshouse.extensions.api.attachments.file.FileDownloaderResponse;
+import uk.gov.companieshouse.extensions.api.attachments.file.DownloadResponse;
 import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
 import uk.gov.companieshouse.extensions.api.logger.LogMethodCall;
 import uk.gov.companieshouse.service.ServiceException;
@@ -73,13 +73,15 @@ public class AttachmentsController {
     @GetMapping("/{requestId}/reasons/{reasonId}/attachments/{attachmentId}/download")
     public ResponseEntity<Void> downloadAttachmentFromRequest(@PathVariable String attachmentId, HttpServletResponse response) {
         try {
-            FileDownloaderResponse downloaderResponse = attachmentsService.downloadAttachment(attachmentId, response.getOutputStream());
+            ServiceResult<DownloadResponse> downloadServiceResult = attachmentsService.downloadAttachment(attachmentId, response.getOutputStream());
+            DownloadResponse downloadResponse = downloadServiceResult.getData();
 
-            ResponseEntity.BodyBuilder responseEntityBuilder = ResponseEntity.status(downloaderResponse.getHttpStatus());
+            ResponseEntity.BodyBuilder responseEntityBuilder = ResponseEntity.status(downloadResponse.getHttpStatus());
 
-            HttpStatus downloaderHttpStatus = downloaderResponse.getHttpStatus();
+            HttpStatus downloaderHttpStatus = downloadResponse.getHttpStatus();
+
             if (downloaderHttpStatus != null && !downloaderHttpStatus.isError()) {
-                HttpHeaders downloaderHttpHeaders = downloaderResponse.getHttpHeaders();
+                HttpHeaders downloaderHttpHeaders = downloadResponse.getHttpHeaders();
                 HttpHeaders newHeaders = new HttpHeaders();
                 newHeaders.setContentType(downloaderHttpHeaders.getContentType());
                 newHeaders.setContentLength(downloaderHttpHeaders.getContentLength());

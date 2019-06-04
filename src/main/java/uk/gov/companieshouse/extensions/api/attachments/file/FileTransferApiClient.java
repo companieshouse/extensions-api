@@ -43,9 +43,9 @@ public class FileTransferApiClient {
     private String fileTransferApiKey;
 
 
-    private <R, T> R makeApiCall(FileTransferOperation <T> operation,
-                                 FileTransferResponseBuilder <R,T> responseBuilder,
-                                 FileTransferErrorResponseBuilder <R> errorResponseBuilder) {
+    private <R extends ApiClientResponse, T> R makeApiCall(FileTransferOperation <T> operation,
+                                                           FileTransferResponseBuilder <R,T> responseBuilder,
+                                                           R errorResponse) {
         R result;
         try {
              T restResponse = operation.execute();
@@ -54,16 +54,18 @@ public class FileTransferApiClient {
 
         } catch (HttpClientErrorException | HttpServerErrorException e) {
             logger.info(e.getMessage());
-            result = errorResponseBuilder.createErrorResponse(e.getStatusCode());
+            errorResponse.setHttpStatus(e.getStatusCode());
+            result = errorResponse;
         } catch (Exception e) {
             logger.error(e);
-            result = errorResponseBuilder.createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR);
+            errorResponse.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+            result = errorResponse;
         }
         return result;
     }
 
     @LogMethodCall
-    public FileDownloaderResponse download(String fileId, OutputStream outputStream) {
+    public DownloadResponse download(String fileId, OutputStream outputStream) {
         String downloadUri = String.format(DOWNLOAD_URI, fileTransferApiURL, fileId);
 
         return makeApiCall(
@@ -81,27 +83,23 @@ public class FileTransferApiClient {
                 }),
 
             clientHttpResponse -> {
-                FileDownloaderResponse fileDownloaderResponse = new FileDownloaderResponse();
+                DownloadResponse downloadResponse = new DownloadResponse();
                 if (clientHttpResponse != null) {
-                    fileDownloaderResponse.setHttpStatus(clientHttpResponse.getStatusCode());
-                    fileDownloaderResponse.setHttpHeaders(clientHttpResponse.getHeaders());
+                    downloadResponse.setHttpStatus(clientHttpResponse.getStatusCode());
+                    downloadResponse.setHttpHeaders(clientHttpResponse.getHeaders());
                 } else {
                     logger.error(NULL_RESPONSE_MESSAGE + fileTransferApiURL);
-                    fileDownloaderResponse.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+                    downloadResponse.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
                 }
-                return fileDownloaderResponse;
+                return downloadResponse;
             },
 
-            httpStatus -> {
-                FileDownloaderResponse fileDownloaderResponse = new FileDownloaderResponse();
-                fileDownloaderResponse.setHttpStatus(httpStatus);
-                return fileDownloaderResponse;
-            }
+            new DownloadResponse()
         );
     }
 
     @LogMethodCall
-    public FileUploaderResponse upload(MultipartFile fileToUpload) {
+    public UploadResponse upload(MultipartFile fileToUpload) {
         return makeApiCall(
             () -> {
                 HttpHeaders headers = createHttpHeaders();
@@ -113,25 +111,21 @@ public class FileTransferApiClient {
             },
 
             responseEntity -> {
-                FileUploaderResponse fileUploaderResponse = new FileUploaderResponse();
+                UploadResponse uploadResponse = new UploadResponse();
                 if (responseEntity != null) {
-                    fileUploaderResponse.setHttpStatus(responseEntity.getStatusCode());
+                    uploadResponse.setHttpStatus(responseEntity.getStatusCode());
                     FileTransferApiResponse apiResponse = responseEntity.getBody();
                     if (apiResponse != null) {
-                        fileUploaderResponse.setFileId(apiResponse.getId());
+                        uploadResponse.setFileId(apiResponse.getId());
                     }
                 } else {
                     logger.error(NULL_RESPONSE_MESSAGE + fileTransferApiURL);
-                    fileUploaderResponse.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+                    uploadResponse.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
                 }
-                return fileUploaderResponse;
+                return uploadResponse;
             },
 
-            httpStatus -> {
-                FileUploaderResponse fileUploaderResponse = new FileUploaderResponse();
-                fileUploaderResponse.setHttpStatus(httpStatus);
-                return fileUploaderResponse;
-            }
+            new UploadResponse()
         );
     }
 

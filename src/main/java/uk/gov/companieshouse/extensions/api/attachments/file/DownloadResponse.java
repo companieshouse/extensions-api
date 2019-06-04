@@ -3,7 +3,7 @@ package uk.gov.companieshouse.extensions.api.attachments.file;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 
-public class FileDownloaderResponse {
+public class DownloadResponse implements ApiClientResponse {
 
     private HttpStatus httpStatus;
     private HttpHeaders httpHeaders;
