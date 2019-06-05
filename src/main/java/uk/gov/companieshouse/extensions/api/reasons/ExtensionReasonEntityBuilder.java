@@ -10,7 +10,7 @@ public class ExtensionReasonEntityBuilder {
     private String id;
     private Links links;
     private String reason;
-    private String additionalText;
+    private String reasonInformation;
     private LocalDate startOn;
     private LocalDate endOn;
 
@@ -34,8 +34,8 @@ public class ExtensionReasonEntityBuilder {
         return this;
     }
 
-    public ExtensionReasonEntityBuilder withAdditionalText(String additionalText) {
-        this.additionalText = additionalText;
+    public ExtensionReasonEntityBuilder withReasonInformation(String reasonInformation) {
+        this.reasonInformation = reasonInformation;
         return this;
     }
 
@@ -60,7 +60,7 @@ public class ExtensionReasonEntityBuilder {
         extensionReasonEntity.setId(this.id);
         extensionReasonEntity.setLinks(this.links);
         extensionReasonEntity.setReason(this.reason);
-        extensionReasonEntity.setAdditionalText(this.additionalText);
+        extensionReasonEntity.setReasonInformation(this.reasonInformation);
         extensionReasonEntity.setStartOn(this.startOn);
         extensionReasonEntity.setEndOn(this.endOn);
         return extensionReasonEntity;

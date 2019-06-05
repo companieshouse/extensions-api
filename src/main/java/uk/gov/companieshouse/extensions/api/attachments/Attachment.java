@@ -1,6 +1,8 @@
 package uk.gov.companieshouse.extensions.api.attachments;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
+
 import uk.gov.companieshouse.service.links.Links;
 
 import java.io.Serializable;
@@ -8,6 +10,7 @@ import java.io.Serializable;
 public class Attachment implements Serializable {
 
     private String id;
+    @JsonUnwrapped
     private Links links;
     private String name;
 

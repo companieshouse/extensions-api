@@ -69,9 +69,9 @@ public class ReasonsService {
             extensionReasonEntityBuilder.withReason(reason);
         }
 
-        String additionalText = extensionCreateReason.getAdditionalText();
-        if (StringUtils.isNotBlank(additionalText)) {
-            extensionReasonEntityBuilder.withAdditionalText(additionalText);
+        String reasonInformation = extensionCreateReason.getReasonInformation();
+        if (StringUtils.isNotBlank(reasonInformation)) {
+            extensionReasonEntityBuilder.withReasonInformation(reasonInformation);
         }
 
         LocalDate startOn = extensionCreateReason.getStartOn();

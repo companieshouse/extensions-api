@@ -1,15 +1,18 @@
 package uk.gov.companieshouse.extensions.api.reasons;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
+
 import uk.gov.companieshouse.service.links.Links;
 
-@JsonPropertyOrder({"etag", "id", "reason", "links", "attachments", "additional_text", "start_on", "end_on", "affected_person", "reason_information", "continued_illness"})
+@JsonPropertyOrder({"etag", "id", "reason", "links", "attachments", "start_on", "end_on", "affected_person", "reason_information", "continued_illness"})
 public abstract class ExtensionReason extends ExtensionReasonCommon {
 
     private String etag;
 
     private String id;
 
+    @JsonUnwrapped
     private Links links;
 
     public String getEtag() {
@@ -37,6 +40,6 @@ public abstract class ExtensionReason extends ExtensionReasonCommon {
     }
 
     public String toString() {
-      return "Extension reason: " + super.getReason() + " Additional text: " + super.getAdditionalText() + " Date start: " + super.getStartOn() + " Date end: " + super.getEndOn();
+      return "Extension reason: " + super.getReason() + " Reason information: " + super.getReasonInformation() + " Date start: " + super.getStartOn() + " Date end: " + super.getEndOn();
     }
 }

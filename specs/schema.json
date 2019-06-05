@@ -460,9 +460,6 @@
                   "reason": {
                     "type": "string"
                   },
-                  "additional_text": {
-                    "type": "string"
-                  },
                   "start_on": {
                     "type": "string",
                     "format": "date"
@@ -656,9 +653,6 @@
         "reason": {
           "type": "string"
         },
-        "additional_text": {
-          "type": "string"
-        },
         "start_on": {
           "type": "string",
           "format": "date"
@@ -689,9 +683,6 @@
           "type": "string"
         },
         "reason": {
-          "type": "string"
-        },
-        "additional_text": {
           "type": "string"
         },
         "start_on": {

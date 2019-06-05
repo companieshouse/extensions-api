@@ -85,7 +85,7 @@ public class AttachmentsServiceUnitTest {
 
         assertEquals("text/plain", result.getData().getContentType());
         assertNotNull(result.getData().getId());
-        assertEquals(FILENAME, result.getData().getName());
+        assertEquals(Utils.ORIGINAL_FILE_NAME, result.getData().getName());
         assertEquals(ServiceResultStatus.ACCEPTED, result.getStatus());
 
         Optional<Attachment> entityAttachment = entity.getReasons()
@@ -133,7 +133,7 @@ public class AttachmentsServiceUnitTest {
 
         assertEquals(2, entityAttachments.size());
         assertEquals("testFile", entityAttachments.get(0).getName());
-        assertEquals(FILENAME, entityAttachments.get(1).getName());
+        assertEquals(Utils.ORIGINAL_FILE_NAME, entityAttachments.get(1).getName());
     }
 
     @Test
