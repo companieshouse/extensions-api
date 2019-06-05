@@ -64,6 +64,15 @@ public class FileTransferApiClient {
         return result;
     }
 
+    /**
+     * Downloads a file from the file-transfer-api
+     * The RestTemplate execute method takes a callback function to handle the response
+     * from the file-transfer-api. it's in here that we copy the data coming in from
+     * the file-transfer-api into the provided outputStream.
+     * @param fileId The id used by the file-transfer-api to identify the file
+     * @param outputStream The outputStream to capture the file
+     * @return DownloadResponse containing the response data
+     */
     @LogMethodCall
     public DownloadResponse download(String fileId, OutputStream outputStream) {
         String downloadUri = String.format(DOWNLOAD_URI, fileTransferApiURL, fileId);
@@ -98,6 +107,14 @@ public class FileTransferApiClient {
         );
     }
 
+    /**
+     * Uploads a file to the file-transfer-api
+     * Creates a multipart form request containing the file and sends to
+     * the file-transfer-api. The response from the file-transfer-api contains
+     * the new unique id for the file. This is captured and returned in the UploadResponse.
+     * @param fileToUpload The file to upload
+     * @return UploadResponse containing the file id if successful, error info if not
+     */
     @LogMethodCall
     public UploadResponse upload(MultipartFile fileToUpload) {
         return makeApiCall(
