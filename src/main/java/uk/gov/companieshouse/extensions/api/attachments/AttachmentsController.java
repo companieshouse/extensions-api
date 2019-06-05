@@ -82,11 +82,13 @@ public class AttachmentsController {
 
             if (downloaderHttpStatus != null && !downloaderHttpStatus.isError()) {
                 HttpHeaders downloaderHttpHeaders = downloadResponse.getHttpHeaders();
-                HttpHeaders newHeaders = new HttpHeaders();
-                newHeaders.setContentType(downloaderHttpHeaders.getContentType());
-                newHeaders.setContentLength(downloaderHttpHeaders.getContentLength());
-                newHeaders.setContentDisposition(downloaderHttpHeaders.getContentDisposition());
-                responseEntityBuilder = responseEntityBuilder.headers(newHeaders);
+                if (downloaderHttpHeaders != null) {
+                    HttpHeaders newHeaders = new HttpHeaders();
+                    newHeaders.setContentType(downloaderHttpHeaders.getContentType());
+                    newHeaders.setContentLength(downloaderHttpHeaders.getContentLength());
+                    newHeaders.setContentDisposition(downloaderHttpHeaders.getContentDisposition());
+                    responseEntityBuilder = responseEntityBuilder.headers(newHeaders);
+                }
             }
 
             return responseEntityBuilder.build();
