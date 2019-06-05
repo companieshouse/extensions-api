@@ -169,7 +169,6 @@ public class FileTransferApiClientUnitTest {
         when(clientHttpResponse.getStatusCode()).thenReturn(HttpStatus.OK);
         when(clientHttpResponse.getHeaders()).thenReturn(httpHeaders);
 
-        //final ArgumentCaptor<ResponseExtractor<ClientHttpResponse>> captor = ArgumentCaptor.forClass(ResponseExtractor.class);
         DownloadResponse downloadResponse = fileTransferApiClient.download(FILE_ID, outputStream);
 
         //need to capture the responseExtractor lambda passed to the restTemplate so we can test it - this is what actually does the file copy
