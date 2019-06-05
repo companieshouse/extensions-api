@@ -48,6 +48,7 @@ public class Utils {
     public static final String ATTACHMENT_SELF_LINK = "/some/link/to/somewhere";
     public static final String ATTACHMENT_ID = "abdkskksd";
     public static final String ATTACHMENT_NAME = "certificate.pdf";
+    public static final String ORIGINAL_FILE_NAME = "original.png";
 
     public static CreatedBy createdBy() {
         CreatedBy createdBy = new CreatedBy();
@@ -152,6 +153,6 @@ public class Utils {
         String fileName = "testMultipart.txt";
         Resource rsc = new ClassPathResource("input/testMultipart.txt");
         return new MockMultipartFile(fileName,
-            fileName, "text/plain", Files.readAllBytes(rsc.getFile().toPath()));
+            ORIGINAL_FILE_NAME, "text/plain", Files.readAllBytes(rsc.getFile().toPath()));
     }
 }
