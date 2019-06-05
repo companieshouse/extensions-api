@@ -112,7 +112,6 @@ public class AttachmentsControllerUnitTest {
                 attachmentsService, logger);
 
         ResponseEntity responseEntity = controller.downloadAttachmentFromRequest(ATTACHMENT_ID, response);
-
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
         assertNull(responseEntity.getBody());
         assertTrue(responseEntity.getHeaders().isEmpty());

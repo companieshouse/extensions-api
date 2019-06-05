@@ -50,7 +50,7 @@ public class AttachmentsController {
                 servletRequest.getRequestURI(), requestId, reasonId);
             return responseEntityFactory.createResponse(result);
         } catch(ServiceException e) {
-            logger.info(e.getMessage());
+            logger.error(e);
             return responseEntityFactory.createResponse(ServiceResult.notFound());
         }
     }
