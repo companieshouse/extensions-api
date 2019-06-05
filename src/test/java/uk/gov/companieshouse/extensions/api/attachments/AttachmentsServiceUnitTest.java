@@ -48,7 +48,6 @@ public class AttachmentsServiceUnitTest {
     private static final String REQUEST_ID = "123";
     private static final String REASON_ID = "1234";
     private static final String ACCESS_URL = "/dummyUrl";
-    private static final String FILENAME = "testMultipart.txt";
     private static final String UPLOAD_ID = "sjhkjsdfhkdshf";
     private static final String UPLOAD_FAILURE_MESSAGE = "Failure";
     private static final String NO_FILE_ID_MESSAGE = "No file id returned from file upload";
@@ -82,7 +81,7 @@ public class AttachmentsServiceUnitTest {
 
         assertEquals("text/plain", result.getData().getContentType());
         assertNotNull(result.getData().getId());
-        assertEquals(FILENAME, result.getData().getName());
+        assertEquals(Utils.ORIGINAL_FILE_NAME, result.getData().getName());
         assertEquals(ServiceResultStatus.ACCEPTED, result.getStatus());
 
         Optional<Attachment> entityAttachment = entity.getReasons()
@@ -131,7 +130,7 @@ public class AttachmentsServiceUnitTest {
 
         assertEquals(2, entityAttachments.size());
         assertEquals("testFile", entityAttachments.get(0).getName());
-        assertEquals(FILENAME, entityAttachments.get(1).getName());
+        assertEquals(Utils.ORIGINAL_FILE_NAME, entityAttachments.get(1).getName());
     }
 
     @Test
