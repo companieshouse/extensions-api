@@ -50,7 +50,6 @@ public class AttachmentsServiceUnitTest {
     private static final String REQUEST_ID = "123";
     private static final String REASON_ID = "1234";
     private static final String ACCESS_URL = "/dummyUrl";
-    private static final String FILENAME = "testMultipart.txt";
     private static final String UPLOAD_ID = "5agf-g6hh";
     private static final String NO_FILE_ID_MESSAGE = "No file id returned from file upload";
 
