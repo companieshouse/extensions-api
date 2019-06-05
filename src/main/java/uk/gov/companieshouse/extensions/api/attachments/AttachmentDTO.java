@@ -69,7 +69,7 @@ public class AttachmentDTO extends ApiObjectImpl implements Serializable {
 
         public AttachmentDTO build() {
             return new AttachmentDTO(attachment.getId(), links, "",
-                file.getName(), file.getSize(), file.getContentType());
+                file.getOriginalFilename(), file.getSize(), file.getContentType());
         }
     }
 }

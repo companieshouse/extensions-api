@@ -27,7 +27,7 @@ public class AttachmentDTOUnitTest {
 
         ObjectMapper mapper = new ObjectMapper();
         String actualJson = mapper.writeValueAsString(attachmentDTO);
-        String expectedJson = "{\"size\":10,\"name\":\"testMultipart.txt\"," +
+        String expectedJson = "{\"size\":10,\"name\":\"" + Utils.ORIGINAL_FILE_NAME+"\"," +
             "\"contentType\":\"text/plain\",\"etag\":\"\"}";
         assertEquals(expectedJson, actualJson);
     }
@@ -48,7 +48,7 @@ public class AttachmentDTOUnitTest {
             .build();
 
         assertEquals("12345", attachmentDTO.getId());
-        assertEquals("testMultipart.txt", attachmentDTO.getName());
+        assertEquals(Utils.ORIGINAL_FILE_NAME, attachmentDTO.getName());
         assertEquals("linkToSelf", attachmentDTO.getLinks().getLink(ExtensionsLinkKeys.SELF));
     }
 }
