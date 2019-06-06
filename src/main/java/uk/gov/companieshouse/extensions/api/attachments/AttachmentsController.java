@@ -1,6 +1,7 @@
 package uk.gov.companieshouse.extensions.api.attachments;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import uk.gov.companieshouse.extensions.api.attachments.file.DownloadResponse;
 import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
 import uk.gov.companieshouse.extensions.api.logger.LogMethodCall;
 import uk.gov.companieshouse.service.ServiceException;
@@ -48,7 +50,7 @@ public class AttachmentsController {
                 servletRequest.getRequestURI(), requestId, reasonId);
             return responseEntityFactory.createResponse(result);
         } catch(ServiceException e) {
-            logger.info(e.getMessage());
+            logger.error(e);
             return responseEntityFactory.createResponse(ServiceResult.notFound());
         }
     }
@@ -70,13 +72,30 @@ public class AttachmentsController {
     @LogMethodCall
     @GetMapping("/{requestId}/reasons/{reasonId}/attachments/{attachmentId}/download")
     public ResponseEntity<Void> downloadAttachmentFromRequest(@PathVariable String attachmentId, HttpServletResponse response) {
-       // response.setStatus(HttpStatus.OK.value());
         try {
-            attachmentsService.downloadAttachment(attachmentId, response.getOutputStream());
+            ServiceResult<DownloadResponse> downloadServiceResult = attachmentsService.downloadAttachment(attachmentId, response.getOutputStream());
+            DownloadResponse downloadResponse = downloadServiceResult.getData();
+
+            ResponseEntity.BodyBuilder responseEntityBuilder = ResponseEntity.status(downloadResponse.getHttpStatus());
+
+            HttpStatus downloaderHttpStatus = downloadResponse.getHttpStatus();
+
+            if (downloaderHttpStatus != null && !downloaderHttpStatus.isError()) {
+                HttpHeaders downloaderHttpHeaders = downloadResponse.getHttpHeaders();
+                if (downloaderHttpHeaders != null) {
+                    HttpHeaders newHeaders = new HttpHeaders();
+                    newHeaders.setContentType(downloaderHttpHeaders.getContentType());
+                    newHeaders.setContentLength(downloaderHttpHeaders.getContentLength());
+                    newHeaders.setContentDisposition(downloaderHttpHeaders.getContentDisposition());
+                    responseEntityBuilder = responseEntityBuilder.headers(newHeaders);
+                }
+            }
+
+            return responseEntityBuilder.build();
+
         } catch (IOException e) {
-            response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
             logger.error(e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-        return ResponseEntity.ok().build();
     }	
 }
