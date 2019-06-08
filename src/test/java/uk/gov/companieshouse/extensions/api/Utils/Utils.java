@@ -2,14 +2,11 @@ package uk.gov.companieshouse.extensions.api.Utils;
 
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
-import org.springframework.http.ContentDisposition;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 import uk.gov.companieshouse.extensions.api.attachments.Attachment;
-import uk.gov.companieshouse.extensions.api.attachments.file.DownloadResponse;
+import uk.gov.companieshouse.extensions.api.attachments.file.FileTransferApiClientResponse;
 import uk.gov.companieshouse.extensions.api.reasons.ExtensionCreateReason;
 import uk.gov.companieshouse.extensions.api.reasons.ExtensionReasonDTO;
 import uk.gov.companieshouse.extensions.api.reasons.ExtensionReasonEntity;
@@ -55,8 +52,6 @@ public class Utils {
     public static final String ATTACHMENT_SELF_LINK = "/some/link/to/somewhere";
     public static final String ATTACHMENT_ID = "abdkskksd";
     public static final String ATTACHMENT_NAME = "certificate.pdf";
-    public static final long DOWNLOAD_CONTENT_LENGTH = 55615L;
-    public static final String DOWNLOAD_DISPOSITION_TYPE = "DISPOSITION_TYPE";
     public static final String ORIGINAL_FILE_NAME = "original.png";
 
     public static CreatedBy createdBy() {
@@ -165,15 +160,9 @@ public class Utils {
             ORIGINAL_FILE_NAME, "text/plain", Files.readAllBytes(rsc.getFile().toPath()));
     }
 
-    public static DownloadResponse dummyDownloadResponse() {
-        DownloadResponse dummyDownloadResponse = new DownloadResponse();
-
+    public static FileTransferApiClientResponse dummyDownloadResponse() {
+        FileTransferApiClientResponse dummyDownloadResponse = new FileTransferApiClientResponse();
         dummyDownloadResponse.setHttpStatus(HttpStatus.OK);
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-        httpHeaders.setContentLength(DOWNLOAD_CONTENT_LENGTH);
-        httpHeaders.setContentDisposition(ContentDisposition.builder(DOWNLOAD_DISPOSITION_TYPE).build());
-        dummyDownloadResponse.setHttpHeaders(httpHeaders);
         return dummyDownloadResponse;
     }
 }
