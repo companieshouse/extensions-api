@@ -8,6 +8,8 @@ import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.only;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -24,6 +26,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.web.multipart.MultipartFile;
 
 import uk.gov.companieshouse.extensions.api.Utils.Utils;
@@ -37,6 +40,8 @@ import uk.gov.companieshouse.extensions.api.requests.ExtensionsLinkKeys;
 import uk.gov.companieshouse.service.ServiceException;
 import uk.gov.companieshouse.service.ServiceResult;
 import uk.gov.companieshouse.service.ServiceResultStatus;
+
+import javax.servlet.http.HttpServletResponse;
 
 @Category(Unit.class)
 @RunWith(MockitoJUnitRunner.class)
@@ -277,17 +282,18 @@ public class AttachmentsServiceUnitTest {
 
     @Test
     public void willCallFileTransferGatewayForDownload() {
-//        String attachmentId = "1234";
-//        OutputStream outputStream = new ByteArrayOutputStream();
-//        DownloadResponse dummyDownloadResponse = Utils.dummyDownloadResponse();
-//
-//        when(fileTransferApiClient.download(attachmentId, outputStream)).thenReturn(dummyDownloadResponse);
-//        ServiceResult<DownloadResponse> downloadServiceResult = service.downloadAttachment(attachmentId, outputStream);
-//
-//        verify(fileTransferApiClient, only()).download(attachmentId, outputStream);
-//        verify(fileTransferApiClient, times(1)).download(attachmentId, outputStream);
-//
-//        assertNotNull(downloadServiceResult);
+        String attachmentId = "1234";
+        HttpServletResponse httpServletResponse = new MockHttpServletResponse();
+        FileTransferApiClientResponse dummyDownloadResponse = Utils.dummyDownloadResponse();
+
+        when(fileTransferApiClient.download(attachmentId, httpServletResponse)).thenReturn(dummyDownloadResponse);
+
+        ServiceResult<FileTransferApiClientResponse> downloadServiceResult = service.downloadAttachment(attachmentId, httpServletResponse);
+
+        verify(fileTransferApiClient, only()).download(attachmentId, httpServletResponse);
+        verify(fileTransferApiClient, times(1)).download(attachmentId, httpServletResponse);
+
+        assertNotNull(downloadServiceResult);
     }
 
     private void addAttachmentToReason(ExtensionReasonEntity reason, String attachmentId) {

@@ -4,20 +4,21 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.web.multipart.MultipartFile;
 import uk.gov.companieshouse.extensions.api.Utils.Utils;
+import uk.gov.companieshouse.extensions.api.attachments.file.FileTransferApiClientResponse;
 import uk.gov.companieshouse.extensions.api.groups.Unit;
 import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
 import uk.gov.companieshouse.service.ServiceException;
+import uk.gov.companieshouse.service.ServiceResult;
 import uk.gov.companieshouse.service.rest.response.PluggableResponseEntityFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -78,58 +79,22 @@ public class AttachmentsControllerUnitTest {
     }
 
     @Test
-    public void willReturn200ForSuccessfulDownload() {
-//        HttpServletResponse response = new MockHttpServletResponse();
-//        DownloadResponse dummyDownloadResponse = Utils.dummyDownloadResponse();
-//
-//        when(attachmentsService.downloadAttachment(ATTACHMENT_ID, response.getOutputStream()))
-//            .thenReturn(ServiceResult.accepted(dummyDownloadResponse));
-//
-//        AttachmentsController controller =
-//            new AttachmentsController(PluggableResponseEntityFactory.buildWithStandardFactories(),
-//                attachmentsService, logger);
-//
-//        ResponseEntity responseEntity = controller.downloadAttachmentFromRequest(ATTACHMENT_ID, response);
-//        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-//
-//        assertEquals(MediaType.APPLICATION_OCTET_STREAM, responseEntity.getHeaders().getContentType());
-//        assertEquals(Utils.DOWNLOAD_CONTENT_LENGTH, responseEntity.getHeaders().getContentLength());
-//        assertEquals(Utils.DOWNLOAD_DISPOSITION_TYPE, responseEntity.getHeaders().getContentDisposition().getType());
-    }
+    public void willReturnStatusFromDownload() {
+        HttpServletResponse response = new MockHttpServletResponse();
+        FileTransferApiClientResponse dummyDownloadResponse = Utils.dummyDownloadResponse();
+        dummyDownloadResponse.setHttpStatus(HttpStatus.NOT_FOUND);
 
-    @Test
-    public void willReturn500ForDownload_IOException() throws IOException {
-        HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
-
-        when(response.getOutputStream()).thenThrow(new IOException());
+        when(attachmentsService.downloadAttachment(ATTACHMENT_ID, response))
+            .thenReturn(ServiceResult.accepted(dummyDownloadResponse));
 
         AttachmentsController controller =
             new AttachmentsController(PluggableResponseEntityFactory.buildWithStandardFactories(),
                 attachmentsService, logger);
 
         ResponseEntity responseEntity = controller.downloadAttachmentFromRequest(ATTACHMENT_ID, response);
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
+
+        assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
         assertNull(responseEntity.getBody());
         assertTrue(responseEntity.getHeaders().isEmpty());
-    }
-
-    @Test
-    public void willReturn404ForDownload_notFound() throws IOException {
-//        HttpServletResponse response = new MockHttpServletResponse();
-//        DownloadResponse dummyDownloadResponse = Utils.dummyDownloadResponse();
-//        dummyDownloadResponse.setHttpStatus(HttpStatus.NOT_FOUND);
-//
-//        when(attachmentsService.downloadAttachment(ATTACHMENT_ID, response.getOutputStream()))
-//            .thenReturn(ServiceResult.accepted(dummyDownloadResponse));
-//
-//        AttachmentsController controller =
-//            new AttachmentsController(PluggableResponseEntityFactory.buildWithStandardFactories(),
-//                attachmentsService, logger);
-//
-//        ResponseEntity responseEntity = controller.downloadAttachmentFromRequest(ATTACHMENT_ID, response);
-//
-//        assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
-//        assertNull(responseEntity.getBody());
-//        assertTrue(responseEntity.getHeaders().isEmpty());
     }
 }

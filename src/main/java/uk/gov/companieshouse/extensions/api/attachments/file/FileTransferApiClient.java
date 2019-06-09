@@ -33,6 +33,9 @@ public class FileTransferApiClient {
     private static final String UPLOAD = "upload";
     private static final String CONTENT_DISPOSITION_VALUE = "form-data; name=%s; filename=%s";
     private static final String NULL_RESPONSE_MESSAGE = "null response from file transfer api url";
+    private static final String CONTENT_TYPE = "Content-Type";
+    private static final String CONTENT_LENGTH = "Content-Length";
+    private static final String CONTENT_DISPOSITION = "Content-Disposition";
 
     @Autowired
     private ApiLogger logger;
@@ -73,7 +76,7 @@ public class FileTransferApiClient {
      * the file-transfer-api into the provided outputStream.
      * @param fileId The id used by the file-transfer-api to identify the file
      * @param httpServletResponse The HttpServletResponse to stream the file to
-     * @return FileTransferApiClientResponse containing the response data
+     * @return FileTransferApiClientResponse containing the http status
      */
     @LogMethodCall
     public FileTransferApiClientResponse download(String fileId, HttpServletResponse httpServletResponse) {
@@ -112,18 +115,18 @@ public class FileTransferApiClient {
 
     /**
      * Copies file detail headers returned from the file-transfer-api call into the httpServletResponse
-     * @param httpServletResponse
-     * @param clientHttpResponse
+     * @param httpServletResponse response to stream file to
+     * @param clientHttpResponse the response back from the api we are calling - the file-transfer-api
      */
     private void setResponseHeaders(HttpServletResponse httpServletResponse, ClientHttpResponse clientHttpResponse) {
         HttpHeaders incomingHeaders = clientHttpResponse.getHeaders();
         if (incomingHeaders != null) {
             MediaType contentType = incomingHeaders.getContentType();
             if (contentType != null) {
-                httpServletResponse.setHeader("Content-Type", contentType.toString());
+                httpServletResponse.setHeader(CONTENT_TYPE, contentType.toString());
             }
-            httpServletResponse.setHeader("Content-Length", String.valueOf(incomingHeaders.getContentLength()));
-            httpServletResponse.setHeader("Content-Disposition", incomingHeaders.getContentDisposition().toString());
+            httpServletResponse.setHeader(CONTENT_LENGTH, String.valueOf(incomingHeaders.getContentLength()));
+            httpServletResponse.setHeader(CONTENT_DISPOSITION, incomingHeaders.getContentDisposition().toString());
         }
     }
 
@@ -133,7 +136,7 @@ public class FileTransferApiClient {
      * the file-transfer-api. The response from the file-transfer-api contains
      * the new unique id for the file. This is captured and returned in the FileTransferApiClientResponse.
      * @param fileToUpload The file to upload
-     * @return FileTransferApiClientResponse containing the file id if successful, error info if not
+     * @return FileTransferApiClientResponse containing the file id if successful, and http status
      */
     @LogMethodCall
     public FileTransferApiClientResponse upload(MultipartFile fileToUpload) {
