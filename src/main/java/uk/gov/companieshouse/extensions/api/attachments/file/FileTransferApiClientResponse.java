@@ -2,7 +2,7 @@ package uk.gov.companieshouse.extensions.api.attachments.file;
 
 import org.springframework.http.HttpStatus;
 
-public class UploadResponse implements ApiClientResponse {
+public class FileTransferApiClientResponse {
 
     private String fileId;
     private HttpStatus httpStatus;

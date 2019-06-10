@@ -13,8 +13,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.io.ByteArrayOutputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -28,12 +26,12 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.web.multipart.MultipartFile;
 
 import uk.gov.companieshouse.extensions.api.Utils.Utils;
-import uk.gov.companieshouse.extensions.api.attachments.file.DownloadResponse;
 import uk.gov.companieshouse.extensions.api.attachments.file.FileTransferApiClient;
-import uk.gov.companieshouse.extensions.api.attachments.file.UploadResponse;
+import uk.gov.companieshouse.extensions.api.attachments.file.FileTransferApiClientResponse;
 import uk.gov.companieshouse.extensions.api.groups.Unit;
 import uk.gov.companieshouse.extensions.api.reasons.ExtensionReasonEntity;
 import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestFullEntity;
@@ -42,6 +40,8 @@ import uk.gov.companieshouse.extensions.api.requests.ExtensionsLinkKeys;
 import uk.gov.companieshouse.service.ServiceException;
 import uk.gov.companieshouse.service.ServiceResult;
 import uk.gov.companieshouse.service.ServiceResultStatus;
+
+import javax.servlet.http.HttpServletResponse;
 
 @Category(Unit.class)
 @RunWith(MockitoJUnitRunner.class)
@@ -179,7 +179,7 @@ public class AttachmentsServiceUnitTest {
 
     @Test
     public void willThrowServiceExceptionIfNoFileIdReturned() throws Exception {
-        UploadResponse response = getSuccessfulUploadResponse();
+        FileTransferApiClientResponse response = getSuccessfulUploadResponse();
         response.setFileId(null);
         when(fileTransferApiClient.upload(any(MultipartFile.class))).thenReturn(response);
 
@@ -283,14 +283,15 @@ public class AttachmentsServiceUnitTest {
     @Test
     public void willCallFileTransferGatewayForDownload() {
         String attachmentId = "1234";
-        OutputStream outputStream = new ByteArrayOutputStream();
-        DownloadResponse dummyDownloadResponse = Utils.dummyDownloadResponse();
+        HttpServletResponse httpServletResponse = new MockHttpServletResponse();
+        FileTransferApiClientResponse dummyDownloadResponse = Utils.dummyDownloadResponse();
 
-        when(fileTransferApiClient.download(attachmentId, outputStream)).thenReturn(dummyDownloadResponse);
-        ServiceResult<DownloadResponse> downloadServiceResult = service.downloadAttachment(attachmentId, outputStream);
+        when(fileTransferApiClient.download(attachmentId, httpServletResponse)).thenReturn(dummyDownloadResponse);
 
-        verify(fileTransferApiClient, only()).download(attachmentId, outputStream);
-        verify(fileTransferApiClient, times(1)).download(attachmentId, outputStream);
+        ServiceResult<FileTransferApiClientResponse> downloadServiceResult = service.downloadAttachment(attachmentId, httpServletResponse);
+
+        verify(fileTransferApiClient, only()).download(attachmentId, httpServletResponse);
+        verify(fileTransferApiClient, times(1)).download(attachmentId, httpServletResponse);
 
         assertNotNull(downloadServiceResult);
     }
@@ -303,15 +304,15 @@ public class AttachmentsServiceUnitTest {
         reason.addAttachment(attachment);
     }
 
-    private UploadResponse getSuccessfulUploadResponse() {
-        UploadResponse uploadResponse = new UploadResponse();
-        uploadResponse.setFileId(UPLOAD_ID);
-        return uploadResponse;
+    private FileTransferApiClientResponse getSuccessfulUploadResponse() {
+        FileTransferApiClientResponse fileTransferApiClientResponse = new FileTransferApiClientResponse();
+        fileTransferApiClientResponse.setFileId(UPLOAD_ID);
+        return fileTransferApiClientResponse;
     }
 
-    private UploadResponse getUnsuccessfullUploadResponse() {
-        UploadResponse uploadResponse = new UploadResponse();
-        uploadResponse.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-        return uploadResponse;
+    private FileTransferApiClientResponse getUnsuccessfullUploadResponse() {
+        FileTransferApiClientResponse fileTransferApiClientResponse = new FileTransferApiClientResponse();
+        fileTransferApiClientResponse.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+        return fileTransferApiClientResponse;
     }
 }

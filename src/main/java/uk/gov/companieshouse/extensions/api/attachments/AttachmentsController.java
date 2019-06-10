@@ -1,8 +1,6 @@
 package uk.gov.companieshouse.extensions.api.attachments;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import uk.gov.companieshouse.extensions.api.attachments.file.DownloadResponse;
+import uk.gov.companieshouse.extensions.api.attachments.file.FileTransferApiClientResponse;
 import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
 import uk.gov.companieshouse.extensions.api.logger.LogMethodCall;
 import uk.gov.companieshouse.service.ServiceException;
@@ -22,7 +20,6 @@ import uk.gov.companieshouse.service.rest.response.PluggableResponseEntityFactor
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 
 @RestController
 @RequestMapping("/company/{companyNumber}/extensions/requests")
@@ -72,30 +69,9 @@ public class AttachmentsController {
     @LogMethodCall
     @GetMapping("/{requestId}/reasons/{reasonId}/attachments/{attachmentId}/download")
     public ResponseEntity<Void> downloadAttachmentFromRequest(@PathVariable String attachmentId, HttpServletResponse response) {
-        try {
-            ServiceResult<DownloadResponse> downloadServiceResult = attachmentsService.downloadAttachment(attachmentId, response.getOutputStream());
-            DownloadResponse downloadResponse = downloadServiceResult.getData();
+        ServiceResult<FileTransferApiClientResponse> downloadServiceResult = attachmentsService.downloadAttachment(attachmentId, response);
+        FileTransferApiClientResponse downloadResponse = downloadServiceResult.getData();
 
-            ResponseEntity.BodyBuilder responseEntityBuilder = ResponseEntity.status(downloadResponse.getHttpStatus());
-
-            HttpStatus downloaderHttpStatus = downloadResponse.getHttpStatus();
-
-            if (downloaderHttpStatus != null && !downloaderHttpStatus.isError()) {
-                HttpHeaders downloaderHttpHeaders = downloadResponse.getHttpHeaders();
-                if (downloaderHttpHeaders != null) {
-                    HttpHeaders newHeaders = new HttpHeaders();
-                    newHeaders.setContentType(downloaderHttpHeaders.getContentType());
-                    newHeaders.setContentLength(downloaderHttpHeaders.getContentLength());
-                    newHeaders.setContentDisposition(downloaderHttpHeaders.getContentDisposition());
-                    responseEntityBuilder = responseEntityBuilder.headers(newHeaders);
-                }
-            }
-
-            return responseEntityBuilder.build();
-
-        } catch (IOException e) {
-            logger.error(e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        return ResponseEntity.status(downloadResponse.getHttpStatus()).build();
     }	
 }

@@ -5,9 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import uk.gov.companieshouse.extensions.api.attachments.file.DownloadResponse;
 import uk.gov.companieshouse.extensions.api.attachments.file.FileTransferApiClient;
-import uk.gov.companieshouse.extensions.api.attachments.file.UploadResponse;
+import uk.gov.companieshouse.extensions.api.attachments.file.FileTransferApiClientResponse;
 import uk.gov.companieshouse.extensions.api.logger.LogMethodCall;
 import uk.gov.companieshouse.extensions.api.reasons.ExtensionReasonEntity;
 import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestFullEntity;
@@ -17,8 +16,8 @@ import uk.gov.companieshouse.service.ServiceException;
 import uk.gov.companieshouse.service.ServiceResult;
 import uk.gov.companieshouse.service.links.Links;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.NotNull;
-import java.io.OutputStream;
 import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -67,13 +66,13 @@ public class AttachmentsService {
     }
 
     private String uploadFile(@NotNull MultipartFile file) throws ServiceException {
-        UploadResponse uploadResponse = fileTransferApiClient.upload(file);
+        FileTransferApiClientResponse response = fileTransferApiClient.upload(file);
 
-        HttpStatus responseHttpStatus = uploadResponse.getHttpStatus();
+        HttpStatus responseHttpStatus = response.getHttpStatus();
         if (responseHttpStatus != null && responseHttpStatus.isError()) {
             throw new ServiceException(responseHttpStatus.toString());
         }
-        String fileId = uploadResponse.getFileId();
+        String fileId = response.getFileId();
         if (StringUtils.isBlank(fileId)) {
             throw new ServiceException("No file id returned from file upload");
         } else {
@@ -141,8 +140,8 @@ public class AttachmentsService {
             "Request %s", reasonId, requestId));
     }
 
-    public ServiceResult<DownloadResponse> downloadAttachment(String attachmentId, OutputStream responseOutputStream) {
-        DownloadResponse downloadResponse = fileTransferApiClient.download(attachmentId, responseOutputStream);
+    public ServiceResult<FileTransferApiClientResponse> downloadAttachment(String attachmentId, HttpServletResponse httpServletResponse) {
+        FileTransferApiClientResponse downloadResponse = fileTransferApiClient.download(attachmentId, httpServletResponse);
         return ServiceResult.accepted(downloadResponse);
     }
 }
