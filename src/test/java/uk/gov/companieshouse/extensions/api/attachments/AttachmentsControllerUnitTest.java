@@ -53,7 +53,7 @@ public class AttachmentsControllerUnitTest {
         ResponseEntity entity = controller.uploadAttachmentToRequest(Utils.mockMultipartFile(),
             "123","1234", servletRequest);
 
-        verify(logger).info(serviceException.getMessage());
+        verify(logger).error(serviceException);
         assertEquals(HttpStatus.NOT_FOUND, entity.getStatusCode());
     }
 

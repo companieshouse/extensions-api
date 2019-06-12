@@ -1,5 +1,9 @@
 package uk.gov.companieshouse.extensions.api.attachments.upload;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.Collections;
+
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,15 +14,12 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
+
 import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
 import uk.gov.companieshouse.extensions.api.logger.LogMethodCall;
-
-import java.io.OutputStream;
-import java.util.Collections;
 
 @Component
 public class FileTransferGateway {
@@ -60,12 +61,7 @@ public class FileTransferGateway {
             ResponseEntity<FileTransferApiResponse> apiResponse = restTemplate.postForEntity(fileTransferApiURL, requestEntity, FileTransferApiResponse.class);
 
             fileTransferGatewayResponse = getResponse(apiResponse);
-        } catch (HttpClientErrorException | HttpServerErrorException httpEx) {
-            logger.info(httpEx.getMessage());
-            fileTransferGatewayResponse = getResponse(httpEx);
-            fileTransferGatewayResponse.setErrorStatusCode(String.valueOf(httpEx.getRawStatusCode()));
-            fileTransferGatewayResponse.setErrorStatusText(httpEx.getStatusText());
-        } catch (Exception e) {
+        } catch (IOException e) {
             logger.error(e);
             fileTransferGatewayResponse = getResponse(e);
         }

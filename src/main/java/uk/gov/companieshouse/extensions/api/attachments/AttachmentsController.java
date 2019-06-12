@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.multipart.MultipartFile;
 import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
 import uk.gov.companieshouse.extensions.api.logger.LogMethodCall;
@@ -48,8 +50,12 @@ public class AttachmentsController {
                 servletRequest.getRequestURI(), requestId, reasonId);
             return responseEntityFactory.createResponse(result);
         } catch(ServiceException e) {
-            logger.info(e.getMessage());
+            logger.error(e);
             return responseEntityFactory.createResponse(ServiceResult.notFound());
+        } catch(HttpClientErrorException | HttpServerErrorException e) {
+            logger.error(String.format("The file-transfer-api has returned an error for file: %s", 
+                file.getOriginalFilename()), e);
+            return ResponseEntity.status(e.getStatusCode()).build();
         }
     }
 
