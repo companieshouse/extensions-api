@@ -136,4 +136,38 @@ public class AttachmentsControllerUnitTest {
         verify(logger).error(anyString(), eq(expectedException));
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, entity.getStatusCode());
     }
+
+    @Test
+    public void willCatchHttpClientExceptions() throws ServiceException, IOException {
+        HttpServletResponse response = new MockHttpServletResponse();
+
+        when(attachmentsService.downloadAttachment(ATTACHMENT_ID, response))
+                .thenThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND));
+
+        AttachmentsController controller = new AttachmentsController(
+                PluggableResponseEntityFactory.buildWithStandardFactories(), attachmentsService, logger);
+
+        ResponseEntity responseEntity = controller.downloadAttachmentFromRequest(ATTACHMENT_ID, response);
+
+        assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
+        assertNull(responseEntity.getBody());
+        assertTrue(responseEntity.getHeaders().isEmpty());
+    }
+
+    @Test
+    public void willCatchHttpServerExceptions() throws ServiceException, IOException {
+        HttpServletResponse response = new MockHttpServletResponse();
+
+        when(attachmentsService.downloadAttachment(ATTACHMENT_ID, response))
+                .thenThrow(new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR));
+
+        AttachmentsController controller = new AttachmentsController(
+                PluggableResponseEntityFactory.buildWithStandardFactories(), attachmentsService, logger);
+
+        ResponseEntity responseEntity = controller.downloadAttachmentFromRequest(ATTACHMENT_ID, response);
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
+        assertNull(responseEntity.getBody());
+        assertTrue(responseEntity.getHeaders().isEmpty());
+    }
 }

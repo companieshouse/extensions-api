@@ -1,5 +1,8 @@
 package uk.gov.companieshouse.extensions.api.attachments;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -11,7 +14,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.multipart.MultipartFile;
+
 import uk.gov.companieshouse.extensions.api.attachments.file.FileTransferApiClientResponse;
 import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
 import uk.gov.companieshouse.extensions.api.logger.LogMethodCall;
@@ -19,9 +24,6 @@ import uk.gov.companieshouse.service.ServiceException;
 import uk.gov.companieshouse.service.ServiceResult;
 import uk.gov.companieshouse.service.rest.response.ChResponseBody;
 import uk.gov.companieshouse.service.rest.response.PluggableResponseEntityFactory;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 @RestController
 @RequestMapping("/company/{companyNumber}/extensions/requests")
@@ -75,9 +77,14 @@ public class AttachmentsController {
     @LogMethodCall
     @GetMapping("/{requestId}/reasons/{reasonId}/attachments/{attachmentId}/download")
     public ResponseEntity<Void> downloadAttachmentFromRequest(@PathVariable String attachmentId, HttpServletResponse response) {
-        ServiceResult<FileTransferApiClientResponse> downloadServiceResult = attachmentsService.downloadAttachment(attachmentId, response);
-        FileTransferApiClientResponse downloadResponse = downloadServiceResult.getData();
-
-        return ResponseEntity.status(downloadResponse.getHttpStatus()).build();
+        try {
+            ServiceResult<FileTransferApiClientResponse> downloadServiceResult = attachmentsService.downloadAttachment(attachmentId, response);
+            FileTransferApiClientResponse downloadResponse = downloadServiceResult.getData();
+            return ResponseEntity.status(downloadResponse.getHttpStatus()).build();
+        } catch(HttpClientErrorException | HttpServerErrorException e) {
+            logger.error(String.format("The file-transfer-api has returned an error: %s for attchmentId %s",
+                e.getMessage(), attachmentId));
+            return ResponseEntity.status(e.getStatusCode()).build();
+        }
     }	
 }
