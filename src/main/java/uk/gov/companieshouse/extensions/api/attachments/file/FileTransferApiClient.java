@@ -19,6 +19,8 @@ import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
 import uk.gov.companieshouse.extensions.api.logger.LogMethodCall;
 
 import javax.servlet.http.HttpServletResponse;
+
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
 
@@ -58,11 +60,7 @@ public class FileTransferApiClient {
              T operationResponse = operation.execute();
 
              response = responseBuilder.createResponse(operationResponse);
-
-        } catch (HttpClientErrorException | HttpServerErrorException e) {
-            logger.info(e.getMessage());
-            response.setHttpStatus(e.getStatusCode());
-        } catch (Exception e) {
+        } catch (IOException e) {
             logger.error(e);
             response.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
         }

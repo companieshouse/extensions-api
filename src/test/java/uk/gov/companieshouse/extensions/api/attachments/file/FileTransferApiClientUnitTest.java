@@ -1,10 +1,26 @@
 package uk.gov.companieshouse.extensions.api.attachments.file;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
@@ -23,29 +39,14 @@ import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RequestCallback;
 import org.springframework.web.client.ResponseExtractor;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
+
 import uk.gov.companieshouse.extensions.api.groups.Unit;
 import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @Category(Unit.class)
 @RunWith(MockitoJUnitRunner.class)
@@ -67,6 +68,9 @@ public class FileTransferApiClientUnitTest {
 
     @InjectMocks
     private FileTransferApiClient fileTransferApiClient;
+
+    @Rule
+    public ExpectedException expectedException = ExpectedException.none();
 
     private MultipartFile file;
 
@@ -103,46 +107,15 @@ public class FileTransferApiClientUnitTest {
     }
 
     @Test
-    public void testUpload_HttpClientException() {
-        final HttpClientErrorException httpClientErrorException = new HttpClientErrorException(HttpStatus.BAD_GATEWAY);
-
-        when(restTemplate.postForEntity(eq(DUMMY_URL), any(), eq(FileTransferApiResponse.class))).thenThrow(httpClientErrorException);
-
-        FileTransferApiClientResponse fileTransferApiClientResponse = fileTransferApiClient.upload(file);
-
-        verify(apiLogger, times(1)).info(httpClientErrorException.getMessage());
-
-        assertTrue(fileTransferApiClientResponse.getHttpStatus().isError());
-        assertEquals(httpClientErrorException.getStatusCode(), fileTransferApiClientResponse.getHttpStatus());
-        assertTrue(StringUtils.isBlank(fileTransferApiClientResponse.getFileId()));
-    }
-
-    @Test
-    public void testUpload_HttpServerException() {
-        final HttpServerErrorException httpServerErrorException = new HttpServerErrorException(HttpStatus.BAD_GATEWAY);
-
-        when(restTemplate.postForEntity(eq(DUMMY_URL), any(), eq(FileTransferApiResponse.class))).thenThrow(httpServerErrorException);
-
-        FileTransferApiClientResponse fileTransferApiClientResponse = fileTransferApiClient.upload(file);
-
-        verify(apiLogger, times(1)).info(httpServerErrorException.getMessage());
-
-        assertTrue(fileTransferApiClientResponse.getHttpStatus().isError());
-        assertEquals(httpServerErrorException.getStatusCode(), fileTransferApiClientResponse.getHttpStatus());
-        assertTrue(StringUtils.isBlank(fileTransferApiClientResponse.getFileId()));
-    }
-
-    @Test
     public void testUpload_GenericExceptionResponse() {
         final RestClientException exception = new RestClientException(EXCEPTION_MESSAGE);
 
         when(restTemplate.postForEntity(eq(DUMMY_URL), any(), eq(FileTransferApiResponse.class))).thenThrow(exception);
 
-        FileTransferApiClientResponse fileTransferApiClientResponse = fileTransferApiClient.upload(file);
+        expectedException.expect(RestClientException.class);
+        expectedException.expectMessage(exception.getMessage());
 
-        assertTrue(fileTransferApiClientResponse.getHttpStatus().isError());
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, fileTransferApiClientResponse.getHttpStatus());
-        assertTrue(StringUtils.isBlank(fileTransferApiClientResponse.getFileId()));
+        fileTransferApiClient.upload(file);
     }
 
     @Test
@@ -196,39 +169,6 @@ public class FileTransferApiClientUnitTest {
     }
 
     @Test
-    public void testDownload_HttpClientException() {
-        final MockHttpServletResponse servletResponse = new MockHttpServletResponse();
-        final HttpClientErrorException httpClientErrorException = new HttpClientErrorException(HttpStatus.BAD_GATEWAY);
-
-        when(restTemplate.execute(eq(DOWNLOAD_URI), eq(HttpMethod.GET), any(RequestCallback.class), ArgumentMatchers.<ResponseExtractor<ClientHttpResponse>>any(), any(FileTransferApiClientResponse.class)))
-            .thenThrow(httpClientErrorException);
-
-        FileTransferApiClientResponse downloadResponse = fileTransferApiClient.download(FILE_ID, servletResponse);
-
-        verify(apiLogger, times(1)).info(httpClientErrorException.getMessage());
-
-        assertTrue(downloadResponse.getHttpStatus().isError());
-        assertEquals(httpClientErrorException.getStatusCode(), downloadResponse.getHttpStatus());
-
-    }
-
-    @Test
-    public void testDownload_HttpServerException() {
-        final MockHttpServletResponse servletResponse = new MockHttpServletResponse();
-        final HttpServerErrorException httpServerErrorException = new HttpServerErrorException(HttpStatus.BAD_GATEWAY);
-
-        when(restTemplate.execute(eq(DOWNLOAD_URI), eq(HttpMethod.GET), any(RequestCallback.class), ArgumentMatchers.<ResponseExtractor<ClientHttpResponse>>any(), any(FileTransferApiClientResponse.class)))
-            .thenThrow(httpServerErrorException);
-
-        FileTransferApiClientResponse downloadResponse = fileTransferApiClient.download(FILE_ID, servletResponse);
-
-        verify(apiLogger, times(1)).info(httpServerErrorException.getMessage());
-
-        assertTrue(downloadResponse.getHttpStatus().isError());
-        assertEquals(httpServerErrorException.getStatusCode(), downloadResponse.getHttpStatus());
-    }
-
-    @Test
     public void testDownload_GenericException() {
         final MockHttpServletResponse servletResponse = new MockHttpServletResponse();
         final RestClientException exception = new RestClientException(EXCEPTION_MESSAGE);
@@ -236,12 +176,10 @@ public class FileTransferApiClientUnitTest {
         when(restTemplate.execute(eq(DOWNLOAD_URI), eq(HttpMethod.GET), any(RequestCallback.class), ArgumentMatchers.<ResponseExtractor<ClientHttpResponse>>any(), any(FileTransferApiClientResponse.class)))
             .thenThrow(exception);
 
-        FileTransferApiClientResponse downloadResponse = fileTransferApiClient.download(FILE_ID, servletResponse);
+        expectedException.expect(RestClientException.class);
+        expectedException.expectMessage(exception.getMessage());
 
-        verify(apiLogger, times(1)).error(exception);
-
-        assertTrue(downloadResponse.getHttpStatus().isError());
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, downloadResponse.getHttpStatus());
+        fileTransferApiClient.download(FILE_ID, servletResponse);
     }
 
     private ResponseEntity<FileTransferApiResponse> apiSuccessResponse() {

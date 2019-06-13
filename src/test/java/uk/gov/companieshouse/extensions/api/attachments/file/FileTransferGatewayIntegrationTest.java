@@ -1,4 +1,4 @@
-package uk.gov.companieshouse.extensions.api.attachments.upload;
+package uk.gov.companieshouse.extensions.api.attachments.file;
 
 import java.io.IOException;
 
@@ -33,7 +33,7 @@ import uk.gov.companieshouse.extensions.api.groups.Integration;
 public class FileTransferGatewayIntegrationTest {
 
     @Autowired
-    private FileTransferGateway gateway;
+    private FileTransferApiClient gateway;
 
     private static ClientAndServer mockServer;
 
