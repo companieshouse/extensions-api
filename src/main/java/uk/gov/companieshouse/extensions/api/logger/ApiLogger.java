@@ -48,6 +48,10 @@ public class ApiLogger {
         LOG.error(prefix(" "), e);
     }
 
+    public void error(String message) {
+        LOG.error(prefix(message));
+    }
+
     public void error(String message, Exception e) {
         LOG.error(prefix(message), e);
     }

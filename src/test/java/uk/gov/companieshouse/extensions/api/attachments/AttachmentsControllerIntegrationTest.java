@@ -1,16 +1,6 @@
 package uk.gov.companieshouse.extensions.api.attachments;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.util.HashMap;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -29,11 +19,23 @@ import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.multipart.MultipartFile;
-
+import uk.gov.companieshouse.extensions.api.Utils.Utils;
+import uk.gov.companieshouse.extensions.api.attachments.file.FileTransferApiClientResponse;
 import uk.gov.companieshouse.extensions.api.groups.Integration;
 import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
 import uk.gov.companieshouse.service.ServiceResult;
 import uk.gov.companieshouse.service.rest.response.PluggableResponseEntityFactory;
+
+import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.OutputStream;
+import java.util.HashMap;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 
 @Category(Integration.class)
 @RunWith(SpringRunner.class)
@@ -110,9 +112,29 @@ public class AttachmentsControllerIntegrationTest {
 
     @Test
     public void testDownloadAttachmentFromRequest() throws Exception {
+        FileTransferApiClientResponse dummyDownloadResponse = Utils.dummyDownloadResponse();
+
+        when(attachmentsService.downloadAttachment(anyString(), any(HttpServletResponse.class)))
+            .thenReturn(ServiceResult.accepted(dummyDownloadResponse));
+
         RequestBuilder requestBuilder = MockMvcRequestBuilders.get(DOWNLOAD_URL);
 
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
         assertEquals(HttpStatus.OK.value(), result.getResponse().getStatus());
+    }
+
+    @Test
+    public void testDownloadAttachmentFromRequest_error() throws Exception {
+        FileTransferApiClientResponse dummyDownloadResponse = new FileTransferApiClientResponse();
+        dummyDownloadResponse.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+
+        when(attachmentsService.downloadAttachment(anyString(), any(HttpServletResponse.class)))
+            .thenReturn(ServiceResult.accepted(dummyDownloadResponse));
+
+        RequestBuilder requestBuilder = MockMvcRequestBuilders.get(DOWNLOAD_URL);
+
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), result.getResponse().getStatus());
     }
 }

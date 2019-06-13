@@ -2,10 +2,11 @@ package uk.gov.companieshouse.extensions.api.attachments;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import uk.gov.companieshouse.extensions.api.attachments.upload.FileTransferGateway;
-import uk.gov.companieshouse.extensions.api.attachments.upload.FileTransferGatewayResponse;
+import uk.gov.companieshouse.extensions.api.attachments.file.FileTransferApiClient;
+import uk.gov.companieshouse.extensions.api.attachments.file.FileTransferApiClientResponse;
 import uk.gov.companieshouse.extensions.api.logger.LogMethodCall;
 import uk.gov.companieshouse.extensions.api.reasons.ExtensionReasonEntity;
 import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestFullEntity;
@@ -15,8 +16,8 @@ import uk.gov.companieshouse.service.ServiceException;
 import uk.gov.companieshouse.service.ServiceResult;
 import uk.gov.companieshouse.service.links.Links;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.NotNull;
-import java.io.OutputStream;
 import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -26,12 +27,13 @@ public class AttachmentsService {
 
     private ExtensionRequestsRepository requestsRepo;
 
-    private FileTransferGateway fileTransferGateway;
+    @Autowired
+    private FileTransferApiClient fileTransferApiClient;
 
     @Autowired
-    public AttachmentsService(ExtensionRequestsRepository requestsRepo, FileTransferGateway fileTransferGateway) {
+    public AttachmentsService(ExtensionRequestsRepository requestsRepo, FileTransferApiClient fileTransferApiClient) {
         this.requestsRepo = requestsRepo;
-        this.fileTransferGateway = fileTransferGateway;
+        this.fileTransferApiClient = fileTransferApiClient;
     }
 
     @LogMethodCall
@@ -40,9 +42,8 @@ public class AttachmentsService {
                           String attachmentsUri, String requestId,
                           String reasonId) throws ServiceException {
 
-        FileTransferGatewayResponse fileTransferGatewayResponse = uploadFile(file);
+        String attachmentId = uploadFile(file);
 
-        String attachmentId = fileTransferGatewayResponse.getFileId();
         Attachment attachment = createAttachment(file, attachmentId);
 
         ExtensionRequestFullEntity extension = requestsRepo.findById(requestId)
@@ -64,15 +65,19 @@ public class AttachmentsService {
             .build());
     }
 
-    private FileTransferGatewayResponse uploadFile(@NotNull MultipartFile file) throws ServiceException {
-        FileTransferGatewayResponse fileTransferGatewayResponse = fileTransferGateway.upload(file);
-        if (fileTransferGatewayResponse.isInError()) {
-            throw new ServiceException(fileTransferGatewayResponse.getErrorMessage());
+    private String uploadFile(@NotNull MultipartFile file) throws ServiceException {
+        FileTransferApiClientResponse response = fileTransferApiClient.upload(file);
+
+        HttpStatus responseHttpStatus = response.getHttpStatus();
+        if (responseHttpStatus != null && responseHttpStatus.isError()) {
+            throw new ServiceException(responseHttpStatus.toString());
         }
-        if (StringUtils.isBlank(fileTransferGatewayResponse.getFileId())) {
+        String fileId = response.getFileId();
+        if (StringUtils.isBlank(fileId)) {
             throw new ServiceException("No file id returned from file upload");
+        } else {
+            return fileId;
         }
-        return fileTransferGatewayResponse;
     }
 
     private Attachment createAttachment(@NotNull MultipartFile file, String attachmentId) {
@@ -135,7 +140,8 @@ public class AttachmentsService {
             "Request %s", reasonId, requestId));
     }
 
-    public void downloadAttachment(String attachmentId, OutputStream responseOutputStream) {
-        fileTransferGateway.download(attachmentId, responseOutputStream);
+    public ServiceResult<FileTransferApiClientResponse> downloadAttachment(String attachmentId, HttpServletResponse httpServletResponse) {
+        FileTransferApiClientResponse downloadResponse = fileTransferApiClient.download(attachmentId, httpServletResponse);
+        return ServiceResult.accepted(downloadResponse);
     }
 }

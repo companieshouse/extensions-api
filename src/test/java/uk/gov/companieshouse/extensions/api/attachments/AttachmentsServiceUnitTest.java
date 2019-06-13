@@ -13,8 +13,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.io.ByteArrayOutputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -27,11 +25,13 @@ import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.http.HttpStatus;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.web.multipart.MultipartFile;
 
 import uk.gov.companieshouse.extensions.api.Utils.Utils;
-import uk.gov.companieshouse.extensions.api.attachments.upload.FileTransferGateway;
-import uk.gov.companieshouse.extensions.api.attachments.upload.FileTransferGatewayResponse;
+import uk.gov.companieshouse.extensions.api.attachments.file.FileTransferApiClient;
+import uk.gov.companieshouse.extensions.api.attachments.file.FileTransferApiClientResponse;
 import uk.gov.companieshouse.extensions.api.groups.Unit;
 import uk.gov.companieshouse.extensions.api.reasons.ExtensionReasonEntity;
 import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestFullEntity;
@@ -41,6 +41,8 @@ import uk.gov.companieshouse.service.ServiceException;
 import uk.gov.companieshouse.service.ServiceResult;
 import uk.gov.companieshouse.service.ServiceResultStatus;
 
+import javax.servlet.http.HttpServletResponse;
+
 @Category(Unit.class)
 @RunWith(MockitoJUnitRunner.class)
 public class AttachmentsServiceUnitTest {
@@ -48,19 +50,21 @@ public class AttachmentsServiceUnitTest {
     private static final String REQUEST_ID = "123";
     private static final String REASON_ID = "1234";
     private static final String ACCESS_URL = "/dummyUrl";
-    private static final String UPLOAD_ID = "sjhkjsdfhkdshf";
-    private static final String UPLOAD_FAILURE_MESSAGE = "Failure";
+    private static final String UPLOAD_ID = "5agf-g6hh";
     private static final String NO_FILE_ID_MESSAGE = "No file id returned from file upload";
 
     @Mock
     private ExtensionRequestsRepository repo;
 
     @Mock
-    private FileTransferGateway fileTransferGateway;
+    private FileTransferApiClient fileTransferApiClient;
+
+    private AttachmentsService service;
 
     @Before
     public void setup() {
-        when(fileTransferGateway.upload(any(MultipartFile.class))).thenReturn(getSuccessfulUploadResponse());
+        service = new AttachmentsService(repo, fileTransferApiClient);
+        when(fileTransferApiClient.upload(any(MultipartFile.class))).thenReturn(getSuccessfulUploadResponse());
     }
 
     @Test
@@ -73,7 +77,6 @@ public class AttachmentsServiceUnitTest {
         entity.setReasons(Arrays.asList(reasonEntity));
         when(repo.findById(anyString())).thenReturn(Optional.of(entity));
 
-        AttachmentsService service = new AttachmentsService(repo, fileTransferGateway);
 
         ServiceResult<AttachmentDTO> result =
             service.addAttachment(Utils.mockMultipartFile(),
@@ -118,7 +121,6 @@ public class AttachmentsServiceUnitTest {
         entity.setReasons(Arrays.asList(reasonEntity));
         when(repo.findById(anyString())).thenReturn(Optional.of(entity));
 
-        AttachmentsService service = new AttachmentsService(repo, fileTransferGateway);
 
         service.addAttachment(Utils.mockMultipartFile(),
             ACCESS_URL, REQUEST_ID, REASON_ID);
@@ -139,8 +141,6 @@ public class AttachmentsServiceUnitTest {
         entity.setId(REQUEST_ID);
         when(repo.findById(anyString())).thenReturn(Optional.of(entity));
 
-        AttachmentsService service = new AttachmentsService(repo, fileTransferGateway);
-
         try {
             service.addAttachment(Utils.mockMultipartFile(),
                 ACCESS_URL, REQUEST_ID, REASON_ID);
@@ -155,8 +155,6 @@ public class AttachmentsServiceUnitTest {
     public void willThrowServiceExceptionIfNoReason() throws Exception {
         when(repo.findById(anyString())).thenReturn(Optional.ofNullable(null));
 
-        AttachmentsService service = new AttachmentsService(repo, fileTransferGateway);
-
         try {
             service.addAttachment(Utils.mockMultipartFile(),
                 ACCESS_URL, REQUEST_ID, REASON_ID);
@@ -167,27 +165,23 @@ public class AttachmentsServiceUnitTest {
     }
 
     @Test
-    public void willThrowServiceExceptionIfUploadFails() throws Exception {
-        when(fileTransferGateway.upload(any(MultipartFile.class))).thenReturn(getUnsuccessfullUploadResponse());
-
-        AttachmentsService service = new AttachmentsService(repo, fileTransferGateway);
+    public void willThrowServiceExceptionIfUploadErrors() throws Exception {
+        when(fileTransferApiClient.upload(any(MultipartFile.class))).thenReturn(getUnsuccessfullUploadResponse());
 
         try {
             service.addAttachment(Utils.mockMultipartFile(),
                 ACCESS_URL, REQUEST_ID, REASON_ID);
             fail();
         } catch(ServiceException e) {
-            assertEquals(UPLOAD_FAILURE_MESSAGE, e.getMessage());
+            assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.toString(), e.getMessage());
         }
     }
 
     @Test
     public void willThrowServiceExceptionIfNoFileIdReturned() throws Exception {
-        FileTransferGatewayResponse response = getSuccessfulUploadResponse();
+        FileTransferApiClientResponse response = getSuccessfulUploadResponse();
         response.setFileId(null);
-        when(fileTransferGateway.upload(any(MultipartFile.class))).thenReturn(response);
-
-        AttachmentsService service = new AttachmentsService(repo, fileTransferGateway);
+        when(fileTransferApiClient.upload(any(MultipartFile.class))).thenReturn(response);
 
         try {
             service.addAttachment(Utils.mockMultipartFile(),
@@ -214,7 +208,6 @@ public class AttachmentsServiceUnitTest {
         assertFalse(entity.getReasons().get(0).getAttachments().isEmpty());
         assertEquals(2, entity.getReasons().get(0).getAttachments().size());
 
-        AttachmentsService service = new AttachmentsService(repo, fileTransferGateway);
         when(repo.findById(entity.getId()))
             .thenReturn(Optional.of(entity));
 
@@ -242,7 +235,6 @@ public class AttachmentsServiceUnitTest {
 
         assertTrue(entity.getReasons().get(0).getAttachments().isEmpty());
 
-        AttachmentsService service = new AttachmentsService(repo, fileTransferGateway);
         when(repo.findById(entity.getId()))
             .thenReturn(Optional.of(entity));
 
@@ -273,7 +265,6 @@ public class AttachmentsServiceUnitTest {
 
         assertFalse(entity.getReasons().get(0).getAttachments().isEmpty());
 
-        AttachmentsService service = new AttachmentsService(repo, fileTransferGateway);
         when(repo.findById(entity.getId()))
             .thenReturn(Optional.of(entity));
 
@@ -292,13 +283,17 @@ public class AttachmentsServiceUnitTest {
     @Test
     public void willCallFileTransferGatewayForDownload() {
         String attachmentId = "1234";
-        OutputStream outputStream = new ByteArrayOutputStream();
+        HttpServletResponse httpServletResponse = new MockHttpServletResponse();
+        FileTransferApiClientResponse dummyDownloadResponse = Utils.dummyDownloadResponse();
 
-        AttachmentsService service = new AttachmentsService(repo, fileTransferGateway);
-        service.downloadAttachment(attachmentId, outputStream);
+        when(fileTransferApiClient.download(attachmentId, httpServletResponse)).thenReturn(dummyDownloadResponse);
 
-        verify(fileTransferGateway, only()).download(attachmentId, outputStream);
-        verify(fileTransferGateway, times(1)).download(attachmentId, outputStream);
+        ServiceResult<FileTransferApiClientResponse> downloadServiceResult = service.downloadAttachment(attachmentId, httpServletResponse);
+
+        verify(fileTransferApiClient, only()).download(attachmentId, httpServletResponse);
+        verify(fileTransferApiClient, times(1)).download(attachmentId, httpServletResponse);
+
+        assertNotNull(downloadServiceResult);
     }
 
     private void addAttachmentToReason(ExtensionReasonEntity reason, String attachmentId) {
@@ -309,19 +304,15 @@ public class AttachmentsServiceUnitTest {
         reason.addAttachment(attachment);
     }
 
-    private FileTransferGatewayResponse getSuccessfulUploadResponse() {
-        FileTransferGatewayResponse fileTransferGatewayResponse = new FileTransferGatewayResponse();
-        fileTransferGatewayResponse.setInError(false);
-        fileTransferGatewayResponse.setFileId(UPLOAD_ID);
-        return fileTransferGatewayResponse;
+    private FileTransferApiClientResponse getSuccessfulUploadResponse() {
+        FileTransferApiClientResponse fileTransferApiClientResponse = new FileTransferApiClientResponse();
+        fileTransferApiClientResponse.setFileId(UPLOAD_ID);
+        return fileTransferApiClientResponse;
     }
 
-    private FileTransferGatewayResponse getUnsuccessfullUploadResponse() {
-        FileTransferGatewayResponse fileTransferGatewayResponse = new FileTransferGatewayResponse();
-        fileTransferGatewayResponse.setInError(true);
-        fileTransferGatewayResponse.setErrorMessage(UPLOAD_FAILURE_MESSAGE);
-        fileTransferGatewayResponse.setErrorStatusCode("500");
-        fileTransferGatewayResponse.setErrorStatusText("Some failure");
-        return fileTransferGatewayResponse;
+    private FileTransferApiClientResponse getUnsuccessfullUploadResponse() {
+        FileTransferApiClientResponse fileTransferApiClientResponse = new FileTransferApiClientResponse();
+        fileTransferApiClientResponse.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+        return fileTransferApiClientResponse;
     }
 }

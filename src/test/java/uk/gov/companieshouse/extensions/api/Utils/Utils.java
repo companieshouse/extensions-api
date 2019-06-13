@@ -2,22 +2,26 @@ package uk.gov.companieshouse.extensions.api.Utils;
 
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 import uk.gov.companieshouse.extensions.api.attachments.Attachment;
+import uk.gov.companieshouse.extensions.api.attachments.file.FileTransferApiClientResponse;
 import uk.gov.companieshouse.extensions.api.reasons.ExtensionCreateReason;
 import uk.gov.companieshouse.extensions.api.reasons.ExtensionReasonDTO;
 import uk.gov.companieshouse.extensions.api.reasons.ExtensionReasonEntity;
-import uk.gov.companieshouse.extensions.api.requests.*;
-import uk.gov.companieshouse.service.links.CoreLinkKeys;
+import uk.gov.companieshouse.extensions.api.requests.CreatedBy;
+import uk.gov.companieshouse.extensions.api.requests.ExtensionCreateRequest;
+import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestFullDTO;
+import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestFullEntity;
+import uk.gov.companieshouse.extensions.api.requests.ExtensionsLinkKeys;
+import uk.gov.companieshouse.extensions.api.requests.Status;
 import uk.gov.companieshouse.service.links.Links;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
 
 public class Utils {
     public static final String ETAG = "etag";
@@ -154,5 +158,11 @@ public class Utils {
         Resource rsc = new ClassPathResource("input/testMultipart.txt");
         return new MockMultipartFile(fileName,
             ORIGINAL_FILE_NAME, "text/plain", Files.readAllBytes(rsc.getFile().toPath()));
+    }
+
+    public static FileTransferApiClientResponse dummyDownloadResponse() {
+        FileTransferApiClientResponse dummyDownloadResponse = new FileTransferApiClientResponse();
+        dummyDownloadResponse.setHttpStatus(HttpStatus.OK);
+        return dummyDownloadResponse;
     }
 }
