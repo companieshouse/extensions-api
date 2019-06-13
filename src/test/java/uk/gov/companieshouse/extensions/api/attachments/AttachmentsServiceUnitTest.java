@@ -19,6 +19,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -27,6 +29,8 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.multipart.MultipartFile;
 
 import uk.gov.companieshouse.extensions.api.Utils.Utils;
@@ -40,8 +44,6 @@ import uk.gov.companieshouse.extensions.api.requests.ExtensionsLinkKeys;
 import uk.gov.companieshouse.service.ServiceException;
 import uk.gov.companieshouse.service.ServiceResult;
 import uk.gov.companieshouse.service.ServiceResultStatus;
-
-import javax.servlet.http.HttpServletResponse;
 
 @Category(Unit.class)
 @RunWith(MockitoJUnitRunner.class)
@@ -174,6 +176,32 @@ public class AttachmentsServiceUnitTest {
             fail();
         } catch(ServiceException e) {
             assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.toString(), e.getMessage());
+        }
+    }
+
+    @Test
+    public void willPropagateServerRuntimeExceptions() throws Exception {
+        when(fileTransferApiClient.upload(any(MultipartFile.class)))
+            .thenThrow(new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR));
+        try {
+            service.addAttachment(Utils.mockMultipartFile(),
+                ACCESS_URL, REQUEST_ID, REASON_ID);
+            fail();
+        } catch(HttpServerErrorException e) {
+            assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.toString(), e.getMessage());
+        }
+    }
+
+    @Test
+    public void willPropagateClientRuntimeExceptions() throws Exception {
+        when(fileTransferApiClient.upload(any(MultipartFile.class)))
+            .thenThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST));
+        try {
+            service.addAttachment(Utils.mockMultipartFile(),
+                ACCESS_URL, REQUEST_ID, REASON_ID);
+            fail();
+        } catch(HttpClientErrorException e) {
+            assertEquals(HttpStatus.BAD_REQUEST.toString(), e.getMessage());
         }
     }
 
