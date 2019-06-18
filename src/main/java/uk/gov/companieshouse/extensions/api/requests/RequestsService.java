@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import uk.gov.companieshouse.extensions.api.logger.LogMethodCall;
+import uk.gov.companieshouse.service.ServiceException;
 import uk.gov.companieshouse.service.links.Links;
 
 import java.time.LocalDateTime;
@@ -28,6 +29,15 @@ public class RequestsService {
     @LogMethodCall
     public List<ExtensionRequestFullEntity> getExtensionsRequestListByCompanyNumber(String companyNumber) {
         return extensionRequestsRepository.findAllByCompanyNumber(companyNumber, Sort.by("_id").descending());
+    }
+
+    @LogMethodCall
+    public ExtensionRequestFullEntity patchRequest(String requestId, RequestStatus status) throws ServiceException {
+        ExtensionRequestFullEntity entity = extensionRequestsRepository.findById(requestId)
+                .orElseThrow(() -> new ServiceException(String.format("Request: %s cannot be found", requestId)));
+
+        entity = PatchRequestMapper.INSTANCE.patchEntity(status, entity);
+        return extensionRequestsRepository.save(entity);
     }
 
     public ExtensionRequestFullEntity insertExtensionsRequest(ExtensionCreateRequest extensionCreateRequest, CreatedBy
