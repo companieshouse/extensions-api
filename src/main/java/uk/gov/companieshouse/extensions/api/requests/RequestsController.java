@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.companieshouse.extensions.api.logger.LogMethodCall;
 import uk.gov.companieshouse.extensions.api.response.ListResponse;
+import uk.gov.companieshouse.service.ServiceException;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -34,9 +36,8 @@ public class RequestsController {
     @LogMethodCall
     @PostMapping("/")
     public ResponseEntity<ExtensionRequestFullDTO> createExtensionRequestResource(
-        @RequestBody ExtensionCreateRequest extensionCreateRequest,
-        HttpServletRequest request,
-        @PathVariable String companyNumber) {
+            @RequestBody ExtensionCreateRequest extensionCreateRequest, HttpServletRequest request,
+            @PathVariable String companyNumber) {
 
         CreatedBy createdBy = new CreatedBy();
         createdBy.setId(ericHeaderParser.getUserId(request));
@@ -44,44 +45,50 @@ public class RequestsController {
         createdBy.setForename(ericHeaderParser.getForename(request));
         createdBy.setSurname(ericHeaderParser.getSurname(request));
 
-         String reqUri = request.getRequestURI();
+        String reqUri = request.getRequestURI();
 
         ExtensionRequestFullEntity extensionRequestFullEntity = requestsService
-            .insertExtensionsRequest
-            (extensionCreateRequest, createdBy, reqUri, companyNumber);
+                .insertExtensionsRequest(extensionCreateRequest, createdBy, reqUri, companyNumber);
 
-        ExtensionRequestFullDTO extensionRequestFullDTO = extensionRequestMapper.entityToDTO
-            (extensionRequestFullEntity);
+        ExtensionRequestFullDTO extensionRequestFullDTO = extensionRequestMapper
+                .entityToDTO(extensionRequestFullEntity);
 
-        return ResponseEntity.created(
-            URI.create(extensionRequestFullEntity
-                .getLinks()
-                .getLink(ExtensionsLinkKeys.SELF)))
-            .body(extensionRequestFullDTO);
+        return ResponseEntity
+                .created(URI.create(extensionRequestFullEntity.getLinks().getLink(ExtensionsLinkKeys.SELF)))
+                .body(extensionRequestFullDTO);
     }
 
     @LogMethodCall
     @GetMapping("/")
     public ResponseEntity<ListResponse<ExtensionRequestFullDTO>> getExtensionRequestsListByCompanyNumber(
-        @PathVariable String companyNumber) {
+            @PathVariable String companyNumber) {
 
         List<ExtensionRequestFullDTO> requestFullDTOList = requestsService
-            .getExtensionsRequestListByCompanyNumber(companyNumber).stream().map
-                (extensionRequestMapper::entityToDTO).collect(Collectors.toList());
+                .getExtensionsRequestListByCompanyNumber(companyNumber).stream()
+                .map(extensionRequestMapper::entityToDTO).collect(Collectors.toList());
 
         ListResponse<ExtensionRequestFullDTO> extensionRequestList = ListResponse.<ExtensionRequestFullDTO>builder()
-            .withItems(requestFullDTOList)
-            .build();
+                .withItems(requestFullDTOList).build();
         return ResponseEntity.ok(extensionRequestList);
     }
 
     @LogMethodCall
     @GetMapping("/{requestId}")
-    public ResponseEntity<ExtensionRequestFullEntity> getSingleExtensionRequestById(@PathVariable String
-                                                                            requestId) {
-        return requestsService.getExtensionsRequestById(requestId)
-            .map(ResponseEntity::ok)
-            .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<ExtensionRequestFullEntity> getSingleExtensionRequestById(@PathVariable String requestId) {
+        return requestsService.getExtensionsRequestById(requestId).map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @LogMethodCall
+    @PatchMapping("/{requestId}")
+    public ResponseEntity<ExtensionRequestFullEntity> patchRequest(@PathVariable String requestId,
+            @RequestBody RequestStatus requestStatus) {
+        try {
+            requestsService.patchRequest(requestId, requestStatus);
+            return ResponseEntity.noContent().build();
+        } catch (ServiceException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @LogMethodCall
