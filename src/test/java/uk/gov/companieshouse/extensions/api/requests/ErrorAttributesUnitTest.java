@@ -13,7 +13,6 @@ import uk.gov.companieshouse.extensions.api.attachments.AttachmentsController;
 import uk.gov.companieshouse.extensions.api.groups.Integration;
 import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
 import uk.gov.companieshouse.extensions.api.reasons.ReasonsController;
-
 import javax.servlet.RequestDispatcher;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -24,8 +23,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @WebMvcTest()
 public class ErrorAttributesUnitTest {
-
-    private static final String ROOT_URL = "/company/00006400/extensions/requests/";
 
     @Autowired
     private MockMvc mockMvc;
@@ -60,7 +57,6 @@ public class ErrorAttributesUnitTest {
         this.mockMvc
             .perform(get("/error")
                 .requestAttr(RequestDispatcher.ERROR_STATUS_CODE, 400)
-                .requestAttr(RequestDispatcher.ERROR_REQUEST_URI, ROOT_URL)
                 .requestAttr(RequestDispatcher.ERROR_MESSAGE, "The request body is missing"))
             .andExpect(status().isBadRequest())
             .andExpect(content().string(""));
