@@ -60,5 +60,35 @@
     },
     "status" : "OPEN",
     "_class" : "uk.gov.companieshouse.extensions.api.requests.ExtensionRequestFullEntity"
+  },
+  {
+    "_id" : ObjectId("aaaaaaaaaaaaaaaaaaaaaaa4"),
+    "companyNumber" : "00006400",
+    "reasons" : [
+      {
+        "_id" : "reason4",
+        "reason" : "illness",
+        "reasonInformation" : "I was ill",
+        "startOn" : ISODate("2018-01-01T23:00:00.000Z"),
+        "endOn" : ISODate("2019-01-01T00:00:00.000Z"),
+        "links" : {
+          "linksMap" : {
+            "self" : "/company/00006400/extensions/requests/request4/reasons/reason4"
+          }
+        }
+      }
+    ],
+    "createdOn" : ISODate("2019-01-01T11:38:44.085Z"),
+    "createdBy" : {
+      "_id" : "qwe",
+      "email" : "prapitest@companieshouse.gov.uk"
+    },
+    "links" : {
+      "linksMap" : {
+        "self" : "/company/00006400/extensions/requests/request4"
+      }
+    },
+    "status" : "OPEN",
+    "_class" : "uk.gov.companieshouse.extensions.api.requests.ExtensionRequestFullEntity"
   }
 ]
