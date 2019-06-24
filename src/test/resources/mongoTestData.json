@@ -90,5 +90,165 @@
     },
     "status" : "OPEN",
     "_class" : "uk.gov.companieshouse.extensions.api.requests.ExtensionRequestFullEntity"
+  },
+  {
+    "_id" : ObjectId("aaaaaaaaaaaaaaaaaaaaaa12"),
+    "companyNumber" : "00006400",
+    "reasons" : [ 
+        {
+            "_id" : "f9c4a6b6-e34e-4a6d-a6ac-ae3b78a48931",
+            "reason" : "illness",
+            "reasonInformation" : "I was ill",
+            "affectedPerson": "Company director",
+            "startOn" : ISODate("2018-01-01T23:00:00.000Z"),
+            "endOn" : ISODate("2019-01-01T00:00:00.000Z"),
+            "links" : {
+                "linksMap" : {
+                    "self" : "/company/00006400/extensions/requests/aaaaaaaaaaaaaaaaaaaaaa12/reasons/f9c4a6b6-e34e-4a6d-a6ac-ae3b78a48931"
+                }
+            }
+        },
+        {
+          "_id" : "f9c4a6b6-e34e-4a6d-a6ac-ae3b78a48932",
+          "reason" : "illness",
+          "reasonInformation" : "another illness",
+          "affectedPerson": "Company director",
+          "startOn" : ISODate("2018-01-01T23:00:00.000Z"),
+          "continuedIllness": "yes",
+          "links" : {
+              "linksMap" : {
+                  "self" : "/company/00006400/extensions/requests/aaaaaaaaaaaaaaaaaaaaaa12/reasons/f9c4a6b6-e34e-4a6d-a6ac-ae3b78a48932"
+              }
+          }
+      }
+    ],
+    "status" : "OPEN",
+    "_class" : "uk.gov.companieshouse.extensions.api.requests.ExtensionRequestFullEntity"
+  },
+  {
+    "_id" : ObjectId("aaaaaaaaaaaaaaaaaaaaaa11"),
+    "companyNumber" : "00006400",
+    "reasons" : [ 
+        {
+            "_id" : "f9c4a6b6-e34e-4a6d-a6ac-ae3b78a48931",
+            "reason" : "illness",
+            "reasonInformation" : "I was ill",
+            "startOn" : ISODate("2018-01-01T23:00:00.000Z"),
+            "endOn" : ISODate("2019-01-01T00:00:00.000Z"),
+            "links" : {
+                "linksMap" : {
+                    "self" : "/company/00006400/extensions/requests/aaaaaaaaaaaaaaaaaaaaaa11/reasons/f9c4a6b6-e34e-4a6d-a6ac-ae3b78a48931"
+                }
+            },
+            "attachments" : [ 
+              {
+                  "_id" : "212185e5-164c-40c2-a8bb-ea42d42cb33b",
+                  "links" : {
+                      "linksMap" : {
+                          "download" : "/company/00006400/extensions/requests/aaaaaaaaaaaaaaaaaaaaaa11/reasons/f9c4a6b6-e34e-4a6d-a6ac-ae3b78a48931/attachments/212185e5-164c-40c2-a8bb-ea42d42cb33b/download",
+                          "self" : "/company/00006400/extensions/requests/aaaaaaaaaaaaaaaaaaaaaa11/reasons/f9c4a6b6-e34e-4a6d-a6ac-ae3b78a48931/attachments/212185e5-164c-40c2-a8bb-ea42d42cb33b"
+                      }
+                  },
+                  "name" : "STATLER- Do you want to remove this reason - error summary message.png",
+                  "contentType" : "image/png",
+                  "size" : NumberLong(81460)
+              }
+          ]
+        }
+    ],
+    "createdOn" : ISODate("2019-01-01T11:38:44.085Z"),
+    "createdBy" : {
+        "_id" : "qwe",
+        "email" : "demo@ch.gov.uk",
+        "forename": "joe",
+        "surname": "bloggs"
+    },
+    "accountingPeriodStartOn" : ISODate("2013-03-31T23:00:00.000Z"),
+    "accountingPeriodEndOn" : ISODate("2014-03-30T23:00:00.000Z"),
+    "links" : {
+        "linksMap" : {
+            "self" : "/company/00006400/extensions/requests/request3"
+        }
+    },
+    "status" : "OPEN",
+    "_class" : "uk.gov.companieshouse.extensions.api.requests.ExtensionRequestFullEntity"
+  },
+  {
+    "_id" : ObjectId("aaaaaaaaaaaaaaaaaaaaaa13"),
+    "companyNumber" : "00006400",
+    "reasons" : [ 
+        {
+            "_id" : "reason1",
+            "reason" : "illness",
+            "reasonInformation" : "I was ill",
+            "startOn" : ISODate("2018-01-01T23:00:00.000Z"),
+            "endOn" : ISODate("2019-01-01T00:00:00.000Z"),
+            "links" : {
+                "linksMap" : {
+                    "self" : "/company/00006400/extensions/requests/aaaaaaaaaaaaaaaaaaaaaa13/reasons/reason1"
+                }
+            }
+        }
+    ],
+    "status" : "OPEN",
+    "_class" : "uk.gov.companieshouse.extensions.api.requests.ExtensionRequestFullEntity"
+  },
+  {
+    "_id" : ObjectId("aaaaaaaaaaaaaaaaaaaaaa15"),
+    "companyNumber" : "00006400",
+    "reasons" : [ 
+        {
+            "_id" : "reason1",
+            "reason" : "illness",
+            "reasonInformation" : "I was ill",
+            "startOn" : ISODate("2018-01-01T23:00:00.000Z"),
+            "endOn" : ISODate("2019-01-01T00:00:00.000Z"),
+            "links" : {
+                "linksMap" : {
+                    "self" : "/company/00006400/extensions/requests/aaaaaaaaaaaaaaaaaaaaaa15/reasons/reason1"
+                }
+            },
+            "attachments" : [ 
+              {
+                  "_id" : "attachment1",
+                  "links" : {
+                      "linksMap" : {
+                          "download" : "/company/00006400/extensions/requests/aaaaaaaaaaaaaaaaaaaaaa15/reasons/reason1/attachments/attachment1/download",
+                          "self" : "/company/00006400/extensions/requests/aaaaaaaaaaaaaaaaaaaaaa15/reasons/reason1/attachments/attachment1"
+                      }
+                  },
+                  "name" : "STATLER- Do you want to remove this reason - error summary message.png",
+                  "contentType" : "image/png",
+                  "size" : NumberLong(81460)
+              }
+          ]
+        }
+    ],
+    "status" : "OPEN",
+    "_class" : "uk.gov.companieshouse.extensions.api.requests.ExtensionRequestFullEntity"
+  },
+  {
+    "_id" : ObjectId("aaaaaaaaaaaaaaaaaaaaaa14"),
+    "companyNumber" : "00006400",
+    "reasons": [],
+    "status" : "OPEN",
+    "_class" : "uk.gov.companieshouse.extensions.api.requests.ExtensionRequestFullEntity"
+  },
+  {
+    "_id" : ObjectId("aaaaaaaaaaaaaaaaaaaaaa16"),
+    "companyNumber" : "00006400",
+    "reasons" : [ 
+        {
+            "_id" : "reason1",
+            "reason" : "illness",
+            "links" : {
+                "linksMap" : {
+                    "self" : "/company/00006400/extensions/requests/aaaaaaaaaaaaaaaaaaaaaa16/reasons/reason1"
+                }
+            }
+        }
+    ],
+    "status" : "OPEN",
+    "_class" : "uk.gov.companieshouse.extensions.api.requests.ExtensionRequestFullEntity"
   }
 ]
