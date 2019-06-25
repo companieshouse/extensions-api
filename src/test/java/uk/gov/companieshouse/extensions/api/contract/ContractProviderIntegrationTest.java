@@ -43,4 +43,25 @@ public class ContractProviderIntegrationTest {
             .orElseThrow(() -> new Exception("Database is not in the right state for test: " +
                 "Expecting request with ID aaaaaaaaaaaaaaaaaaaaaaa4 with a status of OPEN"));
     }
+
+    @State("i have full request object")
+    public void fullRequestObject() {}
+
+    @State("I am expecting a post request")
+    public void expectPostRequest() {}
+
+    @State("I have extension request aaaaaaaaaaaaaaaaaaaaaa14 for company number 00006400")
+    public void a14RequestForGirlsSchool() {}
+
+    @State("I have extension request aaaaaaaaaaaaaaaaaaaaaa16 with reasonId: reason1 without reason information")
+    public void a16RequestForGirlsSchool() {}
+
+    @State("I have extension request aaaaaaaaaaaaaaaaaaaaaa13 with reasonId: reason1")
+    public void a13RequestWithReason() {}
+
+    @State("I have extension request aaaaaaaaaaaaaaaaaaaaaa12 with reasonId: reason1")
+    public void a12RequestWithReason() {}
+    
+    @State("I have extension request aaaaaaaaaaaaaaaaaaaaaa15 with reasonId: reason1 and attachment: attachment1")
+    public void a15RequestWithReasonAndAttachment() {}
 }
