@@ -51,17 +51,17 @@ public class ContractProviderIntegrationTest {
     public void expectPostRequest() {}
 
     @State("I have extension request aaaaaaaaaaaaaaaaaaaaaa14 for company number 00006400")
-    public void a4RequestForGirlsSchool() {}
+    public void a14RequestForGirlsSchool() {}
 
     @State("I have extension request aaaaaaaaaaaaaaaaaaaaaa16 with reasonId: reason1 without reason information")
-    public void a2RequestForGirlsSchool() {}
+    public void a16RequestForGirlsSchool() {}
 
     @State("I have extension request aaaaaaaaaaaaaaaaaaaaaa13 with reasonId: reason1")
-    public void a3RequestWithReason() {}
+    public void a13RequestWithReason() {}
 
     @State("I have extension request aaaaaaaaaaaaaaaaaaaaaa12 with reasonId: reason1")
-    public void a4RequestWithReason() {}
+    public void a12RequestWithReason() {}
     
     @State("I have extension request aaaaaaaaaaaaaaaaaaaaaa15 with reasonId: reason1 and attachment: attachment1")
-    public void a6RequestWithReasonAndAttachment() {}
+    public void a15RequestWithReasonAndAttachment() {}
 }
