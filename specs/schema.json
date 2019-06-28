@@ -669,6 +669,10 @@
         },
         "reason_information": {
           "type": "string"
+        },
+        "reason_status": {
+          "type": "string",
+          "enum": ["DRAFT", "COMPLETED"]
         }
       }
     },

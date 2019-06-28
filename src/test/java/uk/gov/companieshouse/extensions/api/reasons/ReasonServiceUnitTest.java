@@ -139,6 +139,7 @@ public class ReasonServiceUnitTest {
         assertEquals(dummyCreateReason.getStartOn(), extensionReasonResult.getStartOn());
         assertEquals(dummyCreateReason.getEndOn(), extensionReasonResult.getEndOn());
         assertEquals(dummyCreateReason.getReason(), extensionReasonResult.getReason());
+        assertEquals(ReasonStatus.DRAFT, extensionReasonResult.getReasonStatus());
 
         Links expectedLinks = new Links();
         expectedLinks.setLink(ExtensionsLinkKeys.SELF, "dummyUri/abc");
