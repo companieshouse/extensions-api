@@ -153,7 +153,9 @@ public class ReasonsControllerIntegrationTest {
             "\"end_on\":null," +
             "\"affected_person\":null," +
             "\"reason_information\":null," +
-            "\"continued_illness\":null}";
+            "\"continued_illness\":null," +
+            "\"reason_status\":null" +
+        "}";
     }
 
     String mockGetResponse() {
@@ -167,7 +169,8 @@ public class ReasonsControllerIntegrationTest {
                 "\"end_on\":null," +
                 "\"affected_person\":null," +
                 "\"reason_information\":null," +
-                "\"continued_illness\":null" +
+                "\"continued_illness\":null," +
+                "\"reason_status\":null" +
             "}]," +
             "\"items_per_page\":0," +
             "\"start_index\":0," +
