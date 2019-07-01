@@ -20,6 +20,7 @@ public class ExtensionReasonMapper {
         extensionReasonDTO.setReason(entity.getReason());
         extensionReasonDTO.setId(entity.getId());
         extensionReasonDTO.setLinks(entity.getLinks());
+        extensionReasonDTO.setReasonStatus(entity.getReasonStatus());
 
         Links attachments = new Links();
         Map<String, String> linksMap = new HashMap<>();
