@@ -135,6 +135,8 @@
             "reasonInformation" : "I was ill",
             "startOn" : ISODate("2018-01-01T23:00:00.000Z"),
             "endOn" : ISODate("2019-01-01T00:00:00.000Z"),
+            "continuedIllness": "no",
+            "affectedPerson": "company director",
             "links" : {
                 "linksMap" : {
                     "self" : "/company/00006400/extensions/requests/aaaaaaaaaaaaaaaaaaaaaa11/reasons/f9c4a6b6-e34e-4a6d-a6ac-ae3b78a48931"
