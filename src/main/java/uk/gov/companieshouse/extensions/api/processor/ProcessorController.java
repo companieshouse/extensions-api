@@ -5,6 +5,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import uk.gov.companieshouse.extensions.api.requests.Status;
+
 // TOOD - move to a new API - the Extension Processor API
 
 @RestController
@@ -13,6 +15,6 @@ public class ProcessorController {
 
     @PostMapping("/{requestId}/status")
     public String updateExtensionRequestStatus(@PathVariable String requestId) {
-      return StatusEnum.OPEN.toString();
+      return Status.OPEN.toString();
     }
 }

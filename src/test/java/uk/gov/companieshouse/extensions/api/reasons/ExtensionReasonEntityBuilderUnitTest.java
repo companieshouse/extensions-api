@@ -36,6 +36,7 @@ public class ExtensionReasonEntityBuilderUnitTest {
       .withEndOn(LocalDate.of(2018, 01, 01))
       .withStartOn(LocalDate.of(2017, 12, 12))
       .withReason("reason")
+      .withReasonStatus(ReasonStatus.DRAFT)
       .build();
 
 
@@ -46,5 +47,6 @@ public class ExtensionReasonEntityBuilderUnitTest {
     assertEquals("reason", entity.getReason());
     assertEquals(LocalDate.of(2018, 01, 01), entity.getEndOn());
     assertEquals(LocalDate.of(2017, 12, 12), entity.getStartOn());
+    assertEquals(ReasonStatus.DRAFT, entity.getReasonStatus());
   }
 }

@@ -62,7 +62,8 @@ public class ReasonsService {
             ExtensionReasonEntityBuilder
                 .builder()
                 .withId(uuid)
-                .withLinks(requestURI);
+                .withLinks(requestURI)
+                .withReasonStatus(ReasonStatus.DRAFT);
 
         String reason = extensionCreateReason.getReason();
         if (StringUtils.isNotBlank(reason)) {

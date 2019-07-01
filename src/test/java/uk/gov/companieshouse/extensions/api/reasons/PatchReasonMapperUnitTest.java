@@ -19,11 +19,13 @@ public class PatchReasonMapperUnitTest {
         ExtensionCreateReason patchEntity = new ExtensionCreateReason();
         patchEntity.setReasonInformation("replacement text");
         patchEntity.setStartOn(LocalDate.of(2018,2,2));
+        patchEntity.setReasonStatus(ReasonStatus.COMPLETED);
 
         ExtensionReasonEntity dbEntity = new ExtensionReasonEntity();
         dbEntity.setId("12345");
         dbEntity.setReasonInformation("old text");
         dbEntity.setEndOn(LocalDate.of(2018,1,1));
+        dbEntity.setReasonStatus(ReasonStatus.DRAFT);
         Links links = new Links();
         links.setLink(ExtensionsLinkKeys.SELF, "something");
         dbEntity.setLinks(links);
@@ -36,5 +38,6 @@ public class PatchReasonMapperUnitTest {
         assertEquals(LocalDate.of(2018,1,1), mappedEntity.getEndOn());
         assertEquals(links, mappedEntity.getLinks());
         assertEquals(LocalDate.of(2018,2,2), mappedEntity.getStartOn());
+        assertEquals(ReasonStatus.COMPLETED, mappedEntity.getReasonStatus());
     }
 }

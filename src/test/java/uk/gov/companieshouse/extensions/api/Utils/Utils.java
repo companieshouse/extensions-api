@@ -10,6 +10,7 @@ import uk.gov.companieshouse.extensions.api.attachments.file.FileTransferApiClie
 import uk.gov.companieshouse.extensions.api.reasons.ExtensionCreateReason;
 import uk.gov.companieshouse.extensions.api.reasons.ExtensionReasonDTO;
 import uk.gov.companieshouse.extensions.api.reasons.ExtensionReasonEntity;
+import uk.gov.companieshouse.extensions.api.reasons.ReasonStatus;
 import uk.gov.companieshouse.extensions.api.requests.CreatedBy;
 import uk.gov.companieshouse.extensions.api.requests.ExtensionCreateRequest;
 import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestFullDTO;

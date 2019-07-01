@@ -13,6 +13,7 @@ public class ExtensionReasonEntityBuilder {
     private String reasonInformation;
     private LocalDate startOn;
     private LocalDate endOn;
+    private ReasonStatus reasonStatus;
 
     public static ExtensionReasonEntityBuilder builder() {
         return new ExtensionReasonEntityBuilder();
@@ -31,6 +32,11 @@ public class ExtensionReasonEntityBuilder {
 
     public ExtensionReasonEntityBuilder withReason(String reason) {
         this.reason = reason;
+        return this;
+    }
+
+    public ExtensionReasonEntityBuilder withReasonStatus(ReasonStatus status) {
+        this.reasonStatus = status;
         return this;
     }
 
@@ -63,6 +69,7 @@ public class ExtensionReasonEntityBuilder {
         extensionReasonEntity.setReasonInformation(this.reasonInformation);
         extensionReasonEntity.setStartOn(this.startOn);
         extensionReasonEntity.setEndOn(this.endOn);
+        extensionReasonEntity.setReasonStatus(this.reasonStatus);
         return extensionReasonEntity;
     }
 }

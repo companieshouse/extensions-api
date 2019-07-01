@@ -22,6 +22,17 @@ public abstract class ExtensionReasonCommon {
     @JsonProperty("reason_information")
     private String reasonInformation;
 
+    @JsonProperty("reason_status")
+    private ReasonStatus reasonStatus;
+
+    public ReasonStatus getReasonStatus() {
+        return this.reasonStatus;
+    }
+
+    public void setReasonStatus(ReasonStatus reasonStatus) {
+        this.reasonStatus = reasonStatus;
+    }
+
     public String getAffectedPerson() {
         return affectedPerson;
     }
