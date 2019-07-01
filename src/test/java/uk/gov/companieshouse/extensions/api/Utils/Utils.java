@@ -131,6 +131,7 @@ public class Utils {
         extensionReasonEntity.setStartOn(REASON_START_ON);
         extensionReasonEntity.setEndOn(REASON_END_ON);
         extensionReasonEntity.setReason(REASON);
+        extensionReasonEntity.setReasonStatus(ReasonStatus.DRAFT);
 
         return extensionReasonEntity;
     }

@@ -32,6 +32,7 @@ public class ExtensionReasonMapperUnitTest {
         assertEquals(extensionReasonEntity.getStartOn(), extensionReasonDTO.getStartOn());
         assertEquals(extensionReasonEntity.getEndOn(), extensionReasonDTO.getEndOn());
         assertEquals(extensionReasonEntity.getReason(), extensionReasonDTO.getReason());
+        assertEquals(extensionReasonEntity.getReasonStatus(), extensionReasonDTO.getReasonStatus());
 
         String attachmentName = attachment.getName();
         Map<String, String> dtoAttachmentLinks = extensionReasonDTO.getAttachments().getLinks();
