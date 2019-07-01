@@ -30,19 +30,8 @@ public class ContractProviderIntegrationTest {
     @Autowired
     private ExtensionRequestsRepository repository;
 
-    /**
-     * Verify that the test database contains an entry with supplied id and company number.
-     * The status of which must be OPEN. this can be found in the mongoTestData.json resource
-     * @throws Exception
-     */
     @State("I have a valid OPEN request for 00006400 with requestId aaaaaaaaaaaaaaaaaaaaaaa4")
-    public void toPatchState() throws Exception {
-        repository.findById("aaaaaaaaaaaaaaaaaaaaaaa4")
-            .map(ExtensionRequestFullEntity::getStatus)
-            .filter(Status.OPEN::equals)
-            .orElseThrow(() -> new Exception("Database is not in the right state for test: " +
-                "Expecting request with ID aaaaaaaaaaaaaaaaaaaaaaa4 with a status of OPEN"));
-    }
+    public void toPatchState() {}
 
     @State("i have full request object")
     public void fullRequestObject() {}
