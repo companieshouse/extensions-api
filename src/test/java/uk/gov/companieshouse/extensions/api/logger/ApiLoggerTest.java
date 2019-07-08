@@ -1,6 +1,5 @@
 package uk.gov.companieshouse.extensions.api.logger;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 
@@ -17,6 +16,9 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.companieshouse.logging.Logger;
 
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -143,10 +145,10 @@ public class ApiLoggerTest {
      */
     private void assertMapIsValid(ArgumentCaptor<Map<String, Object>> mapArgumentCaptor) {
         Map<String, Object> mapLogged = mapArgumentCaptor.getValue();
-        Assert.assertTrue(mapLogged.containsKey(COMPANY_NUMBER_KEY));
-        Assert.assertEquals(COMPANY_NUMBER, mapLogged.get(COMPANY_NUMBER_KEY));
-        Assert.assertTrue(mapLogged.containsKey(THREAD_ID_KEY));
-        Assert.assertNotNull(mapLogged.get(THREAD_ID_KEY));
+        assertTrue(mapLogged.containsKey(COMPANY_NUMBER_KEY));
+        assertEquals(COMPANY_NUMBER, mapLogged.get(COMPANY_NUMBER_KEY));
+        assertTrue(mapLogged.containsKey(THREAD_ID_KEY));
+        assertNotNull(mapLogged.get(THREAD_ID_KEY));
     }
 
     /**
@@ -160,8 +162,8 @@ public class ApiLoggerTest {
         //check extra values beyond the defaults
         Map<String, Object> mapLogged = mapArgumentCaptor.getValue();
         extraValues.forEach((extraKey, extraValue) -> {
-            Assert.assertTrue(mapLogged.containsKey(extraKey));
-            Assert.assertEquals(extraValue, mapLogged.get(extraKey));
+            assertTrue(mapLogged.containsKey(extraKey));
+            assertEquals(extraValue, mapLogged.get(extraKey));
         });
     }
 }
