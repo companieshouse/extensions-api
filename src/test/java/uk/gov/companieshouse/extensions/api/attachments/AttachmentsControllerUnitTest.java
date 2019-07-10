@@ -190,7 +190,7 @@ public class AttachmentsControllerUnitTest {
     @Test
     public void willCatchHttpServerExceptions_delete() throws ServiceException {
         when(attachmentsService.removeAttachment(REQUEST_ID, REASON_ID, ATTACHMENT_ID))
-            .thenThrow(new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR));
+            .thenThrow(new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR));
 
         AttachmentsController controller = new AttachmentsController(
             PluggableResponseEntityFactory.buildWithStandardFactories(), attachmentsService, logger);
