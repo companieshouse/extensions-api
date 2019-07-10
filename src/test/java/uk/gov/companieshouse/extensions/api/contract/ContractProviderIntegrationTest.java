@@ -3,7 +3,6 @@ package uk.gov.companieshouse.extensions.api.contract;
 import org.junit.Before;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import au.com.dius.pact.provider.junit.Provider;
@@ -27,7 +26,6 @@ import static org.mockito.Mockito.when;
 @Provider("extensions-api")
 @PactFolder("pacts")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureMockMvc
 public class ContractProviderIntegrationTest {
 
     @MockBean
