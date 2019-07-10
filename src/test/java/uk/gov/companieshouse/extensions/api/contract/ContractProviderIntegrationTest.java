@@ -3,8 +3,6 @@ package uk.gov.companieshouse.extensions.api.contract;
 import org.junit.Before;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentMatchers;
-import org.mockito.Mockito;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -20,6 +18,9 @@ import org.springframework.http.HttpStatus;
 import uk.gov.companieshouse.extensions.api.attachments.file.FileTransferApiClient;
 import uk.gov.companieshouse.extensions.api.attachments.file.FileTransferApiClientResponse;
 import uk.gov.companieshouse.extensions.api.groups.ContractProvider;
+
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 
 @Category(ContractProvider.class)
 @RunWith(SpringRestPactRunner.class)
@@ -39,7 +40,7 @@ public class ContractProviderIntegrationTest {
     public void setup() {
         FileTransferApiClientResponse fileTransferApiClientResponse = new FileTransferApiClientResponse();
         fileTransferApiClientResponse.setHttpStatus(HttpStatus.NO_CONTENT);
-        Mockito.when(fileTransferApiClient.delete(ArgumentMatchers.anyString())).thenReturn(fileTransferApiClientResponse);
+        when(fileTransferApiClient.delete(anyString())).thenReturn(fileTransferApiClientResponse);
     }
 
     @State("I have a valid OPEN request for 00006400 with requestId aaaaaaaaaaaaaaaaaaaaaaa4")
