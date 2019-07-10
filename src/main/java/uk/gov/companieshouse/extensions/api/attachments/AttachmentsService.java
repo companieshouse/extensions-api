@@ -114,6 +114,12 @@ public class AttachmentsService {
                 reasonId, attachmentId));
         }
 
+        FileTransferApiClientResponse deleteResponse = fileTransferApiClient.delete(attachmentId);
+        if (deleteResponse.getHttpStatus().isError()) {
+            throw new ServiceException(String.format("Failed to delete attachment %s, response status %s",
+                attachmentId, deleteResponse.getHttpStatus()));
+        }
+
         List<Attachment> updatedAttachments =
             reasonAttachments
                 .stream()

@@ -239,6 +239,10 @@ public class AttachmentsServiceUnitTest {
         when(repo.findById(entity.getId()))
             .thenReturn(Optional.of(entity));
 
+        FileTransferApiClientResponse apiClientResponse = new FileTransferApiClientResponse();
+        apiClientResponse.setHttpStatus(HttpStatus.NO_CONTENT);
+        when(fileTransferApiClient.delete("12345")).thenReturn(apiClientResponse);
+
         service.removeAttachment(entity.getId(),
             entity.getReasons().stream().findAny().get().getId(), "12345");
 
@@ -252,6 +256,7 @@ public class AttachmentsServiceUnitTest {
             });
 
         verify(repo).save(entity);
+        verify(fileTransferApiClient, times(1)).delete("12345");
     }
 
     @Test
@@ -293,6 +298,10 @@ public class AttachmentsServiceUnitTest {
 
         assertFalse(entity.getReasons().get(0).getAttachments().isEmpty());
 
+        FileTransferApiClientResponse apiClientResponse = new FileTransferApiClientResponse();
+        apiClientResponse.setHttpStatus(HttpStatus.NO_CONTENT);
+        when(fileTransferApiClient.delete("12345ab")).thenReturn(apiClientResponse);
+
         when(repo.findById(entity.getId()))
             .thenReturn(Optional.of(entity));
 
@@ -306,6 +315,41 @@ public class AttachmentsServiceUnitTest {
         }
 
         verify(repo, never()).save(entity);
+        verify(fileTransferApiClient, times(1)).delete("12345ab");
+    }
+
+    @Test
+    public void willThrowExceptionIfAttachmentFileDoesntExist() {
+        ExtensionRequestFullEntity entity = Utils.dummyRequestEntity();
+        List<ExtensionReasonEntity> reasons = new ArrayList<>();
+        reasons.add(Utils.dummyReasonEntity());
+        entity.setReasons(reasons);
+        entity.getReasons()
+            .stream()
+            .forEachOrdered(reason -> {
+                addAttachmentToReason(reason, "12345");
+                addAttachmentToReason(reason, "123456");
+            });
+
+        assertFalse(entity.getReasons().get(0).getAttachments().isEmpty());
+
+        FileTransferApiClientResponse apiClientResponse = new FileTransferApiClientResponse();
+        apiClientResponse.setHttpStatus(HttpStatus.NOT_FOUND);
+        when(fileTransferApiClient.delete("12345")).thenReturn(apiClientResponse);
+
+        when(repo.findById(entity.getId()))
+            .thenReturn(Optional.of(entity));
+
+        try {
+            service.removeAttachment(entity.getId(),
+                entity.getReasons().stream().findAny().get().getId(), "12345");
+            fail();
+        } catch(ServiceException e) {
+            assertEquals(String.format("Failed to delete attachment %s, response status %s", "12345", HttpStatus.NOT_FOUND), e.getMessage());
+        }
+
+        verify(repo, never()).save(entity);
+        verify(fileTransferApiClient, times(1)).delete("12345");
     }
 
     @Test

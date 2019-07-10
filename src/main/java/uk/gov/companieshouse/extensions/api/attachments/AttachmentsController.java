@@ -70,6 +70,10 @@ public class AttachmentsController {
       } catch(ServiceException e) {
           logger.info(e.getMessage());
           return responseEntityFactory.createResponse(ServiceResult.notFound());
+      } catch (HttpClientErrorException | HttpServerErrorException e) {
+          logger.error(String.format("The file-transfer-api Delete returned status %s for attachment %s",
+              e.getStatusCode(), attachmentId), e);
+          return ResponseEntity.status(e.getStatusCode()).build();
       }
     }
 
@@ -81,7 +85,7 @@ public class AttachmentsController {
             FileTransferApiClientResponse downloadResponse = downloadServiceResult.getData();
             return ResponseEntity.status(downloadResponse.getHttpStatus()).build();
         } catch(HttpClientErrorException | HttpServerErrorException e) {
-            logger.error(String.format("The file-transfer-api has returned an error: %s for attchmentId %s",
+            logger.error(String.format("The file-transfer-api has returned an error: %s for attachmentId %s",
                 e.getMessage(), attachmentId));
             return ResponseEntity.status(e.getStatusCode()).build();
         }

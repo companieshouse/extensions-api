@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -56,6 +55,7 @@ public class FileTransferApiClientUnitTest {
     private static final String FILE_ID = "12345";
     private static final String EXCEPTION_MESSAGE = "BAD THINGS";
     private static final String DOWNLOAD_URI = DUMMY_URL + "/" + FILE_ID + "/download";
+    private static final String DELETE_URL = DUMMY_URL + "/" + FILE_ID;
 
     @Captor
     private ArgumentCaptor<ResponseExtractor<ClientHttpResponse>> responseExtractorArgCaptor;
@@ -180,6 +180,43 @@ public class FileTransferApiClientUnitTest {
         expectedException.expectMessage(exception.getMessage());
 
         fileTransferApiClient.download(FILE_ID, servletResponse);
+    }
+
+    @Test
+    public void testDelete_success() {
+        final ResponseEntity<String> apiResponse = new ResponseEntity<>("", HttpStatus.NO_CONTENT);
+
+        when(restTemplate.exchange(eq(DELETE_URL), eq(HttpMethod.DELETE), any(), eq(String.class)))
+            .thenReturn(apiResponse);
+
+        FileTransferApiClientResponse fileTransferApiClientResponse = fileTransferApiClient.delete(FILE_ID);
+
+        assertEquals(HttpStatus.NO_CONTENT, fileTransferApiClientResponse.getHttpStatus());
+    }
+
+    @Test
+    public void testDelete_ApiReturnsError() {
+        final ResponseEntity<String> apiResponse = new ResponseEntity<>("", HttpStatus.INTERNAL_SERVER_ERROR);
+
+        when(restTemplate.exchange(eq(DELETE_URL), eq(HttpMethod.DELETE), any(), eq(String.class)))
+            .thenReturn(apiResponse);
+
+        FileTransferApiClientResponse fileTransferApiClientResponse = fileTransferApiClient.delete(FILE_ID);
+
+        assertTrue(fileTransferApiClientResponse.getHttpStatus().isError());
+        assertEquals(apiResponse.getStatusCode(), fileTransferApiClientResponse.getHttpStatus());
+    }
+
+    @Test
+    public void testDelete_GenericExceptionResponse() {
+        final RestClientException exception = new RestClientException(EXCEPTION_MESSAGE);
+
+        when(restTemplate.exchange(eq(DELETE_URL), eq(HttpMethod.DELETE), any(), eq(String.class))).thenThrow(exception);
+
+        expectedException.expect(RestClientException.class);
+        expectedException.expectMessage(exception.getMessage());
+
+        fileTransferApiClient.delete(FILE_ID);
     }
 
     private ResponseEntity<FileTransferApiResponse> apiSuccessResponse() {
