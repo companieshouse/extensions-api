@@ -30,6 +30,7 @@ import uk.gov.companieshouse.extensions.api.logger.LogMethodCall;
 public class FileTransferApiClient {
 
     private static final String DOWNLOAD_URI = "%s/%s/download";
+    private static final String DELETE_URI = "%s/%s";
     private static final String HEADER_API_KEY = "x-api-key";
     private static final String UPLOAD = "upload";
     private static final String CONTENT_DISPOSITION_VALUE = "form-data; name=%s; filename=%s";
@@ -96,7 +97,8 @@ public class FileTransferApiClient {
                     return clientHttpResponse;
                 }),
 
-            //FileTransferResponseBuilder
+            //FileTransferResponseBuilder - the output from FileTransferOperation is the input into
+            // this FileTransferResponseBuilder
             clientHttpResponse -> {
                 FileTransferApiClientResponse fileTransferApiClientResponse = new FileTransferApiClientResponse();
                 if (clientHttpResponse != null) {
@@ -140,7 +142,7 @@ public class FileTransferApiClient {
         return makeApiCall(
             //FileTransferOperation
             () -> {
-                HttpHeaders headers = createUploadHttpHeaders();
+                HttpHeaders headers = createFileTransferApiHttpHeaders();
                 LinkedMultiValueMap<String, String> fileHeaderMap = createUploadFileHeader(fileToUpload);
                 HttpEntity<byte[]> fileHttpEntity = new HttpEntity<>(fileToUpload.getBytes(), fileHeaderMap);
                 LinkedMultiValueMap<String, Object> body = createUploadBody(fileHttpEntity);
@@ -148,7 +150,8 @@ public class FileTransferApiClient {
                 return restTemplate.postForEntity(fileTransferApiURL, requestEntity, FileTransferApiResponse.class);
             },
 
-            //FileTransferResponseBuilder
+            //FileTransferResponseBuilder - the output from FileTransferOperation is the input into
+            //  this FileTransferResponseBuilder
             responseEntity -> {
                 FileTransferApiClientResponse fileTransferApiClientResponse = new FileTransferApiClientResponse();
                 if (responseEntity != null) {
@@ -166,9 +169,14 @@ public class FileTransferApiClient {
         );
     }
 
-    private HttpHeaders createUploadHttpHeaders() {
-        HttpHeaders headers = new HttpHeaders();
+    private HttpHeaders createFileTransferApiHttpHeaders() {
+        HttpHeaders headers = createApiKeyHeader();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+        return headers;
+    }
+
+    private HttpHeaders createApiKeyHeader() {
+        HttpHeaders headers = new HttpHeaders();
         headers.add(HEADER_API_KEY, fileTransferApiKey);
         return headers;
     }
@@ -183,5 +191,30 @@ public class FileTransferApiClient {
         LinkedMultiValueMap<String, Object> multipartReqMap = new LinkedMultiValueMap<>();
         multipartReqMap.add(UPLOAD, fileHttpEntity);
         return multipartReqMap;
+    }
+
+    /**
+     * Delete a file from S3 via the file-transfer-api
+     * @param fileId of the file to delete
+     * @return FileTransferApiClientResponse containing the http status
+     */
+    public FileTransferApiClientResponse delete(String fileId) {
+        String deleteUrl = String.format(DELETE_URI, fileTransferApiURL, fileId);
+
+        return makeApiCall(
+            //FileTransferOperation
+            () -> {
+                HttpEntity<Void> request = new HttpEntity<>(createApiKeyHeader());
+                return restTemplate.exchange(deleteUrl, HttpMethod.DELETE, request, String.class);
+            },
+
+            //FileTransferResponseBuilder - the output from FileTransferOperation is the input into
+            //  this FileTransferResponseBuilder
+            responseEntity -> {
+                FileTransferApiClientResponse response = new FileTransferApiClientResponse();
+                response.setHttpStatus(responseEntity.getStatusCode());
+                return response;
+            }
+        );
     }
 }

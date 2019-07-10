@@ -10,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.multipart.MultipartFile;
 import uk.gov.companieshouse.extensions.api.Utils.Utils;
 import uk.gov.companieshouse.extensions.api.attachments.file.FileTransferApiClientResponse;
@@ -39,6 +38,8 @@ import java.io.IOException;
 public class AttachmentsControllerUnitTest {
 
     private static final String ATTACHMENT_ID = "123";
+    private static final String REQUEST_ID = "ABC";
+    private static final String REASON_ID = "MNB";
 
     @Mock
     private AttachmentsService attachmentsService;
@@ -138,7 +139,7 @@ public class AttachmentsControllerUnitTest {
     }
 
     @Test
-    public void willCatchHttpClientExceptions() throws ServiceException, IOException {
+    public void willCatchHttpClientExceptions_download() throws ServiceException, IOException {
         HttpServletResponse response = new MockHttpServletResponse();
 
         when(attachmentsService.downloadAttachment(ATTACHMENT_ID, response))
@@ -155,7 +156,7 @@ public class AttachmentsControllerUnitTest {
     }
 
     @Test
-    public void willCatchHttpServerExceptions() throws ServiceException, IOException {
+    public void willCatchHttpServerExceptions_download() throws ServiceException, IOException {
         HttpServletResponse response = new MockHttpServletResponse();
 
         when(attachmentsService.downloadAttachment(ATTACHMENT_ID, response))
@@ -165,6 +166,36 @@ public class AttachmentsControllerUnitTest {
                 PluggableResponseEntityFactory.buildWithStandardFactories(), attachmentsService, logger);
 
         ResponseEntity responseEntity = controller.downloadAttachmentFromRequest(ATTACHMENT_ID, response);
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
+        assertNull(responseEntity.getBody());
+        assertTrue(responseEntity.getHeaders().isEmpty());
+    }
+
+    @Test
+    public void willCatchHttpClientExceptions_delete() throws ServiceException {
+        when(attachmentsService.removeAttachment(REQUEST_ID, REASON_ID, ATTACHMENT_ID))
+            .thenThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND));
+
+        AttachmentsController controller = new AttachmentsController(
+            PluggableResponseEntityFactory.buildWithStandardFactories(), attachmentsService, logger);
+
+        ResponseEntity responseEntity = controller.deleteAttachmentFromRequest(REQUEST_ID, REASON_ID, ATTACHMENT_ID);
+
+        assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
+        assertNull(responseEntity.getBody());
+        assertTrue(responseEntity.getHeaders().isEmpty());
+    }
+
+    @Test
+    public void willCatchHttpServerExceptions_delete() throws ServiceException {
+        when(attachmentsService.removeAttachment(REQUEST_ID, REASON_ID, ATTACHMENT_ID))
+            .thenThrow(new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR));
+
+        AttachmentsController controller = new AttachmentsController(
+            PluggableResponseEntityFactory.buildWithStandardFactories(), attachmentsService, logger);
+
+        ResponseEntity responseEntity = controller.deleteAttachmentFromRequest(REQUEST_ID, REASON_ID, ATTACHMENT_ID);
 
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
         assertNull(responseEntity.getBody());
