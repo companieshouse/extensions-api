@@ -1,7 +1,11 @@
 package uk.gov.companieshouse.extensions.api.contract;
 
+import org.junit.Before;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatchers;
+import org.mockito.Mockito;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import au.com.dius.pact.provider.junit.Provider;
@@ -11,6 +15,10 @@ import au.com.dius.pact.provider.junit.target.Target;
 import au.com.dius.pact.provider.junit.target.TestTarget;
 import au.com.dius.pact.provider.spring.SpringRestPactRunner;
 import au.com.dius.pact.provider.spring.target.SpringBootHttpTarget;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
+import uk.gov.companieshouse.extensions.api.attachments.file.FileTransferApiClient;
+import uk.gov.companieshouse.extensions.api.attachments.file.FileTransferApiClientResponse;
 import uk.gov.companieshouse.extensions.api.groups.ContractProvider;
 
 @Category(ContractProvider.class)
@@ -18,10 +26,21 @@ import uk.gov.companieshouse.extensions.api.groups.ContractProvider;
 @Provider("extensions-api")
 @PactFolder("pacts")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@AutoConfigureMockMvc
 public class ContractProviderIntegrationTest {
+
+    @MockBean
+    private FileTransferApiClient fileTransferApiClient;
 
     @TestTarget
     public final Target target = new SpringBootHttpTarget();
+
+    @Before
+    public void setup() {
+        FileTransferApiClientResponse fileTransferApiClientResponse = new FileTransferApiClientResponse();
+        fileTransferApiClientResponse.setHttpStatus(HttpStatus.NO_CONTENT);
+        Mockito.when(fileTransferApiClient.delete(ArgumentMatchers.anyString())).thenReturn(fileTransferApiClientResponse);
+    }
 
     @State("I have a valid OPEN request for 00006400 with requestId aaaaaaaaaaaaaaaaaaaaaaa4")
     public void toPatchState() {}
