@@ -4,9 +4,12 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.multipart.MultipartFile;
 import uk.gov.companieshouse.extensions.api.attachments.file.FileTransferApiClient;
 import uk.gov.companieshouse.extensions.api.attachments.file.FileTransferApiClientResponse;
+import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
 import uk.gov.companieshouse.extensions.api.logger.LogMethodCall;
 import uk.gov.companieshouse.extensions.api.reasons.ExtensionReasonEntity;
 import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestFullEntity;
@@ -26,14 +29,16 @@ import java.util.stream.Collectors;
 public class AttachmentsService {
 
     private ExtensionRequestsRepository requestsRepo;
-
-    @Autowired
     private FileTransferApiClient fileTransferApiClient;
+    private ApiLogger apiLogger;
 
     @Autowired
-    public AttachmentsService(ExtensionRequestsRepository requestsRepo, FileTransferApiClient fileTransferApiClient) {
+    public AttachmentsService(ExtensionRequestsRepository requestsRepo,
+                              FileTransferApiClient fileTransferApiClient,
+                              ApiLogger logger) {
         this.requestsRepo = requestsRepo;
         this.fileTransferApiClient = fileTransferApiClient;
+        this.apiLogger = logger;
     }
 
     @LogMethodCall
@@ -114,11 +119,7 @@ public class AttachmentsService {
                 reasonId, attachmentId));
         }
 
-        FileTransferApiClientResponse deleteResponse = fileTransferApiClient.delete(attachmentId);
-        if (deleteResponse.getHttpStatus().isError()) {
-            throw new ServiceException(String.format("Failed to delete attachment %s, response status %s",
-                attachmentId, deleteResponse.getHttpStatus()));
-        }
+        deleteAttachment(attachmentId);
 
         List<Attachment> updatedAttachments =
             reasonAttachments
@@ -135,6 +136,26 @@ public class AttachmentsService {
 
         requestsRepo.save(extension);
         return ServiceResult.deleted();
+    }
+
+    private void deleteAttachment(String attachmentId) {
+        final String errorMessage = "Unable to delete attachment %s, status code %s";
+        final String errorMessageShort = "Unable to delete attachment %s";
+        try {
+            FileTransferApiClientResponse response = fileTransferApiClient.delete(attachmentId);
+            if (response == null || response.getHttpStatus() == null) {
+                apiLogger.error(String.format(errorMessageShort,
+                    attachmentId));
+            } else {
+                if (response.getHttpStatus().isError()) {
+                    apiLogger.error(String.format(errorMessage,
+                        attachmentId, response.getHttpStatus()));
+                }
+            }
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
+            apiLogger.error(String.format(errorMessage,
+                attachmentId, e.getStatusCode()), e);
+        }
     }
 
     private Supplier<ServiceException> missingRequest(String requestId) {
