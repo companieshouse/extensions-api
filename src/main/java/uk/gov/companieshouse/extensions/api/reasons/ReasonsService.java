@@ -3,6 +3,12 @@ package uk.gov.companieshouse.extensions.api.reasons;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
+import uk.gov.companieshouse.extensions.api.attachments.Attachment;
+import uk.gov.companieshouse.extensions.api.attachments.file.FileTransferApiClient;
+import uk.gov.companieshouse.extensions.api.attachments.file.FileTransferApiClientResponse;
+import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
 import uk.gov.companieshouse.extensions.api.logger.LogMethodCall;
 import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestFullEntity;
 import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestsRepository;
@@ -13,6 +19,7 @@ import uk.gov.companieshouse.service.ServiceResult;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -24,16 +31,22 @@ public class ReasonsService {
     private ExtensionRequestsRepository extensionRequestsRepository;
     private ExtensionReasonMapper reasonMapper;
     private Supplier<String> randomUUid;
+    private FileTransferApiClient fileTransferApiClient;
+    private ApiLogger apiLogger;
 
     @Autowired
     public ReasonsService(RequestsService requestsService,
                           ExtensionRequestsRepository extensionRequestsRepository,
                           ExtensionReasonMapper reasonMapper,
-                          Supplier<String> randomUUid) {
+                          Supplier<String> randomUUid,
+                          FileTransferApiClient fileTransferApiClient,
+                          ApiLogger apiLogger) {
         this.requestsService = requestsService;
         this.extensionRequestsRepository = extensionRequestsRepository;
         this.reasonMapper = reasonMapper;
         this.randomUUid = randomUUid;
+        this.fileTransferApiClient = fileTransferApiClient;
+        this.apiLogger = apiLogger;
     }
 
     @LogMethodCall
@@ -109,6 +122,8 @@ public class ReasonsService {
             .orElse(null);
 
         if (extensionRequestFullEntity != null && !extensionRequestFullEntity.getReasons().isEmpty()) {
+            deleteAttachments(reasonId, extensionRequestFullEntity);
+
             List<ExtensionReasonEntity> extensionRequestReasons = extensionRequestFullEntity
                 .getReasons().stream().filter(reason -> !reason.getId().equals(reasonId)).collect(Collectors.toList());
 
@@ -117,6 +132,34 @@ public class ReasonsService {
             return extensionRequestsRepository.save(extensionRequestFullEntity);
         }
         return extensionRequestFullEntity;
+    }
+
+    private void deleteAttachments(String reasonId, ExtensionRequestFullEntity extensionRequestFullEntity) {
+        String errorMessage = "Unable to delete attachment %s, status code %s";
+
+        Optional<ExtensionReasonEntity> reasonToBeDeleted = extensionRequestFullEntity.getReasons().stream()
+            .filter(reason -> reason.getId().equals(reasonId))
+            .findFirst();
+
+        if (reasonToBeDeleted.isPresent()) {
+            List<Attachment> attachmentsToBeDeleted = reasonToBeDeleted.get().getAttachments();
+            for (Attachment attachment : attachmentsToBeDeleted) {
+                try {
+                    FileTransferApiClientResponse response = fileTransferApiClient.delete(attachment.getId());
+                    if (response == null) {
+                        apiLogger.error(String.format("Unable to delete attachment %s",
+                            attachment.getId()));
+                    }
+                    if (response != null && response.getHttpStatus().isError()) {
+                        apiLogger.error(String.format(errorMessage,
+                            attachment.getId(), response.getHttpStatus()));
+                    }
+                } catch (HttpClientErrorException | HttpServerErrorException e) {
+                    apiLogger.error(String.format(errorMessage,
+                        attachment.getId(), e.getStatusCode()), e);
+                }
+            }
+        }
     }
 
     @LogMethodCall
