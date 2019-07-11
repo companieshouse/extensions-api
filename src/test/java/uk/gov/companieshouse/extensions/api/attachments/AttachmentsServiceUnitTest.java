@@ -37,6 +37,7 @@ import uk.gov.companieshouse.extensions.api.Utils.Utils;
 import uk.gov.companieshouse.extensions.api.attachments.file.FileTransferApiClient;
 import uk.gov.companieshouse.extensions.api.attachments.file.FileTransferApiClientResponse;
 import uk.gov.companieshouse.extensions.api.groups.Unit;
+import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
 import uk.gov.companieshouse.extensions.api.reasons.ExtensionReasonEntity;
 import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestFullEntity;
 import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestsRepository;
@@ -61,11 +62,14 @@ public class AttachmentsServiceUnitTest {
     @Mock
     private FileTransferApiClient fileTransferApiClient;
 
+    @Mock
+    private ApiLogger apiLogger;
+
     private AttachmentsService service;
 
     @Before
     public void setup() {
-        service = new AttachmentsService(repo, fileTransferApiClient);
+        service = new AttachmentsService(repo, fileTransferApiClient, apiLogger);
         when(fileTransferApiClient.upload(any(MultipartFile.class))).thenReturn(getSuccessfulUploadResponse());
     }
 
@@ -257,6 +261,9 @@ public class AttachmentsServiceUnitTest {
 
         verify(repo).save(entity);
         verify(fileTransferApiClient, times(1)).delete("12345");
+        verify(fileTransferApiClient, never()).delete("123456");
+        verify(apiLogger, never()).error(anyString(), any(Exception.class));
+        verify(apiLogger, never()).error(anyString());
     }
 
     @Test
@@ -298,9 +305,8 @@ public class AttachmentsServiceUnitTest {
 
         assertFalse(entity.getReasons().get(0).getAttachments().isEmpty());
 
-        FileTransferApiClientResponse apiClientResponse = new FileTransferApiClientResponse();
-        apiClientResponse.setHttpStatus(HttpStatus.NO_CONTENT);
-        when(fileTransferApiClient.delete("12345ab")).thenReturn(apiClientResponse);
+        HttpClientErrorException exception = new HttpClientErrorException(HttpStatus.NOT_FOUND);
+        when(fileTransferApiClient.delete("12345ab")).thenThrow(exception);
 
         when(repo.findById(entity.getId()))
             .thenReturn(Optional.of(entity));
@@ -316,10 +322,11 @@ public class AttachmentsServiceUnitTest {
 
         verify(repo, never()).save(entity);
         verify(fileTransferApiClient, times(1)).delete("12345ab");
+        verify(apiLogger).error("Unable to delete attachment 12345ab, status code 404 NOT_FOUND", exception);
     }
 
     @Test
-    public void willThrowExceptionIfAttachmentFileDoesntExist() {
+    public void willHandleClientExceptionOnDeleteAttachment() throws ServiceException {
         ExtensionRequestFullEntity entity = Utils.dummyRequestEntity();
         List<ExtensionReasonEntity> reasons = new ArrayList<>();
         reasons.add(Utils.dummyReasonEntity());
@@ -333,23 +340,105 @@ public class AttachmentsServiceUnitTest {
 
         assertFalse(entity.getReasons().get(0).getAttachments().isEmpty());
 
-        FileTransferApiClientResponse apiClientResponse = new FileTransferApiClientResponse();
-        apiClientResponse.setHttpStatus(HttpStatus.NOT_FOUND);
-        when(fileTransferApiClient.delete("12345")).thenReturn(apiClientResponse);
+        HttpClientErrorException exception = new HttpClientErrorException(HttpStatus.NOT_FOUND);
+        when(fileTransferApiClient.delete("12345")).thenThrow(exception);
 
         when(repo.findById(entity.getId()))
             .thenReturn(Optional.of(entity));
 
-        try {
-            service.removeAttachment(entity.getId(),
+        service.removeAttachment(entity.getId(),
                 entity.getReasons().stream().findAny().get().getId(), "12345");
-            fail();
-        } catch(ServiceException e) {
-            assertEquals(String.format("Failed to delete attachment %s, response status %s", "12345", HttpStatus.NOT_FOUND), e.getMessage());
-        }
 
-        verify(repo, never()).save(entity);
+        verify(repo).save(entity);
         verify(fileTransferApiClient, times(1)).delete("12345");
+        verify(apiLogger).error("Unable to delete attachment 12345, status code 404 NOT_FOUND", exception);
+    }
+
+    @Test
+    public void willHandleServerExceptionOnDeleteAttachment() throws ServiceException {
+        ExtensionRequestFullEntity entity = Utils.dummyRequestEntity();
+        List<ExtensionReasonEntity> reasons = new ArrayList<>();
+        reasons.add(Utils.dummyReasonEntity());
+        entity.setReasons(reasons);
+        entity.getReasons()
+            .stream()
+            .forEachOrdered(reason -> {
+                addAttachmentToReason(reason, "12345");
+                addAttachmentToReason(reason, "123456");
+            });
+
+        assertFalse(entity.getReasons().get(0).getAttachments().isEmpty());
+
+        HttpServerErrorException exception = new HttpServerErrorException(HttpStatus.BAD_GATEWAY);
+        when(fileTransferApiClient.delete("12345")).thenThrow(exception);
+
+        when(repo.findById(entity.getId()))
+            .thenReturn(Optional.of(entity));
+
+        service.removeAttachment(entity.getId(),
+            entity.getReasons().stream().findAny().get().getId(), "12345");
+
+        verify(repo).save(entity);
+        verify(fileTransferApiClient, times(1)).delete("12345");
+        verify(apiLogger).error("Unable to delete attachment 12345, status code 502 BAD_GATEWAY", exception);
+    }
+
+    @Test
+    public void willHandleNullApiResponseOnDeleteAttachment() throws ServiceException {
+        ExtensionRequestFullEntity entity = Utils.dummyRequestEntity();
+        List<ExtensionReasonEntity> reasons = new ArrayList<>();
+        reasons.add(Utils.dummyReasonEntity());
+        entity.setReasons(reasons);
+        entity.getReasons()
+            .stream()
+            .forEachOrdered(reason -> {
+                addAttachmentToReason(reason, "12345");
+                addAttachmentToReason(reason, "123456");
+            });
+
+        assertFalse(entity.getReasons().get(0).getAttachments().isEmpty());
+
+        when(fileTransferApiClient.delete("12345")).thenReturn(null);
+
+        when(repo.findById(entity.getId()))
+            .thenReturn(Optional.of(entity));
+
+        service.removeAttachment(entity.getId(),
+            entity.getReasons().stream().findAny().get().getId(), "12345");
+
+        verify(repo).save(entity);
+        verify(fileTransferApiClient, times(1)).delete("12345");
+        verify(apiLogger).error("Unable to delete attachment 12345");
+    }
+
+    @Test
+    public void willHandleNullHttpStatusApiResponseOnDeleteAttachment() throws ServiceException {
+        ExtensionRequestFullEntity entity = Utils.dummyRequestEntity();
+        List<ExtensionReasonEntity> reasons = new ArrayList<>();
+        reasons.add(Utils.dummyReasonEntity());
+        entity.setReasons(reasons);
+        entity.getReasons()
+            .stream()
+            .forEachOrdered(reason -> {
+                addAttachmentToReason(reason, "12345");
+                addAttachmentToReason(reason, "123456");
+            });
+
+        assertFalse(entity.getReasons().get(0).getAttachments().isEmpty());
+
+        FileTransferApiClientResponse response = new FileTransferApiClientResponse();
+        response.setHttpStatus(null);
+        when(fileTransferApiClient.delete("12345")).thenReturn(response);
+
+        when(repo.findById(entity.getId()))
+            .thenReturn(Optional.of(entity));
+
+        service.removeAttachment(entity.getId(),
+            entity.getReasons().stream().findAny().get().getId(), "12345");
+
+        verify(repo).save(entity);
+        verify(fileTransferApiClient, times(1)).delete("12345");
+        verify(apiLogger).error("Unable to delete attachment 12345");
     }
 
     @Test

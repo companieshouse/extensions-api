@@ -171,34 +171,4 @@ public class AttachmentsControllerUnitTest {
         assertNull(responseEntity.getBody());
         assertTrue(responseEntity.getHeaders().isEmpty());
     }
-
-    @Test
-    public void willCatchHttpClientExceptions_delete() throws ServiceException {
-        when(attachmentsService.removeAttachment(REQUEST_ID, REASON_ID, ATTACHMENT_ID))
-            .thenThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND));
-
-        AttachmentsController controller = new AttachmentsController(
-            PluggableResponseEntityFactory.buildWithStandardFactories(), attachmentsService, logger);
-
-        ResponseEntity responseEntity = controller.deleteAttachmentFromRequest(REQUEST_ID, REASON_ID, ATTACHMENT_ID);
-
-        assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
-        assertNull(responseEntity.getBody());
-        assertTrue(responseEntity.getHeaders().isEmpty());
-    }
-
-    @Test
-    public void willCatchHttpServerExceptions_delete() throws ServiceException {
-        when(attachmentsService.removeAttachment(REQUEST_ID, REASON_ID, ATTACHMENT_ID))
-            .thenThrow(new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR));
-
-        AttachmentsController controller = new AttachmentsController(
-            PluggableResponseEntityFactory.buildWithStandardFactories(), attachmentsService, logger);
-
-        ResponseEntity responseEntity = controller.deleteAttachmentFromRequest(REQUEST_ID, REASON_ID, ATTACHMENT_ID);
-
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
-        assertNull(responseEntity.getBody());
-        assertTrue(responseEntity.getHeaders().isEmpty());
-    }
 }

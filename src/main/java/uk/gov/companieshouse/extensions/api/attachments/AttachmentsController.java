@@ -70,10 +70,6 @@ public class AttachmentsController {
       } catch(ServiceException e) {
           logger.info(e.getMessage());
           return responseEntityFactory.createResponse(ServiceResult.notFound());
-      } catch (HttpClientErrorException | HttpServerErrorException e) {
-          logger.error(String.format("The file-transfer-api Delete returned status %s for attachment %s",
-              e.getStatusCode(), attachmentId), e);
-          return ResponseEntity.status(e.getStatusCode()).build();
       }
     }
 
