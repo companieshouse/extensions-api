@@ -135,7 +135,8 @@ public class ReasonsService {
     }
 
     private void deleteAttachments(String reasonId, ExtensionRequestFullEntity extensionRequestFullEntity) {
-        String errorMessage = "Unable to delete attachment %s, status code %s";
+        final String errorMessage = "Unable to delete attachment %s, status code %s";
+        final String errorMessageShort = "Unable to delete attachment %s";
 
         Optional<ExtensionReasonEntity> reasonToBeDeleted = extensionRequestFullEntity.getReasons().stream()
             .filter(reason -> reason.getId().equals(reasonId))
@@ -146,13 +147,15 @@ public class ReasonsService {
             for (Attachment attachment : attachmentsToBeDeleted) {
                 try {
                     FileTransferApiClientResponse response = fileTransferApiClient.delete(attachment.getId());
-                    if (response == null) {
-                        apiLogger.error(String.format("Unable to delete attachment %s",
+
+                    if (response == null || response.getHttpStatus() == null) {
+                        apiLogger.error(String.format(errorMessageShort,
                             attachment.getId()));
-                    }
-                    if (response != null && response.getHttpStatus().isError()) {
-                        apiLogger.error(String.format(errorMessage,
-                            attachment.getId(), response.getHttpStatus()));
+                    } else {
+                        if (response.getHttpStatus().isError()) {
+                            apiLogger.error(String.format(errorMessage,
+                                attachment.getId(), response.getHttpStatus()));
+                        }
                     }
                 } catch (HttpClientErrorException | HttpServerErrorException e) {
                     apiLogger.error(String.format(errorMessage,
