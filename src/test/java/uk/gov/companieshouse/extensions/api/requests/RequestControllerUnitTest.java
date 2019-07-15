@@ -22,6 +22,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Supplier;
 
@@ -94,7 +95,7 @@ public class RequestControllerUnitTest {
                 any(String.class));
 
         assertNotNull(entityRequestDTO);
-        assertEquals(entityRequestDTO.toString(), response.getBody().toString());
+        assertEquals(entityRequestDTO.toString(), Objects.requireNonNull(response.getBody()).toString());
     }
 
     @Test

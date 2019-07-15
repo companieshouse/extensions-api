@@ -9,14 +9,14 @@ import java.util.List;
 
 public class ListResponse<T> {
 
-    private String etag;
+    private final String etag;
     @JsonProperty("items_per_page")
-    private int itemsPerPage;
+    private final int itemsPerPage;
     @JsonProperty("start_index")
-    private int startIndex;
+    private final int startIndex;
     @JsonProperty("total_results")
-    private int totalResults;
-    private List<T> items;
+    private final int totalResults;
+    private final List<T> items;
 
     public ListResponse(String etag, int itemsPerPage, int startIndex,
                         int totalResults, List<T> items) {

@@ -133,7 +133,7 @@ public class ReasonsControllerIntegrationTest {
         assertEquals(mockGetResponse(), result.getResponse().getContentAsString());
     }
 
-    String buildMockReason() {
+    private String buildMockReason() {
         return "{\n" +
                 "  \"reason\": \"illness\",\n" +
                 "  \"reason_information\": \"string\",\n" +
@@ -142,7 +142,7 @@ public class ReasonsControllerIntegrationTest {
                 "}";
     }
 
-    String mockReponse() {
+    private String mockReponse() {
         return "{\"etag\":null," +
             "\"id\":\"123\"," +
             "\"reason\":null," +
@@ -158,7 +158,7 @@ public class ReasonsControllerIntegrationTest {
         "}";
     }
 
-    String mockGetResponse() {
+    private String mockGetResponse() {
         return "{" +
             "\"etag\":null," +
             "\"items\":[" +

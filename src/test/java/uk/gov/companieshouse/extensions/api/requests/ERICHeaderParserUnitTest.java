@@ -23,7 +23,7 @@ public class ERICHeaderParserUnitTest {
     private static final String UTF8_AUTH_USER = "demo@ch.gov.uk; forename*=UTF-8''demo%20%3BForename; surname*=UTF-8''demo%3BSurname";
     private static final String ERIC_IDENTITY = "Y2VkZWVlMzhlZWFjY2M4MzQ3MT";
 
-    private ERICHeaderParser ericHeaderParser = new ERICHeaderParser();
+    private final ERICHeaderParser ericHeaderParser = new ERICHeaderParser();
 
     @Mock
     private HttpServletRequest request;

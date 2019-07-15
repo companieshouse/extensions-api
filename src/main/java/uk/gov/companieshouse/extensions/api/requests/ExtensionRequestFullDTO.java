@@ -8,7 +8,7 @@ import java.util.List;
 public class ExtensionRequestFullDTO extends ExtensionRequestFull {
 
     // key = hash of reason id, value = uri of reason
-    private List<Links> reasons = new ArrayList<>();
+    private final List<Links> reasons = new ArrayList<>();
 
     public List<Links> getReasons() {
         return reasons;

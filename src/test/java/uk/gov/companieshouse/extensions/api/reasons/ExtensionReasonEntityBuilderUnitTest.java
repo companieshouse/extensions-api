@@ -17,7 +17,7 @@ import uk.gov.companieshouse.service.links.Links;
 public class ExtensionReasonEntityBuilderUnitTest {
 
   @Rule
-  public ExpectedException expectedException = ExpectedException.none();
+  public final ExpectedException expectedException = ExpectedException.none();
 
   @Test
   public void willThrowUnsupportOperationExceptionIfLinksBeforeId() {
@@ -29,7 +29,7 @@ public class ExtensionReasonEntityBuilderUnitTest {
   }
 
   @Test
-  public void willCreateAReasonEnity() {
+  public void willCreateAReasonEntity() {
     ExtensionReasonEntity entity = new ExtensionReasonEntityBuilder()
       .withId("123")
       .withLinks("requestURI")

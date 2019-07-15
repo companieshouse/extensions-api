@@ -159,7 +159,7 @@ public class AttachmentsServiceUnitTest {
 
     @Test
     public void willThrowServiceExceptionIfNoReason() throws Exception {
-        when(repo.findById(anyString())).thenReturn(Optional.ofNullable(null));
+        when(repo.findById(anyString())).thenReturn(Optional.empty());
 
         try {
             service.addAttachment(Utils.mockMultipartFile(),
@@ -172,7 +172,7 @@ public class AttachmentsServiceUnitTest {
 
     @Test
     public void willThrowServiceExceptionIfUploadErrors() throws Exception {
-        when(fileTransferApiClient.upload(any(MultipartFile.class))).thenReturn(getUnsuccessfullUploadResponse());
+        when(fileTransferApiClient.upload(any(MultipartFile.class))).thenReturn(getUnsuccessfulUploadResponse());
 
         try {
             service.addAttachment(Utils.mockMultipartFile(),
@@ -231,8 +231,7 @@ public class AttachmentsServiceUnitTest {
         reasons.add(Utils.dummyReasonEntity());
         entity.setReasons(reasons);
         entity.getReasons()
-            .stream()
-            .forEachOrdered(reason -> {
+            .forEach(reason -> {
                 addAttachmentToReason(reason, "12345");
                 addAttachmentToReason(reason, "123456");
             });
@@ -252,7 +251,6 @@ public class AttachmentsServiceUnitTest {
 
         assertFalse(entity.getReasons().isEmpty());
         entity.getReasons()
-            .stream()
             .forEach(reason -> {
                 assertFalse(reason.getAttachments().isEmpty());
                 assertEquals(1, reason.getAttachments().size());
@@ -291,14 +289,13 @@ public class AttachmentsServiceUnitTest {
     }
 
     @Test
-    public void willThrowExceptionIfAttachmentDoesntExist() {
+    public void willThrowExceptionIfAttachmentDoesNotExist() {
         ExtensionRequestFullEntity entity = Utils.dummyRequestEntity();
         List<ExtensionReasonEntity> reasons = new ArrayList<>();
         reasons.add(Utils.dummyReasonEntity());
         entity.setReasons(reasons);
         entity.getReasons()
-            .stream()
-            .forEachOrdered(reason -> {
+            .forEach(reason -> {
                 addAttachmentToReason(reason, "12345");
                 addAttachmentToReason(reason, "123456");
             });
@@ -471,7 +468,7 @@ public class AttachmentsServiceUnitTest {
         return fileTransferApiClientResponse;
     }
 
-    private FileTransferApiClientResponse getUnsuccessfullUploadResponse() {
+    private FileTransferApiClientResponse getUnsuccessfulUploadResponse() {
         FileTransferApiClientResponse fileTransferApiClientResponse = new FileTransferApiClientResponse();
         fileTransferApiClientResponse.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
         return fileTransferApiClientResponse;

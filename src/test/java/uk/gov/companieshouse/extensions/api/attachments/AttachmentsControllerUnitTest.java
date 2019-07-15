@@ -50,7 +50,7 @@ public class AttachmentsControllerUnitTest {
     @Mock
     private ApiLogger logger;
 
-    private ServiceException serviceException = new ServiceException("exception error");
+    private final ServiceException serviceException = new ServiceException("exception error");
 
     @Test
     public void willReturn404IfInvalidRequestSuppliedPostRequest() throws Exception {

@@ -10,10 +10,10 @@ import java.io.Serializable;
 
 public class AttachmentDTO extends ApiObjectImpl implements Serializable {
 
-    private long size;
-    private String name;
-    private String contentType;
-    private String id;
+    private final long size;
+    private final String name;
+    private final String contentType;
+    private final String id;
 
     public AttachmentDTO(String id, Links links, String etag, String name, long size,
                          String contentType) {

@@ -14,6 +14,7 @@ import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyReasonEntity
 import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyRequestEntity;
 
 import java.util.List;
+import java.util.Objects;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -101,7 +102,7 @@ public class ReasonsControllerUnitTest {
         assertNotNull(response.getBody());
         assertEquals(dto.getLinks(), response.getBody().getLinks());
         assertEquals(dto.getId(), response.getBody().getId());
-        assertEquals("requestURL", response.getHeaders().getLocation().toString());
+        assertEquals("requestURL", Objects.requireNonNull(response.getHeaders().getLocation()).toString());
     }
 
     @Test

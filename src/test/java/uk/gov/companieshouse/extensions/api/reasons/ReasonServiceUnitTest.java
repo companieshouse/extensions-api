@@ -71,7 +71,7 @@ public class ReasonServiceUnitTest {
     private ApiLogger logger;
 
     @Rule
-    public ExpectedException exception = ExpectedException.none();
+    public final ExpectedException exception = ExpectedException.none();
 
     @Captor
     private ArgumentCaptor<ExtensionRequestFullEntity> captor;
@@ -167,7 +167,7 @@ public class ReasonServiceUnitTest {
     @Test
     public void exceptionThrownIfNoRequestFound() throws ServiceException {
         when(requestsService.getExtensionsRequestById("123"))
-            .thenReturn(Optional.ofNullable(null));
+            .thenReturn(Optional.empty());
 
         exception.expect(ServiceException.class);
         exception.expectMessage("Request 123 not found");

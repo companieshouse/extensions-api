@@ -70,7 +70,7 @@ public class FileTransferApiClientUnitTest {
     private FileTransferApiClient fileTransferApiClient;
 
     @Rule
-    public ExpectedException expectedException = ExpectedException.none();
+    public final ExpectedException expectedException = ExpectedException.none();
 
     private MultipartFile file;
 
