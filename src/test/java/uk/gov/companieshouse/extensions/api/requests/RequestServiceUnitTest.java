@@ -49,7 +49,7 @@ public class RequestServiceUnitTest {
     private ArgumentCaptor<ExtensionRequestFullEntity> captor;
 
     @Rule
-    public ExpectedException expectedException = ExpectedException.none();
+    public final ExpectedException expectedException = ExpectedException.none();
 
     @Test
     public void testGetSingleRequest() {
@@ -114,7 +114,7 @@ public class RequestServiceUnitTest {
         ExtensionRequestFullEntity extensionRequestFullEntity = new ExtensionRequestFullEntity();
         extensionRequestFullEntity.setStatus(Status.OPEN);
         when(extensionRequestsRepository.findById(anyString()))
-            .thenReturn(Optional.ofNullable(null));
+            .thenReturn(Optional.empty());
 
         RequestStatus status = new RequestStatus();
         status.setStatus(Status.SUBMITTED);

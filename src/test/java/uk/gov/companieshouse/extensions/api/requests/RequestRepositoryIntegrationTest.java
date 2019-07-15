@@ -114,10 +114,7 @@ public class RequestRepositoryIntegrationTest {
         expectedAttachment.setLinks(links);
 
         entity.getReasons()
-            .stream()
-            .forEach(reason -> {
-                reason.setAttachments(Arrays.asList(expectedAttachment));
-            });
+            .forEach(reason -> reason.setAttachments(Arrays.asList(expectedAttachment)));
 
         ExtensionRequestFullEntity savedEntity = requestsRepository.save(entity);
 

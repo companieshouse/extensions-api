@@ -22,7 +22,7 @@ public class ExtensionRequestFullEntityBuilder {
 
     private Status status;
 
-    private List<ExtensionReasonEntity> reasons = new ArrayList<>();
+    private final List<ExtensionReasonEntity> reasons = new ArrayList<>();
 
     public ExtensionRequestFullEntityBuilder withCompanyNumber(String companyNumber) {
         this.companyNumber = companyNumber;

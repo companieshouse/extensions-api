@@ -38,7 +38,7 @@ public class FileTransferGatewayIntegrationTest {
     private static ClientAndServer mockServer;
 
     @Rule
-    public ExpectedException expectedException = ExpectedException.none();
+    public final ExpectedException expectedException = ExpectedException.none();
 
     @BeforeClass
     public static void startMockApiServer() {

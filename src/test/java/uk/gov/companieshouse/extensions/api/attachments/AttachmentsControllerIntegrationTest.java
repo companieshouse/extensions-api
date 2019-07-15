@@ -59,14 +59,12 @@ public class AttachmentsControllerIntegrationTest {
     @Mock
     private ApiLogger logger;
 
-    private AttachmentsController controller;
-
     @Autowired
     private PluggableResponseEntityFactory responseEntityFactory;
 
     @Before
     public void setup() {
-        controller = new AttachmentsController(responseEntityFactory, attachmentsService, logger);
+        AttachmentsController controller = new AttachmentsController(responseEntityFactory, attachmentsService, logger);
         this.mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
     }
 
@@ -75,7 +73,7 @@ public class AttachmentsControllerIntegrationTest {
          File file = new File("./src/test/resources/input/test.txt");
          MockMultipartFile multipartFile = new MockMultipartFile("file", new FileInputStream(file));
 
-         HashMap<String, String> contentTypeParams = new HashMap<String, String>();
+         HashMap<String, String> contentTypeParams = new HashMap<>();
          MediaType mediaType = new MediaType("multipart", "form-data", contentTypeParams);
 
          AttachmentDTO expectedDto = AttachmentDTO

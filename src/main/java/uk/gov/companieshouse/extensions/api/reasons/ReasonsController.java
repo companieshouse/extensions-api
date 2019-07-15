@@ -17,8 +17,8 @@ import java.net.URI;
 @RequestMapping("${api.endpoint.extensions}")
 public class ReasonsController {
 
-    private ReasonsService reasonsService;
-    private ApiLogger logger;
+    private final ReasonsService reasonsService;
+    private final ApiLogger logger;
 
     @Autowired
     public ReasonsController(ReasonsService reasonsService, ApiLogger logger) {
