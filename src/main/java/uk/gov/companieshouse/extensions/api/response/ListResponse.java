@@ -18,8 +18,8 @@ public class ListResponse<T> {
     private final int totalResults;
     private final List<T> items;
 
-    private ListResponse(String etag, int itemsPerPage, int startIndex,
-                         int totalResults, List<T> items) {
+    public ListResponse(String etag, int itemsPerPage, int startIndex,
+                        int totalResults, List<T> items) {
         this.etag = etag;
         this.items = items;
         this.itemsPerPage = itemsPerPage;

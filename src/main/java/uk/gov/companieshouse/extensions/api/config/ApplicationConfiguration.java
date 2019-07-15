@@ -26,7 +26,7 @@ import java.util.function.Supplier;
 public class ApplicationConfiguration implements WebMvcConfigurer {
 
     @Bean
-    private EnvironmentReader environmentReader() {
+    public EnvironmentReader environmentReader() {
         return new EnvironmentReaderImpl();
     }
 
@@ -60,7 +60,7 @@ public class ApplicationConfiguration implements WebMvcConfigurer {
     }
 
     @Bean
-    private RequestLoggerInterceptor requestLoggerInterceptor() {
+    public RequestLoggerInterceptor requestLoggerInterceptor() {
         return new RequestLoggerInterceptor();
     }
 

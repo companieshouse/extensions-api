@@ -15,8 +15,8 @@ public class AttachmentDTO extends ApiObjectImpl implements Serializable {
     private final String contentType;
     private final String id;
 
-    private AttachmentDTO(String id, Links links, String etag, String name, long size,
-                          String contentType) {
+    public AttachmentDTO(String id, Links links, String etag, String name, long size,
+                         String contentType) {
         this.id = id;
         setLinks(links);
         setEtag(etag);

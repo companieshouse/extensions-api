@@ -25,34 +25,34 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class Utils {
-    private static final String ETAG = "etag";
+    public static final String ETAG = "etag";
     public static final String REQUEST_ID = "1234";
     public static final String COMPANY_NUMBER = "00006400";
-    private static final LocalDateTime CREATED_ON = LocalDateTime.of(
+    public static final LocalDateTime CREATED_ON = LocalDateTime.of(
         2018, 10, 10, 00,00,00);
-    private static final CreatedBy CREATED_BY = createdBy();
-    private static final LocalDate ACCOUNTING_PERIOD_START_ON = LocalDate.of(
+    public static final CreatedBy CREATED_BY = createdBy();
+    public static final LocalDate ACCOUNTING_PERIOD_START_ON = LocalDate.of(
         2018, 12, 12);
-    private static final LocalDate ACCOUNTING_PERIOD_END_ON = LocalDate.of(
+    public static final LocalDate ACCOUNTING_PERIOD_END_ON = LocalDate.of(
         2019, 12, 12);
-    private static final Links LINKS = links();
-    private static final Status STATUS_OPEN = Status.OPEN;
+    public static final Links LINKS = links();
+    public static final Status STATUS_OPEN = Status.OPEN;
     public static final String BASE_URL = "/company/00006400/extensions/requests/";
     public static final String USER_ID = "userID";
     public static final String EMAIL = "email";
     public static final String FORENAME = "forename";
     public static final String SURNAME = "surname";
-    private static final LocalDate REASON_START_ON = LocalDate.of(
+    public static final LocalDate REASON_START_ON = LocalDate.of(
         2018, 12, 12);
-    private static final LocalDate REASON_END_ON = LocalDate.of(
+    public static final LocalDate REASON_END_ON = LocalDate.of(
         2019, 12, 12);
-    private static final String REASON = "illness";
-    private static final String REASON_INFORMATION = "string";
+    public static final String REASON = "illness";
+    public static final String REASON_INFORMATION = "string";
     public static final String TESTURI = "testuri";
     public static final String REASON_ID = "abc";
-    private static final String ATTACHMENT_SELF_LINK = "/some/link/to/somewhere";
-    private static final String ATTACHMENT_ID = "abdkskksd";
-    private static final String ATTACHMENT_NAME = "certificate.pdf";
+    public static final String ATTACHMENT_SELF_LINK = "/some/link/to/somewhere";
+    public static final String ATTACHMENT_ID = "abdkskksd";
+    public static final String ATTACHMENT_NAME = "certificate.pdf";
     public static final String ORIGINAL_FILE_NAME = "original.png";
 
     public static CreatedBy createdBy() {

@@ -9,7 +9,7 @@ public enum ExtensionsLinkKeys implements LinkKey {
 
     private final String key;
 
-    ExtensionsLinkKeys(String key) {
+    private ExtensionsLinkKeys(String key) {
         this.key = key;
     }
 
