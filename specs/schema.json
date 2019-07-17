@@ -630,6 +630,9 @@
             "open",
             "submitted"
           ]
+        },
+        "num_granted_extension_requests": {
+          "type": "number"
         }
       }
     },
