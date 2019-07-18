@@ -1,8 +1,11 @@
 package uk.gov.companieshouse.extensions.api.requests;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class RequestStatus {
 
     private Status status;
+    @JsonProperty("num_granted_extension_reqs")
     private int numGrantedExtensionReqs;
 
     public Status getStatus() {
