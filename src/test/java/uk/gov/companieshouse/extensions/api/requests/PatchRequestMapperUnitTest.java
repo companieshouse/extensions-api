@@ -19,6 +19,7 @@ public class PatchRequestMapperUnitTest {
     public void canMergeAPatchEntityIntoADatabaseEntity() {
         RequestStatus patchEntity = new RequestStatus();
         patchEntity.setStatus(Status.SUBMITTED);
+        patchEntity.setNumGrantedExtensionReqs(1);
 
         ExtensionRequestFullEntity dbEntity = new ExtensionRequestFullEntity();
         dbEntity.setId("12345");
@@ -30,7 +31,6 @@ public class PatchRequestMapperUnitTest {
         ExtensionReasonEntity reason = new ExtensionReasonEntity();
         reason.setId("reason1");
         dbEntity.setReasons(Arrays.asList(reason));
-
         ExtensionRequestFullEntity mappedEntity = PatchRequestMapper.INSTANCE
             .patchEntity(patchEntity, dbEntity);
 
@@ -38,6 +38,7 @@ public class PatchRequestMapperUnitTest {
         assertEquals(LocalDate.of(2018,1,1), mappedEntity.getAccountingPeriodEndOn());
         assertEquals(links, mappedEntity.getLinks());
         assertEquals(Status.SUBMITTED, dbEntity.getStatus());
+        assertEquals(1, dbEntity.getNumGrantedExtensionReqs());
         assertEquals("reason1", dbEntity.getReasons().get(0).getId());
     }
   

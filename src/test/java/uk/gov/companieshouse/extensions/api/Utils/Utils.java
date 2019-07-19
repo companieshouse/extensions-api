@@ -28,6 +28,7 @@ public class Utils {
     public static final String ETAG = "etag";
     public static final String REQUEST_ID = "1234";
     public static final String COMPANY_NUMBER = "00006400";
+    public static final int NUM_GRANTED_EXTENSION_REQS = 1;
     public static final LocalDateTime CREATED_ON = LocalDateTime.of(
         2018, 10, 10, 00,00,00);
     public static final CreatedBy CREATED_BY = createdBy();
@@ -79,6 +80,7 @@ public class Utils {
         requestDTO.setEtag(ETAG);
         requestDTO.setId(REQUEST_ID);
         requestDTO.setCompanyNumber(COMPANY_NUMBER);
+        requestDTO.setNumGrantedExtensionReqs(NUM_GRANTED_EXTENSION_REQS);
         requestDTO.setCreatedOn(CREATED_ON);
         requestDTO.setCreatedBy(CREATED_BY);
         requestDTO.setAccountingPeriodStartOn(ACCOUNTING_PERIOD_START_ON);
@@ -95,6 +97,7 @@ public class Utils {
         requestEntity.setEtag(ETAG);
         requestEntity.setId(REQUEST_ID);
         requestEntity.setCompanyNumber(COMPANY_NUMBER);
+        requestEntity.setNumGrantedExtensionReqs(NUM_GRANTED_EXTENSION_REQS);
         requestEntity.setCreatedOn(CREATED_ON);
         requestEntity.setCreatedBy(CREATED_BY);
         requestEntity.setAccountingPeriodStartOn(ACCOUNTING_PERIOD_START_ON);

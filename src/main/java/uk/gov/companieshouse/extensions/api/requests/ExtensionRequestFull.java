@@ -16,6 +16,9 @@ public abstract class ExtensionRequestFull {
 
     private String companyNumber;
 
+    @JsonProperty("num_granted_extension_reqs")
+    private int numGrantedExtensionReqs;
+
     @JsonProperty("created_on")
     private LocalDateTime createdOn;
 
@@ -55,6 +58,14 @@ public abstract class ExtensionRequestFull {
 
     public void setCompanyNumber(String companyNumber) {
         this.companyNumber = companyNumber;
+    }
+
+    public int getNumGrantedExtensionReqs() {
+        return numGrantedExtensionReqs;
+    }
+
+    public void setNumGrantedExtensionReqs(int numGrantedExtensionReqs) {
+        this.numGrantedExtensionReqs = numGrantedExtensionReqs;
     }
 
     public LocalDateTime getCreatedOn() {

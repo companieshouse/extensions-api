@@ -139,7 +139,6 @@ public class RequestControllerUnitTest {
     public void canGetSingleExtensionRequest_NotFound() {
         when(requestsService.getExtensionsRequestById("1234")).thenReturn(Optional.ofNullable(null));
         ResponseEntity<ExtensionRequestFullEntity> response = controller.getSingleExtensionRequestById("1234");
-
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         assertNull(response.getBody());
     }
@@ -151,6 +150,7 @@ public class RequestControllerUnitTest {
 
         RequestStatus status = new RequestStatus();
         status.setStatus(Status.SUBMITTED);
+        status.setNumGrantedExtensionReqs(1);
         ResponseEntity<ExtensionRequestFullEntity> response = controller.patchRequest("123", status);
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
     }
@@ -162,6 +162,7 @@ public class RequestControllerUnitTest {
 
         RequestStatus status = new RequestStatus();
         status.setStatus(Status.SUBMITTED);
+        status.setNumGrantedExtensionReqs(1);
         ResponseEntity<ExtensionRequestFullEntity> response = controller.patchRequest("123", status);
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
