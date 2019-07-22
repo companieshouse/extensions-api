@@ -49,6 +49,25 @@ public class CompanyAuthorizationInterceptor extends HandlerInterceptorAdapter {
             return false;
         }
 
+        if (adminCanGetResource(request)) {
+            return true;
+        }
+
+        response.setStatus(HttpStatus.UNAUTHORIZED.value());
+        return false;
+    }
+
+    private boolean hasPrivilege(HttpServletRequest request, String privilege) throws Exception {
+        logger.debug("Checking admin privileges");
+        return
+            Arrays.stream(
+                    Optional.ofNullable(request.getHeader(AuthorizedRoles.ERIC_AUTHORISED_ROLES))
+                            .orElseThrow(() -> new Exception("Header missing: " + AuthorizedRoles.ERIC_AUTHORISED_ROLES))
+                        .split(" "))
+                .anyMatch(privilege::equals);
+    }
+
+    private boolean adminCanGetResource(HttpServletRequest request) {
         try {
             boolean downloadPrivilege = hasPrivilege(request, AuthorizedRoles.ADMIN_DOWNLOAD);
             boolean viewPrivilege = hasPrivilege(request, AuthorizedRoles.ADMIN_VIEW);
@@ -64,18 +83,6 @@ public class CompanyAuthorizationInterceptor extends HandlerInterceptorAdapter {
         } catch(Exception ex) {
             logger.error(ex);
         }
-
-        response.setStatus(HttpStatus.UNAUTHORIZED.value());
         return false;
-    }
-
-    private boolean hasPrivilege(HttpServletRequest request, String privilege) throws Exception {
-        logger.debug("Checking admin privileges");
-        return
-            Arrays.stream(
-                    Optional.ofNullable(request.getHeader(AuthorizedRoles.ERIC_AUTHORISED_ROLES))
-                            .orElseThrow(() -> new Exception("Header missing: " + AuthorizedRoles.ERIC_AUTHORISED_ROLES))
-                        .split(" "))
-                .anyMatch(privilege::equals);
     }
 }
