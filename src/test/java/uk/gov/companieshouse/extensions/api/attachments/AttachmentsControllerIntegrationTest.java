@@ -115,7 +115,7 @@ public class AttachmentsControllerIntegrationTest {
         FileTransferApiClientResponse dummyDownloadResponse = Utils.dummyDownloadResponse();
 
         when(attachmentsService.downloadAttachment(anyString(), any(HttpServletResponse.class)))
-            .thenReturn(ServiceResult.accepted(dummyDownloadResponse));
+            .thenReturn(dummyDownloadResponse);
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders.get(DOWNLOAD_URL);
 
@@ -129,7 +129,7 @@ public class AttachmentsControllerIntegrationTest {
         dummyDownloadResponse.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
 
         when(attachmentsService.downloadAttachment(anyString(), any(HttpServletResponse.class)))
-            .thenReturn(ServiceResult.accepted(dummyDownloadResponse));
+            .thenReturn(dummyDownloadResponse);
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders.get(DOWNLOAD_URL);
 

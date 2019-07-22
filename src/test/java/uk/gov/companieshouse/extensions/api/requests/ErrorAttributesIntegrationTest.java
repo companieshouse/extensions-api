@@ -1,5 +1,11 @@
 package uk.gov.companieshouse.extensions.api.requests;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import javax.servlet.RequestDispatcher;
+
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -9,20 +15,16 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.client.RestTemplate;
+
 import uk.gov.companieshouse.extensions.api.attachments.AttachmentsController;
 import uk.gov.companieshouse.extensions.api.groups.Integration;
 import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
 import uk.gov.companieshouse.extensions.api.reasons.ReasonsController;
-import javax.servlet.RequestDispatcher;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Category(Integration.class)
 @RunWith(SpringRunner.class)
 @WebMvcTest()
-public class ErrorAttributesUnitTest {
+public class ErrorAttributesIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;

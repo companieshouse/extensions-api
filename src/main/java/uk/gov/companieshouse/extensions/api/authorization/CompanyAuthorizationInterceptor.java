@@ -2,30 +2,31 @@ package uk.gov.companieshouse.extensions.api.authorization;
 
 import java.util.Arrays;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
-import org.springframework.stereotype.Component;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
 
-@Component
 public class CompanyAuthorizationInterceptor extends HandlerInterceptorAdapter {
 
     private static final int COMPANY_NUMBER_LENGTH = 8;
 
-    @Autowired
     private ApiLogger logger;
+
+    public CompanyAuthorizationInterceptor(ApiLogger logger) {
+        this.logger = logger;
+    }
     
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-        String authorizedScope = request.getHeader("ERIC-Authorized-Scope");
+        String authorizedScope = request.getHeader(AuthorizedRoles.ERIC_AUTHORISED_SCOPE);
         String authorizedCompany = authorizedScope.substring(
             Math.max(0, authorizedScope.length() - COMPANY_NUMBER_LENGTH));
         logger.debug("Company number from authorized scope: " + authorizedCompany);
@@ -36,15 +37,45 @@ public class CompanyAuthorizationInterceptor extends HandlerInterceptorAdapter {
 
         logger.debug("Company number from path: " + actualCompany);
         if (actualCompany.equals(authorizedCompany)) {
-            logger.debug("Company number does not match authorized scope" + 
-                actualCompany + " =/= " + authorizedCompany);
+            logger.debug("User with scope " + actualCompany + " has full authorization to proceed with request.");
             return true;
         }
+        logger.debug("Company number does not match authorized scope" + 
+                actualCompany + " =/= " + authorizedCompany);
         
-        return HttpMethod.GET.matches(request.getMethod()) && 
-            Arrays.stream(request.getHeader("ERIC-Authorized-Roles").split(" "))
-                  .filter(role -> "/admin/extensions-view".equals(role))
-                  .findAny()
-                  .isPresent();
+        if (!HttpMethod.GET.matches(request.getMethod())) {
+            logger.debug("Only a user with authorised company scope can modify a resource");
+            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+            return false;
+        }
+
+        try {
+            boolean downloadPrivilege = hasPrivilege(request, AuthorizedRoles.ADMIN_DOWNLOAD);
+            boolean viewPrivilege = hasPrivilege(request, AuthorizedRoles.ADMIN_VIEW);
+            if (request.getRequestURI().endsWith("download")) {
+                if(downloadPrivilege && viewPrivilege) {
+                    logger.debug("Admin download privileges detected, granting access to download resource");
+                    return true;
+                }
+            } else if (viewPrivilege) {
+                logger.debug("Admin view privilege detected, granting access to GET resource");
+                return true;
+            }
+        } catch(Exception ex) {
+            logger.error(ex);
+        }
+
+        response.setStatus(HttpStatus.UNAUTHORIZED.value());
+        return false;
+    }
+
+    private boolean hasPrivilege(HttpServletRequest request, String privilege) throws Exception {
+        logger.debug("Checking admin privileges");
+        return
+            Arrays.stream(
+                    Optional.ofNullable(request.getHeader(AuthorizedRoles.ERIC_AUTHORISED_ROLES))
+                            .orElseThrow(() -> new Exception("Header missing: " + AuthorizedRoles.ERIC_AUTHORISED_ROLES))
+                        .split(" "))
+                .anyMatch(privilege::equals);
     }
 }

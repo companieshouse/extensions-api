@@ -21,7 +21,7 @@ import uk.gov.companieshouse.service.ServiceException;
 import javax.servlet.http.HttpServletRequest;
 
 @RestController
-@RequestMapping("${api.endpoint.extensions}")
+@RequestMapping("/")
 public class RequestsController {
 
     @Autowired
@@ -34,7 +34,7 @@ public class RequestsController {
     private ExtensionRequestMapper extensionRequestMapper;
 
     @LogMethodCall
-    @PostMapping("/")
+    @PostMapping("${api.endpoint.extensions}")
     public ResponseEntity<ExtensionRequestFullDTO> createExtensionRequestResource(
             @RequestBody ExtensionCreateRequest extensionCreateRequest, HttpServletRequest request,
             @PathVariable String companyNumber) {
@@ -59,7 +59,7 @@ public class RequestsController {
     }
 
     @LogMethodCall
-    @GetMapping("/")
+    @GetMapping("${api.endpoint.extensions}")
     public ResponseEntity<ListResponse<ExtensionRequestFullDTO>> getExtensionRequestsListByCompanyNumber(
             @PathVariable String companyNumber) {
 
@@ -73,14 +73,14 @@ public class RequestsController {
     }
 
     @LogMethodCall
-    @GetMapping("/{requestId}")
+    @GetMapping("${api.endpoint.extensions}/{requestId}")
     public ResponseEntity<ExtensionRequestFullEntity> getSingleExtensionRequestById(@PathVariable String requestId) {
         return requestsService.getExtensionsRequestById(requestId).map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @LogMethodCall
-    @PatchMapping("/{requestId}")
+    @PatchMapping("${api.endpoint.extensions}/{requestId}")
     public ResponseEntity<ExtensionRequestFullEntity> patchRequest(@PathVariable String requestId,
             @RequestBody RequestStatus requestStatus) {
         try {
@@ -92,7 +92,7 @@ public class RequestsController {
     }
 
     @LogMethodCall
-    @DeleteMapping("/{requestId}")
+    @DeleteMapping("${api.endpoint.extensions}/{requestId}")
     public boolean deleteExtensionRequestById(@PathVariable String requestId) {
       return false;
     }

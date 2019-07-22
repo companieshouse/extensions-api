@@ -446,7 +446,7 @@ public class AttachmentsServiceUnitTest {
 
         when(fileTransferApiClient.download(attachmentId, httpServletResponse)).thenReturn(dummyDownloadResponse);
 
-        ServiceResult<FileTransferApiClientResponse> downloadServiceResult = service.downloadAttachment(attachmentId, httpServletResponse);
+        FileTransferApiClientResponse downloadServiceResult = service.downloadAttachment(attachmentId, httpServletResponse);
 
         verify(fileTransferApiClient, only()).download(attachmentId, httpServletResponse);
         verify(fileTransferApiClient, times(1)).download(attachmentId, httpServletResponse);
