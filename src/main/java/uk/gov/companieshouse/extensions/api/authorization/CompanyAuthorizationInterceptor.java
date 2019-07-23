@@ -69,9 +69,9 @@ public class CompanyAuthorizationInterceptor extends HandlerInterceptorAdapter {
 
     private boolean adminCanGetResource(HttpServletRequest request) {
         try {
-            boolean downloadPrivilege = hasPrivilege(request, AuthorizedRoles.ADMIN_DOWNLOAD);
             boolean viewPrivilege = hasPrivilege(request, AuthorizedRoles.ADMIN_VIEW);
             if (request.getRequestURI().endsWith("download")) {
+                boolean downloadPrivilege = hasPrivilege(request, AuthorizedRoles.ADMIN_DOWNLOAD);
                 if(downloadPrivilege && viewPrivilege) {
                     logger.debug("Admin download privileges detected, granting access to download resource");
                     return true;

@@ -99,7 +99,7 @@ public class CompanyAuthorizationInterceptorTest {
         boolean result = interceptor.preHandle(request, response, null);
 
         assertTrue(result);
-        verify(request, times(2)).getHeader("ERIC-Authorised-Roles");
+        verify(request).getHeader("ERIC-Authorised-Roles");
     }
 
     @Test
