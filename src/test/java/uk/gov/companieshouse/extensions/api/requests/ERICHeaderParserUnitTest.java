@@ -2,6 +2,8 @@ package uk.gov.companieshouse.extensions.api.requests;
 
 import static org.mockito.Mockito.when;
 
+import java.io.UnsupportedEncodingException;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.junit.Assert;
@@ -59,37 +61,37 @@ public class ERICHeaderParserUnitTest {
     }
 
     @Test
-    public void testGetForename() {
+    public void testGetForename() throws UnsupportedEncodingException {
         when(request.getHeader(ERIC_AUTHORISED_USER)).thenReturn(AUTH_USER);
         Assert.assertEquals("demoForename", ericHeaderParser.getForename(request));
     }
 
     @Test
-    public void testGetForename_UTF8() {
+    public void testGetForename_UTF8() throws UnsupportedEncodingException {
         when(request.getHeader(ERIC_AUTHORISED_USER)).thenReturn(UTF8_AUTH_USER);
         Assert.assertEquals("demo ;Forename", ericHeaderParser.getForename(request));
     }
 
     @Test
-    public void testGetForename_null() {
+    public void testGetForename_null() throws UnsupportedEncodingException {
         when(request.getHeader(ERIC_AUTHORISED_USER)).thenReturn("");
         Assert.assertNull(ericHeaderParser.getForename(request));
     }
 
     @Test
-    public void testGetSurname() {
+    public void testGetSurname() throws UnsupportedEncodingException {
         when(request.getHeader(ERIC_AUTHORISED_USER)).thenReturn(AUTH_USER);
         Assert.assertEquals("demoSurname", ericHeaderParser.getSurname(request));
     }
 
     @Test
-    public void testGetSurname_UTF8() {
+    public void testGetSurname_UTF8() throws UnsupportedEncodingException {
         when(request.getHeader(ERIC_AUTHORISED_USER)).thenReturn(UTF8_AUTH_USER);
         Assert.assertEquals("demo;Surname", ericHeaderParser.getSurname(request));
     }
 
     @Test
-    public void testGetSurname_null() {
+    public void testGetSurname_null() throws UnsupportedEncodingException {
         when(request.getHeader(ERIC_AUTHORISED_USER)).thenReturn("");
         Assert.assertNull(ericHeaderParser.getSurname(request));
     }

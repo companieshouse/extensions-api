@@ -1,10 +1,14 @@
 package uk.gov.companieshouse.extensions.api.requests;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,11 +18,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
 import uk.gov.companieshouse.extensions.api.logger.LogMethodCall;
 import uk.gov.companieshouse.extensions.api.response.ListResponse;
 import uk.gov.companieshouse.service.ServiceException;
-
-import javax.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/")
@@ -33,6 +37,9 @@ public class RequestsController {
     @Autowired
     private ExtensionRequestMapper extensionRequestMapper;
 
+    @Autowired
+    private ApiLogger logger;
+
     @LogMethodCall
     @PostMapping("${api.endpoint.extensions}")
     public ResponseEntity<ExtensionRequestFullDTO> createExtensionRequestResource(
@@ -42,8 +49,14 @@ public class RequestsController {
         CreatedBy createdBy = new CreatedBy();
         createdBy.setId(ericHeaderParser.getUserId(request));
         createdBy.setEmail(ericHeaderParser.getEmail(request));
-        createdBy.setForename(ericHeaderParser.getForename(request));
-        createdBy.setSurname(ericHeaderParser.getSurname(request));
+        try {
+            createdBy.setForename(ericHeaderParser.getForename(request));
+            createdBy.setSurname(ericHeaderParser.getSurname(request));
+        } catch(UnsupportedEncodingException ex) {
+            logger.debug("Cannot parse username from eric header", request);
+            logger.error(ex);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
 
         String reqUri = request.getRequestURI();
 

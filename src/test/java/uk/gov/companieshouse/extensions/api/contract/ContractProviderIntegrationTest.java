@@ -26,7 +26,7 @@ import static org.mockito.Mockito.when;
 @Provider("extensions-api")
 @PactFolder("pacts")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class ContractProviderIntegrationVerification {
+public class ContractProviderIntegrationTest {
 
     @MockBean
     private FileTransferApiClient fileTransferApiClient;

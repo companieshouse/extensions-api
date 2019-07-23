@@ -29,22 +29,22 @@ public class CompanyAuthorizationInterceptor extends HandlerInterceptorAdapter {
         String authorizedScope = request.getHeader(AuthorizedRoles.ERIC_AUTHORISED_SCOPE);
         String authorizedCompany = authorizedScope.substring(
             Math.max(0, authorizedScope.length() - COMPANY_NUMBER_LENGTH));
-        logger.debug("Company number from authorized scope: " + authorizedCompany);
+        logger.debug("Company number from authorized scope: " + authorizedCompany, request);
 
         String actualCompany = ((Map<String, String>)request.getAttribute(
                                     HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE))
                                       .get("companyNumber");
 
-        logger.debug("Company number from path: " + actualCompany);
+        logger.debug("Company number from path: " + actualCompany, request);
         if (actualCompany.equals(authorizedCompany)) {
-            logger.debug("User with scope " + actualCompany + " has full authorization to proceed with request.");
+            logger.debug("User with scope " + actualCompany + " has full authorization to proceed with request.", request);
             return true;
         }
         logger.debug("Company number does not match authorized scope" + 
-                actualCompany + " =/= " + authorizedCompany);
+                actualCompany + " =/= " + authorizedCompany, request);
         
         if (!HttpMethod.GET.matches(request.getMethod())) {
-            logger.debug("Only a user with authorised company scope can modify a resource");
+            logger.debug("Only a user with authorised company scope can modify a resource", request);
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
             return false;
         }
@@ -58,11 +58,11 @@ public class CompanyAuthorizationInterceptor extends HandlerInterceptorAdapter {
     }
 
     private boolean hasPrivilege(HttpServletRequest request, String privilege) throws Exception {
-        logger.debug("Checking admin privileges");
-        return
+        logger.debug("Checking admin privileges", request);
+        return 
             Arrays.stream(
-                    Optional.ofNullable(request.getHeader(AuthorizedRoles.ERIC_AUTHORISED_ROLES))
-                            .orElseThrow(() -> new Exception("Header missing: " + AuthorizedRoles.ERIC_AUTHORISED_ROLES))
+                Optional.ofNullable(request.getHeader(AuthorizedRoles.ERIC_AUTHORISED_ROLES))
+                        .orElseThrow(() -> new Exception("Header missing: " + AuthorizedRoles.ERIC_AUTHORISED_ROLES))
                         .split(" "))
                 .anyMatch(privilege::equals);
     }
@@ -73,11 +73,11 @@ public class CompanyAuthorizationInterceptor extends HandlerInterceptorAdapter {
             if (request.getRequestURI().endsWith("download")) {
                 boolean downloadPrivilege = hasPrivilege(request, AuthorizedRoles.ADMIN_DOWNLOAD);
                 if(downloadPrivilege && viewPrivilege) {
-                    logger.debug("Admin download privileges detected, granting access to download resource");
+                    logger.debug("Admin download privileges detected, granting access to download resource", request);
                     return true;
                 }
             } else if (viewPrivilege) {
-                logger.debug("Admin view privilege detected, granting access to GET resource");
+                logger.debug("Admin view privilege detected, granting access to GET resource", request);
                 return true;
             }
         } catch(Exception ex) {
