@@ -16,10 +16,15 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import uk.gov.companieshouse.extensions.api.attachments.file.FileTransferApiClient;
 import uk.gov.companieshouse.extensions.api.attachments.file.FileTransferApiClientResponse;
+import uk.gov.companieshouse.extensions.api.authorization.CompanyAuthorizationInterceptor;
 import uk.gov.companieshouse.extensions.api.groups.ContractProvider;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 @Category(ContractProvider.class)
 @RunWith(SpringRestPactRunner.class)
@@ -31,6 +36,9 @@ public class ContractProviderIntegrationTest {
     @MockBean
     private FileTransferApiClient fileTransferApiClient;
 
+    @MockBean
+    private CompanyAuthorizationInterceptor mockAuthInterceptor;
+
     @TestTarget
     public final Target target = new SpringBootHttpTarget();
 
@@ -39,6 +47,9 @@ public class ContractProviderIntegrationTest {
         FileTransferApiClientResponse fileTransferApiClientResponse = new FileTransferApiClientResponse();
         fileTransferApiClientResponse.setHttpStatus(HttpStatus.NO_CONTENT);
         when(fileTransferApiClient.delete(anyString())).thenReturn(fileTransferApiClientResponse);
+        when(mockAuthInterceptor.preHandle(any(HttpServletRequest.class), 
+            any(HttpServletResponse.class), any(Object.class)))
+              .thenReturn(true);
     }
 
     @State("I have a valid OPEN request for 00006400 with requestId aaaaaaaaaaaaaaaaaaaaaaa4")
