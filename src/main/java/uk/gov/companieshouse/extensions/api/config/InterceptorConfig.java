@@ -3,6 +3,7 @@ package uk.gov.companieshouse.extensions.api.config;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.context.annotation.Bean;
@@ -21,6 +22,9 @@ public class InterceptorConfig implements WebMvcConfigurer {
     @Autowired
     private ApiLogger logger;
 
+    @Value("${FEATURE_AUTHORISATION}")
+    private String authorisationActive;
+
     @Bean
     public RequestLoggerInterceptor requestLoggerInterceptor() {
         return new RequestLoggerInterceptor();
@@ -34,8 +38,10 @@ public class InterceptorConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(requestLoggerInterceptor());
-        registry.addInterceptor(companyInterceptor(logger))
-            .excludePathPatterns("/**/error");
+        if (authorisationActive.equals("true")) {
+            registry.addInterceptor(companyInterceptor(logger))
+                .excludePathPatterns("/**/error");
+        }
     }
 
     // This bean override allows us to control what fields are returned in a Spring error response
