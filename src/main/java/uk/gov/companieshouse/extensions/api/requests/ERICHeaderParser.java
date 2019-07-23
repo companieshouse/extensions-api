@@ -1,13 +1,12 @@
 package uk.gov.companieshouse.extensions.api.requests;
 
-import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
-
-import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang.StringUtils;
+import org.springframework.stereotype.Component;
 
 @Component
 public class ERICHeaderParser {
@@ -19,9 +18,6 @@ public class ERICHeaderParser {
     private static final String DELIMITER = ";";
     private static final String ERIC_AUTHORISED_USER = "ERIC-Authorised-User";
     private static final String EMAIL_IDENTIFIER = "@";
-
-    @Autowired
-    private ApiLogger logger;
 
     public String getUserId(HttpServletRequest request) {
         String userId = request.getHeader(ERIC_IDENTITY);
@@ -48,7 +44,7 @@ public class ERICHeaderParser {
         return email;
     }
 
-    public String getForename(HttpServletRequest request) {
+    public String getForename(HttpServletRequest request) throws UnsupportedEncodingException {
         String forename = getFromAuthorisedUser(request, ERIC_FORENAME, DELIMITER);
         if (forename == null) {
             forename = getFromAuthorisedUser(request, ERIC_FORENAME_UTF8, DELIMITER);
@@ -59,7 +55,7 @@ public class ERICHeaderParser {
         return forename;
     }
 
-    public String getSurname(HttpServletRequest request) {
+    public String getSurname(HttpServletRequest request) throws UnsupportedEncodingException {
         String surname = getFromAuthorisedUser(request, ERIC_SURNAME, null);
         if (surname == null) {
             surname = getFromAuthorisedUser(request, ERIC_SURNAME_UTF8, null);
@@ -95,16 +91,10 @@ public class ERICHeaderParser {
         return name;
     }
 
-    private String decodeUTF8(String utf8String) {
-        String decoded = null;
+    private String decodeUTF8(String utf8String) throws UnsupportedEncodingException {
         String utf8Prefix = "UTF-8''";
         utf8String = StringUtils.remove(utf8String, utf8Prefix);
-        try {
-            decoded = URLDecoder.decode(utf8String, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-           logger.error(e);
-        }
-        return decoded;
+        return URLDecoder.decode(utf8String, "UTF-8");
     }
 
 }

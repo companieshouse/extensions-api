@@ -88,7 +88,7 @@ public class AttachmentsControllerUnitTest {
         dummyDownloadResponse.setHttpStatus(HttpStatus.NOT_FOUND);
 
         when(attachmentsService.downloadAttachment(ATTACHMENT_ID, response))
-                .thenReturn(ServiceResult.accepted(dummyDownloadResponse));
+                .thenReturn(dummyDownloadResponse);
 
         AttachmentsController controller = new AttachmentsController(
                 PluggableResponseEntityFactory.buildWithStandardFactories(), attachmentsService, logger);

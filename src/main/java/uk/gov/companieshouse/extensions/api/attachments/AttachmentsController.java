@@ -77,9 +77,8 @@ public class AttachmentsController {
     @GetMapping("/{requestId}/reasons/{reasonId}/attachments/{attachmentId}/download")
     public ResponseEntity<Void> downloadAttachmentFromRequest(@PathVariable String attachmentId, HttpServletResponse response) {
         try {
-            ServiceResult<FileTransferApiClientResponse> downloadServiceResult = attachmentsService.downloadAttachment(attachmentId, response);
-            FileTransferApiClientResponse downloadResponse = downloadServiceResult.getData();
-            return ResponseEntity.status(downloadResponse.getHttpStatus()).build();
+            FileTransferApiClientResponse downloadServiceResult = attachmentsService.downloadAttachment(attachmentId, response);
+            return ResponseEntity.status(downloadServiceResult.getHttpStatus()).build();
         } catch(HttpClientErrorException | HttpServerErrorException e) {
             logger.error(String.format("The file-transfer-api has returned an error: %s for attachmentId %s",
                 e.getMessage(), attachmentId));

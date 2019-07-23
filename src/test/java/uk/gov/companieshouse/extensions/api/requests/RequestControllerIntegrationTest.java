@@ -12,6 +12,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -27,6 +31,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.web.client.RestTemplate;
 
 import uk.gov.companieshouse.extensions.api.Utils.Utils;
+import uk.gov.companieshouse.extensions.api.authorization.CompanyAuthorizationInterceptor;
 import uk.gov.companieshouse.extensions.api.groups.Integration;
 import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
 
@@ -61,6 +66,16 @@ public class RequestControllerIntegrationTest {
 
     @MockBean
     private ApiLogger apiLogger;
+
+    @MockBean
+    private CompanyAuthorizationInterceptor companyInterceptor;
+
+    @Before
+    public void setup() {
+        when(companyInterceptor.preHandle(any(HttpServletRequest.class), any(HttpServletResponse.class),
+            any(Object.class)))
+                .thenReturn(true);
+    }
 
     @Test
     public void testCreateExtensionRequestResource() throws Exception {

@@ -18,6 +18,7 @@ import static uk.gov.companieshouse.extensions.api.Utils.Utils.USER_ID;
 import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyRequestDTO;
 import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyRequestEntity;
 
+import java.io.UnsupportedEncodingException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -40,6 +41,7 @@ import org.springframework.http.ResponseEntity;
 
 import uk.gov.companieshouse.extensions.api.attachments.Attachment;
 import uk.gov.companieshouse.extensions.api.groups.Unit;
+import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
 import uk.gov.companieshouse.extensions.api.reasons.ExtensionReasonEntity;
 import uk.gov.companieshouse.extensions.api.response.ListResponse;
 import uk.gov.companieshouse.service.ServiceException;
@@ -66,8 +68,11 @@ public class RequestControllerUnitTest {
     @Mock
     private ExtensionRequestMapper mockExtensionRequestMapper;
 
+    @Mock
+    private ApiLogger logger;
+
     @Before
-    public void setup() {
+    public void setup() throws UnsupportedEncodingException {
         when(mockHttpServletRequest.getRequestURI()).thenReturn(BASE_URL);
         when(mockEricHeaderParser.getUserId(mockHttpServletRequest)).thenReturn(USER_ID);
         when(mockEricHeaderParser.getEmail(mockHttpServletRequest)).thenReturn(EMAIL);
@@ -96,6 +101,20 @@ public class RequestControllerUnitTest {
 
         assertNotNull(entityRequestDTO);
         assertEquals(entityRequestDTO.toString(), Objects.requireNonNull(response.getBody()).toString());
+    }
+
+    @Test
+    public void willGive500IfUnsupportedEncodingException() throws UnsupportedEncodingException {
+        ExtensionCreateRequest createRequest = dummyRequest();
+
+        when(mockEricHeaderParser.getForename(eq(mockHttpServletRequest)))
+            .thenThrow(new UnsupportedEncodingException());
+
+        ResponseEntity<ExtensionRequestFullDTO> response = controller.createExtensionRequestResource(createRequest,
+                mockHttpServletRequest, COMPANY_NUMBER);
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        verify(mockEricHeaderParser).getForename(mockHttpServletRequest);
     }
 
     @Test
