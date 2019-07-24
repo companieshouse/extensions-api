@@ -22,9 +22,6 @@ public class InterceptorConfig implements WebMvcConfigurer {
     @Autowired
     private ApiLogger logger;
 
-    @Value("${FEATURE_AUTHORISATION}")
-    private String authorisationActive;
-
     @Bean
     public RequestLoggerInterceptor requestLoggerInterceptor() {
         return new RequestLoggerInterceptor();
@@ -38,10 +35,8 @@ public class InterceptorConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(requestLoggerInterceptor());
-        if (authorisationActive.equals("true")) {
-            registry.addInterceptor(companyInterceptor(logger))
-                .addPathPatterns("/**/attachments/**");
-        }
+        registry.addInterceptor(companyInterceptor(logger))
+            .addPathPatterns("/**/attachments/**");
     }
 
     // This bean override allows us to control what fields are returned in a Spring error response
