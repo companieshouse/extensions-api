@@ -45,7 +45,7 @@ import uk.gov.companieshouse.service.rest.response.PluggableResponseEntityFactor
 
 @Category(Integration.class)
 @RunWith(SpringRunner.class)
-@WebMvcTest(value = { RequestsController.class, AttachmentsController.class })
+@WebMvcTest(value = { AttachmentsController.class })
 @TestPropertySource({ "classpath:application.properties"})
 public class AuthorizationIntegrationTest {
 
@@ -54,9 +54,6 @@ public class AuthorizationIntegrationTest {
 
     @MockBean
     private AttachmentsService attachmentsService;
-
-    @MockBean
-    private RequestsService requestsService;
 
     @MockBean
     private ERICHeaderParser headerParser;
@@ -80,68 +77,17 @@ public class AuthorizationIntegrationTest {
     }
 
     @Test
-    public void willRejectUnauthorizedUser() throws Exception {
+    public void willNotAllowUserToDownload() throws Exception {
         RequestBuilder requestBuilder = MockMvcRequestBuilders
-            .delete("/company/00006400/extensions/requests/1/reasons/2/attachments/3")
-            .accept(MediaType.APPLICATION_JSON)
-            .header("ERIC-Authorised-Scope", "00006401")
-            .header("ERIC-Authorised-Roles", "");
+            .get("/company/00006400/extensions/requests/1/reasons/2/attachments/3/download")
+            .accept(MediaType.APPLICATION_JSON);
 
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
         assertEquals(HttpStatus.UNAUTHORIZED.value(), result.getResponse().getStatus());
-        verify(attachmentsService, never()).removeAttachment(anyString(), anyString(), anyString());
     }
 
     @Test
-    public void willAllowCompanyScopedUserToPost() throws Exception {
-        ExtensionRequestFullEntity entity = new ExtensionRequestFullEntity();
-        Links links = new Links();
-        links.setLink(ExtensionsLinkKeys.SELF, "self-link");
-        entity.setLinks(links);
-        when(requestsService.insertExtensionsRequest(any(ExtensionCreateRequest.class), any(CreatedBy.class), anyString(), anyString()))
-            .thenReturn(entity);
-        RequestBuilder requestBuilder = MockMvcRequestBuilders
-            .post("/company/00006400/extensions/requests")
-            .contentType(MediaType.APPLICATION_JSON)
-            .header("ERIC-Authorised-Scope", "00006400")
-            .header("ERIC-Authorised-Roles", "")
-            .content("{ " +
-                "\"accounting_period_start_on\": \"2018-01-01\"," +
-                "\"accounting_period_end_on\": \"2018-02-02\"" +
-            "}");
-
-        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
-        assertEquals(HttpStatus.CREATED.value(), result.getResponse().getStatus());
-    }
-
-    @Test
-    public void willAllowCompanyScopedUserToDownload() throws Exception {
-        RequestBuilder requestBuilder = MockMvcRequestBuilders
-            .get("/company/00006400/extensions/requests/1/reasons/2/attachments/3/download")
-            .accept(MediaType.APPLICATION_JSON)
-            .header("ERIC-Authorised-Scope", "00006400")
-            .header("ERIC-Authorised-Roles", "");
-
-        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
-        assertEquals(HttpStatus.OK.value(), result.getResponse().getStatus());
-    }
-
-    @Test
-    public void willAllowAdminToGet() throws Exception {
-        when(requestsService.getExtensionsRequestById(anyString()))
-            .thenReturn(Optional.of(new ExtensionRequestFullEntity()));
-        RequestBuilder requestBuilder = MockMvcRequestBuilders
-            .get("/company/00006400/extensions/requests/1")
-            .accept(MediaType.APPLICATION_JSON)
-            .header("ERIC-Authorised-Scope", "")
-            .header("ERIC-Authorised-Roles", "/admin/extensions-download /admin/extensions-view");
-
-        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
-        assertEquals(HttpStatus.OK.value(), result.getResponse().getStatus());
-    }
-
-    @Test
-    public void willAllowAdminToDownload() throws Exception {
+    public void willAllowAdminToDownloadWithCorrectPermissions() throws Exception {
         RequestBuilder requestBuilder = MockMvcRequestBuilders
             .get("/company/00006400/extensions/requests/1/reasons/2/attachments/3/download")
             .accept(MediaType.APPLICATION_JSON)
@@ -167,9 +113,8 @@ public class AuthorizationIntegrationTest {
     @Test
     public void willRejectAdminToDelete() throws Exception {
         RequestBuilder requestBuilder = MockMvcRequestBuilders
-            .delete("/company/00006400/extensions/requests/1")
+            .delete("/company/00006400/extensions/requests/1/reasons/2/attachments/3")
             .accept(MediaType.APPLICATION_JSON)
-            .header("ERIC-Authorised-Scope", "")
             .header("ERIC-Authorised-Roles", "/admin/extensions-download /admin/extensions-view");
 
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();

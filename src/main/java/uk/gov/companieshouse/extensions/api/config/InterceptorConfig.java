@@ -40,7 +40,7 @@ public class InterceptorConfig implements WebMvcConfigurer {
         registry.addInterceptor(requestLoggerInterceptor());
         if (authorisationActive.equals("true")) {
             registry.addInterceptor(companyInterceptor(logger))
-                .excludePathPatterns("/**/error");
+                .addPathPatterns("/**/attachments/**");
         }
     }
 
