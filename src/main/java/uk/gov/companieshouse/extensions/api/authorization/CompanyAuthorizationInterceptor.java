@@ -1,22 +1,19 @@
 package uk.gov.companieshouse.extensions.api.authorization;
 
 import java.util.Arrays;
-import java.util.Map;
 import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
 
 public class CompanyAuthorizationInterceptor extends HandlerInterceptorAdapter {
-
-    private static final int COMPANY_NUMBER_LENGTH = 8;
 
     private ApiLogger logger;
 
@@ -26,33 +23,22 @@ public class CompanyAuthorizationInterceptor extends HandlerInterceptorAdapter {
     
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-        String authorizedScope = request.getHeader(AuthorizedRoles.ERIC_AUTHORISED_SCOPE);
-        String authorizedCompany = authorizedScope.substring(
-            Math.max(0, authorizedScope.length() - COMPANY_NUMBER_LENGTH));
-        logger.debug("Company number from authorized scope: " + authorizedCompany, request);
-
-        String actualCompany = ((Map<String, String>)request.getAttribute(
-                                    HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE))
-                                      .get("companyNumber");
-
-        logger.debug("Company number from path: " + actualCompany, request);
-        if (actualCompany.equals(authorizedCompany)) {
-            logger.debug("User with scope " + actualCompany + " has full authorization to proceed with request.", request);
-            return true;
-        }
-        logger.debug("Company number does not match authorized scope" + 
-                actualCompany + " =/= " + authorizedCompany, request);
-        
         if (!HttpMethod.GET.matches(request.getMethod())) {
-            logger.debug("Only a user with authorised company scope can modify a resource", request);
-            response.setStatus(HttpStatus.UNAUTHORIZED.value());
-            return false;
+            if (StringUtils.isEmpty(request.getHeader(AuthorizedRoles.ERIC_AUTHORISED_ROLES))) {
+                logger.debug("User is permitted to update attachment", request);
+                return true;
+            } else {
+                logger.debug("Admin user is not permitted to modify an attachment", request);
+                response.setStatus(HttpStatus.UNAUTHORIZED.value());
+                return false;
+            }
         }
 
         if (adminCanGetResource(request)) {
             return true;
         }
 
+        logger.debug("User is not authorized to view this resource", request);
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
         return false;
     }

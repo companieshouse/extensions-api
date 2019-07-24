@@ -42,58 +42,11 @@ public class CompanyAuthorizationInterceptorTest {
     private ApiLogger logger;
 
     @Test
-    public void willAuthorizeIfScopeMatchesPath() {
-        when(request.getHeader("ERIC-Authorised-Scope"))
-            .thenReturn("abcdefg00006400");
-        Map<String, String> pathParams = new HashMap<>();
-        pathParams.put("companyNumber", "00006400");
-        when(request.getAttribute(anyString()))
-            .thenReturn(pathParams);
-        boolean result = interceptor.preHandle(request, response, null);
-
-        assertTrue(result);
-    }
-
-    @Test
-    public void willNotAuthorizeIfScopeDoesntMatchPath() {
-        when(request.getHeader("ERIC-Authorised-Scope"))
-            .thenReturn("abcdefg00006401");
-        Map<String, String> pathParams = new HashMap<>();
-        pathParams.put("companyNumber", "00006400");
-        when(request.getAttribute(anyString()))
-            .thenReturn(pathParams);
-        boolean result = interceptor.preHandle(request, response, null);
-
-        assertFalse(result);
-        verify(response).setStatus(HttpStatus.SC_UNAUTHORIZED);
-    }
-
-    @Test
-    public void willNotAuthorizeIfScopeIsEmpty() {
-        when(request.getHeader("ERIC-Authorised-Scope"))
-            .thenReturn("");
-        Map<String, String> pathParams = new HashMap<>();
-        pathParams.put("companyNumber", "00006400");
-        when(request.getAttribute(anyString()))
-            .thenReturn(pathParams);
-        boolean result = interceptor.preHandle(request, response, null);
-
-        assertFalse(result);
-        verify(response).setStatus(HttpStatus.SC_UNAUTHORIZED);
-    }
-
-    @Test
     public void willAuthorizeAdminIfGetRequest() {
         when(request.getHeader("ERIC-Authorised-Roles"))
             .thenReturn("permission /admin/extensions-view anotherPermission");
-        when(request.getHeader("ERIC-Authorised-Scope")) 
-            .thenReturn("");
         when(request.getRequestURI()) 
             .thenReturn("");
-        Map<String, String> pathParams = new HashMap<>();
-        pathParams.put("companyNumber", "00006400");
-        when(request.getAttribute(anyString()))
-            .thenReturn(pathParams);
         when(request.getMethod())
             .thenReturn("GET");
         boolean result = interceptor.preHandle(request, response, null);
@@ -106,14 +59,8 @@ public class CompanyAuthorizationInterceptorTest {
     public void willAuthorizeAdminIfDownloadGetRequest() {
         when(request.getHeader("ERIC-Authorised-Roles"))
             .thenReturn("permission /admin/extensions-view /admin/extensions-download");
-        when(request.getHeader("ERIC-Authorised-Scope")) 
-            .thenReturn("");
         when(request.getRequestURI()) 
             .thenReturn("download");
-        Map<String, String> pathParams = new HashMap<>();
-        pathParams.put("companyNumber", "00006400");
-        when(request.getAttribute(anyString()))
-            .thenReturn(pathParams);
         when(request.getMethod())
             .thenReturn("GET");
         boolean result = interceptor.preHandle(request, response, null);
@@ -126,14 +73,8 @@ public class CompanyAuthorizationInterceptorTest {
     public void willNotAuthorizeAdminIfDownloadGetRequestWithoutView() {
         when(request.getHeader("ERIC-Authorised-Roles"))
             .thenReturn("permission /admin/extensions-download");
-        when(request.getHeader("ERIC-Authorised-Scope")) 
-            .thenReturn("");
         when(request.getRequestURI()) 
             .thenReturn("download");
-        Map<String, String> pathParams = new HashMap<>();
-        pathParams.put("companyNumber", "00006400");
-        when(request.getAttribute(anyString()))
-            .thenReturn(pathParams);
         when(request.getMethod())
             .thenReturn("GET");
         boolean result = interceptor.preHandle(request, response, null);
@@ -146,14 +87,8 @@ public class CompanyAuthorizationInterceptorTest {
     public void willNotAuthorizeAdminIfDownloadGetRequestWithoutDownload() {
         when(request.getHeader("ERIC-Authorised-Roles"))
             .thenReturn("permission /admin/extensions-view");
-        when(request.getHeader("ERIC-Authorised-Scope")) 
-            .thenReturn("");
         when(request.getRequestURI()) 
             .thenReturn("download");
-        Map<String, String> pathParams = new HashMap<>();
-        pathParams.put("companyNumber", "00006400");
-        when(request.getAttribute(anyString()))
-            .thenReturn(pathParams);
         when(request.getMethod())
             .thenReturn("GET");
         boolean result = interceptor.preHandle(request, response, null);
@@ -164,18 +99,34 @@ public class CompanyAuthorizationInterceptorTest {
 
     @Test
     public void willNotAuthorizeAdminIfPostRequest() {
-        when(request.getHeader("ERIC-Authorised-Scope")) 
-            .thenReturn("");
-        Map<String, String> pathParams = new HashMap<>();
-        pathParams.put("companyNumber", "00006400");
-        when(request.getAttribute(anyString()))
-            .thenReturn(pathParams);
+        when(request.getHeader("ERIC-Authorised-Roles")) 
+            .thenReturn("/admin/extensions-view");
         when(request.getMethod())
             .thenReturn("POST");
         boolean result = interceptor.preHandle(request, response, null);
 
         assertFalse(result);
-        verify(request, never()).getHeader("ERIC-Authorised-Roles");
+        verify(request).getHeader("ERIC-Authorised-Roles");
         verify(response).setStatus(HttpStatus.SC_UNAUTHORIZED);
+    }
+
+    @Test
+    public void willAuthorizeUserToPost() {
+        when(request.getMethod())
+            .thenReturn("POST");
+        boolean result = interceptor.preHandle(request, response, null);
+
+        assertTrue(result);
+        verify(request).getHeader("ERIC-Authorised-Roles");
+    }
+
+    @Test
+    public void willNotAuthoriseUserToDownload() {
+        when(request.getMethod())
+            .thenReturn("GET");
+        boolean result = interceptor.preHandle(request, response, null);
+
+        assertFalse(result);
+        verify(request).getHeader("ERIC-Authorised-Roles");
     }
 }
