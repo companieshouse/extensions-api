@@ -28,7 +28,7 @@ public class CompanyAuthorizationInterceptor extends HandlerInterceptorAdapter {
                 logger.debug("User is permitted to update attachment", request);
                 return true;
             } else {
-                logger.debug("Admin user is not permitted to modify a resource", request);
+                logger.debug("Admin user is not permitted to modify an attachment", request);
                 response.setStatus(HttpStatus.UNAUTHORIZED.value());
                 return false;
             }
