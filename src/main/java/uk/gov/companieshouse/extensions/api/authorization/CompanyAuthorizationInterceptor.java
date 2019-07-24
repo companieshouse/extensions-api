@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
+import uk.gov.companieshouse.service.ServiceException;
 
 public class CompanyAuthorizationInterceptor extends HandlerInterceptorAdapter {
 
@@ -43,12 +44,12 @@ public class CompanyAuthorizationInterceptor extends HandlerInterceptorAdapter {
         return false;
     }
 
-    private boolean hasPrivilege(HttpServletRequest request, String privilege) throws Exception {
+    private boolean hasPrivilege(HttpServletRequest request, String privilege) throws ServiceException {
         logger.debug("Checking admin privileges", request);
         return 
             Arrays.stream(
                 Optional.ofNullable(request.getHeader(AuthorizedRoles.ERIC_AUTHORISED_ROLES))
-                        .orElseThrow(() -> new Exception("Header missing: " + AuthorizedRoles.ERIC_AUTHORISED_ROLES))
+                        .orElseThrow(() -> new ServiceException("Header missing: " + AuthorizedRoles.ERIC_AUTHORISED_ROLES))
                         .split(" "))
                 .anyMatch(privilege::equals);
     }
