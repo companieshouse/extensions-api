@@ -7,6 +7,7 @@ import uk.gov.companieshouse.service.links.Links;
 import uk.gov.companieshouse.service.rest.ApiObjectImpl;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 public class AttachmentDTO extends ApiObjectImpl implements Serializable {
 
@@ -71,5 +72,17 @@ public class AttachmentDTO extends ApiObjectImpl implements Serializable {
             return new AttachmentDTO(attachment.getId(), links, "",
                 file.getOriginalFilename(), file.getSize(), file.getContentType());
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        AttachmentDTO that = (AttachmentDTO) o;
+        return size == that.size &&
+            Objects.equals(name, that.name) &&
+            Objects.equals(contentType, that.contentType) &&
+            Objects.equals(id, that.id);
     }
 }
