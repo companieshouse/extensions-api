@@ -85,4 +85,9 @@ public class AttachmentDTO extends ApiObjectImpl implements Serializable {
             Objects.equals(contentType, that.contentType) &&
             Objects.equals(id, that.id);
     }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), size, name, contentType, id);
+    }
 }
