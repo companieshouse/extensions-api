@@ -3,6 +3,10 @@ artifact_name       := extensions-api
 .PHONY: all
 all: build
 
+.PHONY: githooks
+githooks:
+	git config core.hooksPath .githooks
+
 .PHONY: clean
 clean:
 	mvn clean
