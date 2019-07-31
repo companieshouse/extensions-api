@@ -1,33 +1,54 @@
 package uk.gov.companieshouse.extensions.api.attachments.file;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.util.Objects;
+import java.util.concurrent.Callable;
 
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Rule;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.disk.DiskFileItem;
+import org.apache.commons.io.IOUtils;
+
+import org.apache.commons.lang.StringUtils;
+import org.awaitility.Duration;
+import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
-import org.mockserver.client.ForwardChainExpectation;
-import org.mockserver.integration.ClientAndServer;
-import org.mockserver.model.HttpRequest;
-import org.mockserver.model.HttpResponse;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.multipart.MultipartFile;
 
-import uk.gov.companieshouse.extensions.api.groups.Integration;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
+import uk.gov.companieshouse.extensions.api.groups.ConcourseIntegration;
+
+import javax.annotation.PostConstruct;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.WriteListener;
+import javax.servlet.http.HttpServletResponse;
+
+import static org.awaitility.Awaitility.await;
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.when;
 
 /**
  * FileTransferGatewayIntegrationTest
  */
-@Category(Integration.class)
+@Category(ConcourseIntegration.class)
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class FileTransferGatewayIntegrationTest {
@@ -35,59 +56,160 @@ public class FileTransferGatewayIntegrationTest {
     @Autowired
     private FileTransferApiClient gateway;
 
-    private static ClientAndServer mockServer;
+    @Mock
+    private HttpServletResponse mockHttpServletResponse;
 
-    @Rule
-    public final ExpectedException expectedException = ExpectedException.none();
+    @Value("${http_proxy}")
+    private String envHttpProxy;
 
-    @BeforeClass
-    public static void startMockApiServer() {
-        mockServer = ClientAndServer.startClientAndServer(8081);
+    @Value("${https_proxy}")
+    private String envHttpsProxy;
+
+    @PostConstruct
+    public void setProxy() {
+        setProxySystemProperties("http", envHttpProxy);
+        setProxySystemProperties("https", envHttpsProxy);
     }
 
-    @AfterClass
-    public static void stopMockApiServer() {
-        mockServer.stop();
-    }
+    private void setProxySystemProperties(String protocol, String envProxyValue) {
+        if (StringUtils.isNotBlank(envProxyValue)) {
+            final String portSeparator = ":";
+            String proxyHost;
+            String proxyPort;
 
-    @Before
-    public void setup() {
-        mockServer.reset();
+            envProxyValue = StringUtils.remove(envProxyValue, "http://");
+
+            if (envProxyValue.contains(portSeparator)) {
+                proxyHost = StringUtils.substringBefore(envProxyValue, portSeparator);
+                proxyPort = StringUtils.substringAfter(envProxyValue, portSeparator);
+            } else {
+                proxyHost = envProxyValue;
+                proxyPort = "8080";
+            }
+
+            System.setProperty(protocol + ".proxyHost", proxyHost);
+            System.setProperty(protocol + ".proxyPort", proxyPort);
+        }
     }
 
     @Test
-    public void willThrowHttpClientExceptionOnUnsupportedMediaType() throws IOException {
-        MultipartFile mockFile = new MockMultipartFile("file", "file.txt", "text/plain", "test".getBytes());
+    public void willUploadDownloadDeleteFile() throws IOException {
+        final String filename = "test.png";
+        final String fileFolder = "./src/test/resources/input/";
+        final String uploadFilePath =  fileFolder + filename;
+        final String downloadFilePath = fileFolder + "download-" + filename;
 
-        mockServerExpectation("/", "POST")
-            .respond(HttpResponse.response()
-                .withStatusCode(415));
 
-        expectedException.expect(HttpClientErrorException.class);
+        // Upload
+        File uploadFile = new File(uploadFilePath);
+        FileTransferApiClientResponse uploadResponse = uploadFile(uploadFile);
 
-        gateway.upload(mockFile);
+        assertEquals(HttpStatus.CREATED, uploadResponse.getHttpStatus());
+        assertTrue(StringUtils.isNotBlank(uploadResponse.getFileId()));
+
+        String fileID = uploadResponse.getFileId();
+
+
+        // Download
+        File downloadFile = new File(downloadFilePath);
+        downloadFile.deleteOnExit();
+
+        FileOutputStream fileOutputStream = new FileOutputStream(downloadFile);
+
+        ServletOutputStream servletOutputStream = getServletOutputStream(fileOutputStream);
+
+        when(mockHttpServletResponse.getOutputStream()).thenReturn(servletOutputStream);
+
+        try {
+            System.out.print("Awaiting download...");
+            await().atMost(Duration.FIVE_MINUTES)
+                .with()
+                .pollInterval(Duration.FIVE_SECONDS)
+                .until(downloadFile(fileID, mockHttpServletResponse), equalTo(HttpStatus.OK));
+
+        } catch (Exception e) {
+            fail(e.getMessage());
+        } finally {
+            fileOutputStream.close();
+            System.out.println();
+        }
+
+        assertFilesAreEqual(uploadFile, downloadFile);
+
+
+        // Delete
+        FileTransferApiClientResponse deleteResponse = gateway.delete(fileID);
+
+        assertEquals(HttpStatus.NO_CONTENT, deleteResponse.getHttpStatus());
+
+        // Try to download after delete - should get 404
+        try {
+            HttpStatus downloadStatus = await().atMost(Duration.ONE_MINUTE)
+                .with()
+                .pollInterval(Duration.FIVE_SECONDS)
+                .until(downloadFile(fileID, mockHttpServletResponse), Objects::nonNull);
+
+            assertEquals(HttpStatus.NOT_FOUND, downloadStatus);
+        } catch (Exception e) {
+            fail(e.getMessage());
+        } finally {
+            fileOutputStream.close();
+        }
     }
 
-    @Test
-    public void willThrowHttpServerExceptionIf500Returned() throws IOException {
-        MultipartFile mockFile = new MockMultipartFile("file", "file.txt", "text/plain", "test".getBytes());
+    @NotNull
+    private ServletOutputStream getServletOutputStream(FileOutputStream fileOutputStream) {
+        return new ServletOutputStream() {
+                @Override
+                public boolean isReady() {
+                    return true;
+                }
 
-        mockServerExpectation("/", "POST")
-            .respond(HttpResponse.response()
-                .withStatusCode(500));
+                @Override
+                public void setWriteListener(WriteListener writeListener) {}
 
-        expectedException.expect(HttpServerErrorException.class);
-
-        gateway.upload(mockFile);
+                @Override
+                public void write(int b) throws IOException {
+                    fileOutputStream.write(b);
+                }
+            };
     }
 
-    private ForwardChainExpectation mockServerExpectation(String path, String httpMethod)
-            throws IOException {
-        return mockServer
-            .when(HttpRequest
-                .request()
-                .withMethod(httpMethod)
-                .withPath(path)
-                .withKeepAlive(true));
+    private FileTransferApiClientResponse uploadFile(File uploadFile) throws IOException {
+        FileItem fileItem = new DiskFileItem("file", Files.probeContentType(uploadFile.toPath()), false, uploadFile.getName(), (int) uploadFile.length(), uploadFile.getParentFile());
+        try {
+            IOUtils.copy(new FileInputStream(uploadFile), fileItem.getOutputStream());
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+
+        MultipartFile multipartFile = new CommonsMultipartFile(fileItem);
+
+        System.out.println("Calling upload...");
+        return gateway.upload(multipartFile);
+    }
+
+    private Callable<HttpStatus> downloadFile(String fileID, HttpServletResponse httpServletResponse) {
+        return () -> {
+                HttpStatus downloadStatus;
+                try {
+                    System.out.print(".");
+                    FileTransferApiClientResponse downloadResponse = gateway.download(fileID, httpServletResponse);
+                    downloadStatus = downloadResponse.getHttpStatus();
+                } catch (HttpClientErrorException | HttpServerErrorException e) {
+                    downloadStatus = e.getStatusCode();
+                }
+                return downloadStatus;
+        };
+    }
+
+    private void assertFilesAreEqual(File uploadFile, File downloadFile) throws IOException {
+        try (InputStream inputStream = new FileInputStream(uploadFile);
+             InputStream downloadStream = new FileInputStream(downloadFile) ) {
+
+            String md5UploadedFile = DigestUtils.md5Hex(inputStream);
+            String md5DownloadedFile = DigestUtils.md5Hex(downloadStream);
+            assertEquals(md5UploadedFile, md5DownloadedFile);
+        }
     }
 }
