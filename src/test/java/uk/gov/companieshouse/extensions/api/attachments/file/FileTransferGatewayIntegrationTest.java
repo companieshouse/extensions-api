@@ -138,12 +138,14 @@ public class FileTransferGatewayIntegrationTest {
 
 
         // Delete
+        System.out.println("Calling delete...");
         FileTransferApiClientResponse deleteResponse = gateway.delete(fileID);
 
         assertEquals(HttpStatus.NO_CONTENT, deleteResponse.getHttpStatus());
 
         // Try to download after delete - should get 404
         try {
+            System.out.println("Calling download...");
             HttpStatus downloadStatus = await().atMost(Duration.ONE_MINUTE)
                 .with()
                 .pollInterval(Duration.FIVE_SECONDS)
