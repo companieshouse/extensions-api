@@ -59,10 +59,10 @@ public class FileTransferGatewayIntegrationTest {
     @Mock
     private HttpServletResponse mockHttpServletResponse;
 
-    @Value("${http_proxy}")
+    @Value("${http_proxy:}")
     private String envHttpProxy;
 
-    @Value("${https_proxy}")
+    @Value("${https_proxy:}")
     private String envHttpsProxy;
 
     @PostConstruct
