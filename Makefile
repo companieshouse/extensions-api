@@ -31,9 +31,9 @@ test-unit: clean
 test-integration: clean
 	mvn verify -Dgroups="uk.gov.companieshouse.extensions.api.groups.Integration"
 
-.PHONY: test-concourse-integration
-test-concourse-integration: clean
-	mvn verify -Dgroups="uk.gov.companieshouse.extensions.api.groups.ConcourseIntegration"
+.PHONY: test-ci-integration
+test-ci-integration: clean
+	mvn verify -Dgroups="uk.gov.companieshouse.extensions.api.groups.CIIntegration"
 
 .PHONY: test-contract-consumer
 test-contract-consumer: clean
