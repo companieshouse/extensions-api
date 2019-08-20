@@ -31,7 +31,7 @@ import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.multipart.MultipartFile;
 
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
-import uk.gov.companieshouse.extensions.api.groups.ConcourseIntegration;
+import uk.gov.companieshouse.extensions.api.groups.CIIntegration;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.ServletOutputStream;
@@ -48,7 +48,7 @@ import static org.mockito.Mockito.when;
 /**
  * FileTransferGatewayIntegrationTest
  */
-@Category(ConcourseIntegration.class)
+@Category(CIIntegration.class)
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class FileTransferGatewayIntegrationTest {
