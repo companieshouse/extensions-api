@@ -19,6 +19,9 @@ public abstract class ExtensionRequestFull {
     @JsonProperty("num_granted_extension_reqs")
     private int numGrantedExtensionReqs;
 
+    @JsonProperty("is_auto_accepted")
+    private boolean isAutoAccepted;
+
     @JsonProperty("created_on")
     private LocalDateTime createdOn;
 
@@ -66,6 +69,14 @@ public abstract class ExtensionRequestFull {
 
     public void setNumGrantedExtensionReqs(int numGrantedExtensionReqs) {
         this.numGrantedExtensionReqs = numGrantedExtensionReqs;
+    }
+
+    public boolean getIsAutoAccepted() {
+        return isAutoAccepted;
+    }
+
+    public void setIsAutoAccepted(boolean isAutoAccepted) {
+        this.isAutoAccepted = isAutoAccepted;
     }
 
     public LocalDateTime getCreatedOn() {
