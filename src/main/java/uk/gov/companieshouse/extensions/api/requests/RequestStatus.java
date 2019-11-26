@@ -5,8 +5,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class RequestStatus {
 
     private Status status;
+
     @JsonProperty("num_granted_extension_reqs")
     private int numGrantedExtensionReqs;
+
+    @JsonProperty("is_auto_accepted")
+    private boolean isAutoAccepted;
 
     public Status getStatus() {
         return this.status;
@@ -22,5 +26,13 @@ public class RequestStatus {
 
     public void setNumGrantedExtensionReqs(int numGrantedExtensionReqs) {
         this.numGrantedExtensionReqs = numGrantedExtensionReqs;
+    }
+
+    public boolean getIsAutoAccepted() {
+        return isAutoAccepted;
+    }
+
+    public void setIsAutoAccepted(boolean isAutoAccepted) {
+        this.isAutoAccepted = isAutoAccepted;
     }
 }
