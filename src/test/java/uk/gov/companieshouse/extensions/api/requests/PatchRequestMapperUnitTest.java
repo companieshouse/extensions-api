@@ -1,7 +1,7 @@
 package uk.gov.companieshouse.extensions.api.requests;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -21,7 +21,7 @@ public class PatchRequestMapperUnitTest {
         RequestStatus patchEntity = new RequestStatus();
         patchEntity.setStatus(Status.SUBMITTED);
         patchEntity.setNumGrantedExtensionReqs(1);
-        patchEntity.setIsAutoAccepted(false);
+        patchEntity.setIsAutoAccepted(true);
 
         ExtensionRequestFullEntity dbEntity = new ExtensionRequestFullEntity();
         dbEntity.setId("12345");
@@ -42,7 +42,7 @@ public class PatchRequestMapperUnitTest {
         assertEquals(Status.SUBMITTED, dbEntity.getStatus());
         assertEquals(1, dbEntity.getNumGrantedExtensionReqs());
         assertEquals("reason1", dbEntity.getReasons().get(0).getId());
-        assertFalse(dbEntity.getIsAutoAccepted());
+        assertTrue(dbEntity.getIsAutoAccepted());
     }
   
 }
