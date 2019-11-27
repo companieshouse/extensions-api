@@ -80,7 +80,6 @@ public class Utils {
         requestDTO.setEtag(ETAG);
         requestDTO.setId(REQUEST_ID);
         requestDTO.setCompanyNumber(COMPANY_NUMBER);
-        requestDTO.setNumGrantedExtensionReqs(NUM_GRANTED_EXTENSION_REQS);
         requestDTO.setCreatedOn(CREATED_ON);
         requestDTO.setCreatedBy(CREATED_BY);
         requestDTO.setAccountingPeriodStartOn(ACCOUNTING_PERIOD_START_ON);
@@ -97,7 +96,6 @@ public class Utils {
         requestEntity.setEtag(ETAG);
         requestEntity.setId(REQUEST_ID);
         requestEntity.setCompanyNumber(COMPANY_NUMBER);
-        requestEntity.setNumGrantedExtensionReqs(NUM_GRANTED_EXTENSION_REQS);
         requestEntity.setCreatedOn(CREATED_ON);
         requestEntity.setCreatedBy(CREATED_BY);
         requestEntity.setAccountingPeriodStartOn(ACCOUNTING_PERIOD_START_ON);

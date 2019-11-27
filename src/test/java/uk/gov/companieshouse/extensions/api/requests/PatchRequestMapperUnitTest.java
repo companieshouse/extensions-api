@@ -20,7 +20,6 @@ public class PatchRequestMapperUnitTest {
     public void canMergeAPatchEntityIntoADatabaseEntity() {
         RequestStatus patchEntity = new RequestStatus();
         patchEntity.setStatus(Status.SUBMITTED);
-        patchEntity.setNumGrantedExtensionReqs(1);
         patchEntity.setIsAutoAccepted(true);
 
         ExtensionRequestFullEntity dbEntity = new ExtensionRequestFullEntity();
@@ -40,7 +39,6 @@ public class PatchRequestMapperUnitTest {
         assertEquals(LocalDate.of(2018,1,1), mappedEntity.getAccountingPeriodEndOn());
         assertEquals(links, mappedEntity.getLinks());
         assertEquals(Status.SUBMITTED, dbEntity.getStatus());
-        assertEquals(1, dbEntity.getNumGrantedExtensionReqs());
         assertEquals("reason1", dbEntity.getReasons().get(0).getId());
         assertTrue(dbEntity.getIsAutoAccepted());
     }

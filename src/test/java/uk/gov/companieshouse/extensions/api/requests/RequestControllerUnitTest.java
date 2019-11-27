@@ -169,7 +169,6 @@ public class RequestControllerUnitTest {
 
         RequestStatus status = new RequestStatus();
         status.setStatus(Status.SUBMITTED);
-        status.setNumGrantedExtensionReqs(1);
         ResponseEntity<ExtensionRequestFullEntity> response = controller.patchRequest("123", status);
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
     }
@@ -181,7 +180,6 @@ public class RequestControllerUnitTest {
 
         RequestStatus status = new RequestStatus();
         status.setStatus(Status.SUBMITTED);
-        status.setNumGrantedExtensionReqs(1);
         ResponseEntity<ExtensionRequestFullEntity> response = controller.patchRequest("123", status);
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }

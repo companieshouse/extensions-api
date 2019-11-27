@@ -82,7 +82,6 @@ public class RequestServiceUnitTest {
         assertEquals(extensionCreateRequest.getAccountingPeriodEndOn(),
                 extensionRequestResult.getAccountingPeriodEndOn());
         assertEquals(Status.OPEN, extensionRequestResult.getStatus());
-        assertEquals(0, extensionRequestResult.getNumGrantedExtensionReqs());
 
         CreatedBy createdByInEntity = extensionRequestResult.getCreatedBy();
         assertEquals(createdBy.getEmail(), createdByInEntity.getEmail());
@@ -103,13 +102,11 @@ public class RequestServiceUnitTest {
 
         RequestStatus status = new RequestStatus();
         status.setStatus(Status.SUBMITTED);
-        status.setNumGrantedExtensionReqs(1);
         ExtensionRequestFullEntity entity = requestsService.patchRequest("request", status);
 
         verify(extensionRequestsRepository).findById("request");
         verify(extensionRequestsRepository).save(extensionRequestFullEntity);
         assertEquals(Status.SUBMITTED, entity.getStatus());
-        assertEquals(1, entity.getNumGrantedExtensionReqs());
     }
 
     @Test
@@ -121,8 +118,7 @@ public class RequestServiceUnitTest {
 
         RequestStatus status = new RequestStatus();
         status.setStatus(Status.SUBMITTED);
-        status.setNumGrantedExtensionReqs(1);
-        
+
         expectedException.expect(ServiceException.class);
         expectedException.expectMessage("Request: request1 cannot be found");
         requestsService.patchRequest("request1", status);
