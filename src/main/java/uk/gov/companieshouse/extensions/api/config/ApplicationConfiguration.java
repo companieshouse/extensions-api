@@ -6,21 +6,26 @@ import java.util.function.Supplier;
 
 import com.mongodb.MongoClientOptions;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
 
-import uk.gov.companieshouse.environment.EnvironmentReader;
-import uk.gov.companieshouse.environment.impl.EnvironmentReaderImpl;
-
 @Configuration
 public class ApplicationConfiguration {
 
-    @Bean
-    public EnvironmentReader environmentReader() {
-        return new EnvironmentReaderImpl();
-    }
+    /**
+     * Constructs the config using environment variables for
+     * Mongo Connection Pool settings. Sets default values in case
+     * the environment variables are not supplied.
+     */
+    @Value("${MONGO_CONNECTION_POOL_MIN_SIZE}")
+    private Integer optionalMinSize;
+    @Value("${MONGO_CONNECTION_MAX_IDLE_TIME}")
+    private Integer optionalMaxConnectionIdleTimeMS;
+    @Value("${MONGO_CONNECTION_MAX_LIFE_TIME}")
+    private Integer optionalMaxConnectionLifeTimeMS;
 
     /**
      * Create a {@link MongoClientOptions} .
@@ -29,11 +34,14 @@ public class ApplicationConfiguration {
      */
     @Bean
     public MongoClientOptions mongoClientOptions() {
-        MongoDBConnectionPoolProperties connectionPoolProperties = new MongoDBConnectionPoolProperties(environmentReader());
+        MongoDBConnectionPoolProperties connectionPoolProperties = new MongoDBConnectionPoolProperties(
+            optionalMinSize,
+            optionalMaxConnectionIdleTimeMS,
+            optionalMaxConnectionLifeTimeMS);
         return MongoClientOptions.builder().minConnectionsPerHost(connectionPoolProperties.getMinSize())
-                .maxConnectionIdleTime(connectionPoolProperties.getMaxConnectionIdleTimeMS())
-                .maxConnectionLifeTime(connectionPoolProperties.getMaxConnectionLifeTimeMS())
-                .build();
+            .maxConnectionIdleTime(connectionPoolProperties.getMaxConnectionIdleTimeMS())
+            .maxConnectionLifeTime(connectionPoolProperties.getMaxConnectionLifeTimeMS())
+            .build();
     }
 
     @Bean
