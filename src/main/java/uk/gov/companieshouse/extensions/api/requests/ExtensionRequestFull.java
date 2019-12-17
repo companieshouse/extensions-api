@@ -1,6 +1,5 @@
 package uk.gov.companieshouse.extensions.api.requests;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonProperty;

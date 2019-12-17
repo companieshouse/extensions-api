@@ -2,7 +2,6 @@ package uk.gov.companieshouse.extensions.api.requests;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class ExtensionCreateRequest {

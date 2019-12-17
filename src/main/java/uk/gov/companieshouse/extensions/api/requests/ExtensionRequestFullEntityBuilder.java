@@ -2,7 +2,6 @@ package uk.gov.companieshouse.extensions.api.requests;
 
 import uk.gov.companieshouse.extensions.api.reasons.ExtensionReasonEntity;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;

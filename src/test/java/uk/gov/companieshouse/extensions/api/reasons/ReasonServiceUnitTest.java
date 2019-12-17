@@ -11,7 +11,6 @@ import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyCreateReason
 import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyReasonEntity;
 import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyRequestEntity;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Optional;

@@ -21,7 +21,6 @@ import uk.gov.companieshouse.service.links.Links;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class Utils {
