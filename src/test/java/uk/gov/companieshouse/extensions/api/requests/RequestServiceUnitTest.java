@@ -58,7 +58,7 @@ public class RequestServiceUnitTest {
         when(extensionRequestsRepository.findById(REQUEST_ID)).thenReturn(Optional.of(entity));
 
         Optional<ExtensionRequestFullEntity> request = requestsService.getExtensionsRequestById(REQUEST_ID);
-        assertEquals("id 1234 Acc period start: 2018-12-12  Acc period end: 2019-12-12", request.get().toString());
+        assertEquals("id 1234 Acc period start: 2018-12-12T00:00:01  Acc period end: 2019-12-12T00:00:01", request.get().toString());
     }
 
     @Test

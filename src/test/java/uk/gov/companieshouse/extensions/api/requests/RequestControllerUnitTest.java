@@ -19,7 +19,6 @@ import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyRequestDTO;
 import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyRequestEntity;
 
 import java.io.UnsupportedEncodingException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -192,8 +191,10 @@ public class RequestControllerUnitTest {
 
     private ExtensionCreateRequest dummyRequest() {
         ExtensionCreateRequest request = new ExtensionCreateRequest();
-        request.setAccountingPeriodEndOn(LocalDate.of(2019, 12, 12));
-        request.setAccountingPeriodStartOn(LocalDate.of(2018, 12, 12));
+        request.setAccountingPeriodEndOn(LocalDateTime.of(
+            2019, 12, 12, 00, 00, 00));
+        request.setAccountingPeriodStartOn(LocalDateTime.of(
+            2018, 12, 12, 00, 00, 00));
         return request;
     }
 }

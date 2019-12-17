@@ -16,9 +16,9 @@ public class ExtensionRequestFullEntityBuilder {
 
     private CreatedBy createdBy;
 
-    private LocalDate accountingPeriodStartOn;
+    private LocalDateTime accountingPeriodStartOn;
 
-    private LocalDate accountingPeriodEndOn;
+    private LocalDateTime accountingPeriodEndOn;
 
     private Status status;
 
@@ -39,13 +39,13 @@ public class ExtensionRequestFullEntityBuilder {
         return this;
     }
 
-    public ExtensionRequestFullEntityBuilder withAccountingPeriodStartOn(LocalDate
+    public ExtensionRequestFullEntityBuilder withAccountingPeriodStartOn(LocalDateTime
                                                                              accountingPeriodStartDate) {
         this.accountingPeriodStartOn = accountingPeriodStartDate;
         return this;
     }
 
-    public ExtensionRequestFullEntityBuilder withAccountingPeriodEndOn(LocalDate
+    public ExtensionRequestFullEntityBuilder withAccountingPeriodEndOn(LocalDateTime
                                                                            accountingPeriodStartDate) {
         this.accountingPeriodEndOn = accountingPeriodStartDate;
         return this;

@@ -3,6 +3,7 @@ package uk.gov.companieshouse.extensions.api.requests;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
+import uk.gov.companieshouse.extensions.api.common.ExtensionDateUtils;
 import uk.gov.companieshouse.extensions.api.logger.LogMethodCall;
 import uk.gov.companieshouse.service.ServiceException;
 import uk.gov.companieshouse.service.links.Links;
@@ -42,6 +43,11 @@ public class RequestsService {
 
     public ExtensionRequestFullEntity insertExtensionsRequest(ExtensionCreateRequest extensionCreateRequest, CreatedBy
         createdBy, String reqUri, String companyNumber) {
+
+        extensionCreateRequest.setAccountingPeriodStartOn(
+            ExtensionDateUtils.handleDSTOffsets(extensionCreateRequest.getAccountingPeriodStartOn()));
+        extensionCreateRequest.setAccountingPeriodEndOn(
+            ExtensionDateUtils.handleDSTOffsets(extensionCreateRequest.getAccountingPeriodEndOn()));
 
         ExtensionRequestFullEntity extensionRequestFullEntity = ExtensionRequestFullEntityBuilder
             .newInstance()

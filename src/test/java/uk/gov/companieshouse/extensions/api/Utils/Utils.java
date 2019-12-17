@@ -32,10 +32,10 @@ public class Utils {
     public static final LocalDateTime CREATED_ON = LocalDateTime.of(
         2018, 10, 10, 00,00,00);
     public static final CreatedBy CREATED_BY = createdBy();
-    public static final LocalDate ACCOUNTING_PERIOD_START_ON = LocalDate.of(
-        2018, 12, 12);
-    public static final LocalDate ACCOUNTING_PERIOD_END_ON = LocalDate.of(
-        2019, 12, 12);
+    public static final LocalDateTime ACCOUNTING_PERIOD_START_ON = LocalDateTime.of(
+        2018, 12, 12, 0, 0, 01);
+    public static final LocalDateTime ACCOUNTING_PERIOD_END_ON = LocalDateTime.of(
+        2019, 12, 12, 0, 0, 01);
     public static final Links LINKS = links();
     public static final Status STATUS_OPEN = Status.OPEN;
     public static final String BASE_URL = "/company/00006400/extensions/requests/";

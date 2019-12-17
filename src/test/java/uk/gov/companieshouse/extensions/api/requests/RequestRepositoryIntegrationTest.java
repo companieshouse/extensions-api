@@ -5,7 +5,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
@@ -66,8 +65,10 @@ public class RequestRepositoryIntegrationTest {
 
         assertNotNull(savedEntity.getId());
         assertTrue(savedEntity.getReasons().isEmpty());
-        assertEquals(LocalDate.of(2019, 12, 12), savedEntity.getAccountingPeriodEndOn());
-        assertEquals(LocalDate.of(2018, 12, 12), savedEntity.getAccountingPeriodStartOn());
+        assertEquals(LocalDateTime.of(
+            2019, 12, 12, 0, 0, 1), savedEntity.getAccountingPeriodEndOn());
+        assertEquals(LocalDateTime.of(
+            2018, 12, 12, 0, 0, 1), savedEntity.getAccountingPeriodStartOn());
         assertEquals("etag", savedEntity.getEtag());
         assertEquals(Status.OPEN, savedEntity.getStatus());
         assertEquals(expectedEntity.getCreatedBy(), savedEntity.getCreatedBy());

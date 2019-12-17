@@ -3,28 +3,29 @@ package uk.gov.companieshouse.extensions.api.requests;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class ExtensionCreateRequest {
 
     @JsonProperty("accounting_period_start_on")
-    private LocalDate accountingPeriodStartOn;
+    private LocalDateTime accountingPeriodStartOn;
 
     @JsonProperty("accounting_period_end_on")
-    private LocalDate accountingPeriodEndOn;
+    private LocalDateTime accountingPeriodEndOn;
 
-    public LocalDate getAccountingPeriodStartOn() {
+    public LocalDateTime getAccountingPeriodStartOn() {
         return accountingPeriodStartOn;
     }
 
-    public void setAccountingPeriodStartOn(LocalDate accountingPeriodStartDate) {
+    public void setAccountingPeriodStartOn(LocalDateTime accountingPeriodStartDate) {
         this.accountingPeriodStartOn = accountingPeriodStartDate;
     }
 
-    public LocalDate getAccountingPeriodEndOn() {
+    public LocalDateTime getAccountingPeriodEndOn() {
         return accountingPeriodEndOn;
     }
 
-    public void setAccountingPeriodEndOn(LocalDate accountingPeriodEndDate) {
+    public void setAccountingPeriodEndOn(LocalDateTime accountingPeriodEndDate) {
         this.accountingPeriodEndOn = accountingPeriodEndDate;
     }
 }

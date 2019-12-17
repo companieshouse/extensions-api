@@ -3,7 +3,7 @@ package uk.gov.companieshouse.extensions.api.requests;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 
 import org.junit.Test;
@@ -24,7 +24,7 @@ public class PatchRequestMapperUnitTest {
 
         ExtensionRequestFullEntity dbEntity = new ExtensionRequestFullEntity();
         dbEntity.setId("12345");
-        dbEntity.setAccountingPeriodEndOn(LocalDate.of(2018,1,1));
+        dbEntity.setAccountingPeriodEndOn(LocalDateTime.of(2018,1,1, 0, 0, 0));
         Links links = new Links();
         links.setLink(ExtensionsLinkKeys.SELF, "something");
         dbEntity.setLinks(links);
@@ -36,7 +36,7 @@ public class PatchRequestMapperUnitTest {
             .patchEntity(patchEntity, dbEntity);
 
         assertEquals("12345", mappedEntity.getId());
-        assertEquals(LocalDate.of(2018,1,1), mappedEntity.getAccountingPeriodEndOn());
+        assertEquals(LocalDateTime.of(2018,1,1, 0, 0, 0), mappedEntity.getAccountingPeriodEndOn());
         assertEquals(links, mappedEntity.getLinks());
         assertEquals(Status.SUBMITTED, dbEntity.getStatus());
         assertEquals("reason1", dbEntity.getReasons().get(0).getId());

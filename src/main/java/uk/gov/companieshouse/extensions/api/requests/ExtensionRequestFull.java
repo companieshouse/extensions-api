@@ -26,10 +26,10 @@ public abstract class ExtensionRequestFull {
     private CreatedBy createdBy;
 
     @JsonProperty("accounting_period_start_on")
-    private LocalDate accountingPeriodStartOn;
+    private LocalDateTime accountingPeriodStartOn;
 
     @JsonProperty("accounting_period_end_on")
-    private LocalDate accountingPeriodEndOn;
+    private LocalDateTime accountingPeriodEndOn;
 
     @JsonUnwrapped
     private Links links;
@@ -84,19 +84,19 @@ public abstract class ExtensionRequestFull {
         this.createdBy = createdBy;
     }
 
-    public LocalDate getAccountingPeriodStartOn() {
+    public LocalDateTime getAccountingPeriodStartOn() {
         return accountingPeriodStartOn;
     }
 
-    public void setAccountingPeriodStartOn(LocalDate accountingPeriodStartOn) {
+    public void setAccountingPeriodStartOn(LocalDateTime accountingPeriodStartOn) {
         this.accountingPeriodStartOn = accountingPeriodStartOn;
     }
 
-    public LocalDate getAccountingPeriodEndOn() {
+    public LocalDateTime getAccountingPeriodEndOn() {
         return accountingPeriodEndOn;
     }
 
-    public void setAccountingPeriodEndOn(LocalDate accountingPeriodEndOn) {
+    public void setAccountingPeriodEndOn(LocalDateTime accountingPeriodEndOn) {
         this.accountingPeriodEndOn = accountingPeriodEndOn;
     }
 
