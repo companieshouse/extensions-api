@@ -3,6 +3,7 @@ package uk.gov.companieshouse.extensions.api.reasons;
 import static org.junit.Assert.assertEquals;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -33,8 +34,8 @@ public class ExtensionReasonEntityBuilderUnitTest {
     ExtensionReasonEntity entity = new ExtensionReasonEntityBuilder()
       .withId("123")
       .withLinks("requestURI")
-      .withEndOn(LocalDate.of(2018, 01, 01))
-      .withStartOn(LocalDate.of(2017, 12, 12))
+      .withEndOn(LocalDateTime.of(2018, 01, 01, 00, 00, 00))
+      .withStartOn(LocalDateTime.of(2017, 12, 12, 00, 00, 00))
       .withReason("reason")
       .withReasonStatus(ReasonStatus.DRAFT)
       .build();
@@ -45,8 +46,8 @@ public class ExtensionReasonEntityBuilderUnitTest {
     assertEquals("123", entity.getId());
     assertEquals(expectedLinks, entity.getLinks());
     assertEquals("reason", entity.getReason());
-    assertEquals(LocalDate.of(2018, 01, 01), entity.getEndOn());
-    assertEquals(LocalDate.of(2017, 12, 12), entity.getStartOn());
+    assertEquals(LocalDateTime.of(2018, 01, 01,00,00,00), entity.getEndOn());
+    assertEquals(LocalDateTime.of(2017, 12, 12,00,00,00), entity.getStartOn());
     assertEquals(ReasonStatus.DRAFT, entity.getReasonStatus());
   }
 }

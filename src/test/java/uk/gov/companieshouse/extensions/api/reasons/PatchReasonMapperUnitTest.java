@@ -3,6 +3,7 @@ package uk.gov.companieshouse.extensions.api.reasons;
 import static org.junit.Assert.assertEquals;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -18,13 +19,13 @@ public class PatchReasonMapperUnitTest {
     public void canMergeAPatchEntityIntoADatabaseEntity() {
         ExtensionCreateReason patchEntity = new ExtensionCreateReason();
         patchEntity.setReasonInformation("replacement text");
-        patchEntity.setStartOn(LocalDate.of(2018,2,2));
+        patchEntity.setStartOn(LocalDateTime.of(2018,2,2,0,0,0));
         patchEntity.setReasonStatus(ReasonStatus.COMPLETED);
 
         ExtensionReasonEntity dbEntity = new ExtensionReasonEntity();
         dbEntity.setId("12345");
         dbEntity.setReasonInformation("old text");
-        dbEntity.setEndOn(LocalDate.of(2018,1,1));
+        dbEntity.setEndOn(LocalDateTime.of(2018,1,1,0,0,0));
         dbEntity.setReasonStatus(ReasonStatus.DRAFT);
         Links links = new Links();
         links.setLink(ExtensionsLinkKeys.SELF, "something");
@@ -35,9 +36,9 @@ public class PatchReasonMapperUnitTest {
 
         assertEquals("replacement text", mappedEntity.getReasonInformation());
         assertEquals("12345", mappedEntity.getId());
-        assertEquals(LocalDate.of(2018,1,1), mappedEntity.getEndOn());
+        assertEquals(LocalDateTime.of(2018,1,1,0,0,0), mappedEntity.getEndOn());
         assertEquals(links, mappedEntity.getLinks());
-        assertEquals(LocalDate.of(2018,2,2), mappedEntity.getStartOn());
+        assertEquals(LocalDateTime.of(2018,2,2,0,0,0), mappedEntity.getStartOn());
         assertEquals(ReasonStatus.COMPLETED, mappedEntity.getReasonStatus());
     }
 }

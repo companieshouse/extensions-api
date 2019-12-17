@@ -4,6 +4,7 @@ import uk.gov.companieshouse.extensions.api.requests.ExtensionsLinkKeys;
 import uk.gov.companieshouse.service.links.Links;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class ExtensionReasonEntityBuilder {
 
@@ -11,8 +12,8 @@ public class ExtensionReasonEntityBuilder {
     private Links links;
     private String reason;
     private String reasonInformation;
-    private LocalDate startOn;
-    private LocalDate endOn;
+    private LocalDateTime startOn;
+    private LocalDateTime endOn;
     private ReasonStatus reasonStatus;
 
     public static ExtensionReasonEntityBuilder builder() {
@@ -45,12 +46,12 @@ public class ExtensionReasonEntityBuilder {
         return this;
     }
 
-    public ExtensionReasonEntityBuilder withStartOn(LocalDate startOn) {
+    public ExtensionReasonEntityBuilder withStartOn(LocalDateTime startOn) {
         this.startOn = startOn;
         return this;
     }
 
-    public ExtensionReasonEntityBuilder withEndOn(LocalDate endOn) {
+    public ExtensionReasonEntityBuilder withEndOn(LocalDateTime endOn) {
         this.endOn = endOn;
         return this;
     }

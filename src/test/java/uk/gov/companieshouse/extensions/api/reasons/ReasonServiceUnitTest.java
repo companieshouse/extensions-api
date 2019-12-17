@@ -12,6 +12,7 @@ import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyReasonEntity
 import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyRequestEntity;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -386,7 +387,7 @@ public class ReasonServiceUnitTest {
         ExtensionReasonEntity reasonEntity = new ExtensionReasonEntity();
         requestEntity.setId("123");
 
-        reasonEntity.setEndOn(LocalDate.of(2018,1,1));
+        reasonEntity.setEndOn(LocalDateTime.of(2018,1,1,0,0,0));
         reasonEntity.setReasonInformation("Old text");
         reasonEntity.setId("1234");
 

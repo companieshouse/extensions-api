@@ -3,15 +3,16 @@ package uk.gov.companieshouse.extensions.api.reasons;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public abstract class ExtensionReasonCommon {
     private String reason;
 
     @JsonProperty("start_on")
-    private LocalDate startOn;
+    private LocalDateTime startOn;
 
     @JsonProperty("end_on")
-    private LocalDate endOn;
+    private LocalDateTime endOn;
 
     @JsonProperty("affected_person")
     private String affectedPerson;
@@ -65,19 +66,19 @@ public abstract class ExtensionReasonCommon {
         this.reason = reason;
     }
 
-    public LocalDate getStartOn() {
+    public LocalDateTime getStartOn() {
         return startOn;
     }
 
-    public void setStartOn(LocalDate startOn) {
+    public void setStartOn(LocalDateTime startOn) {
         this.startOn = startOn;
     }
 
-    public LocalDate getEndOn() {
+    public LocalDateTime getEndOn() {
         return endOn;
     }
 
-    public void setEndOn(LocalDate endOn) {
+    public void setEndOn(LocalDateTime endOn) {
         this.endOn = endOn;
     }
 }

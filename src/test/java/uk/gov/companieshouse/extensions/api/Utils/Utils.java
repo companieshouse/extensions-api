@@ -43,10 +43,10 @@ public class Utils {
     public static final String EMAIL = "email";
     public static final String FORENAME = "forename";
     public static final String SURNAME = "surname";
-    public static final LocalDate REASON_START_ON = LocalDate.of(
-        2018, 12, 12);
-    public static final LocalDate REASON_END_ON = LocalDate.of(
-        2019, 12, 12);
+    public static final LocalDateTime REASON_START_ON = LocalDateTime.of(
+        2018, 12, 12,0,0,0);
+    public static final LocalDateTime REASON_END_ON = LocalDateTime.of(
+        2019, 12, 12,0,0,0);
     public static final String REASON = "illness";
     public static final String REASON_INFORMATION = "string";
     public static final String TESTURI = "testuri";
