@@ -8,6 +8,7 @@ import org.springframework.web.client.HttpServerErrorException;
 import uk.gov.companieshouse.extensions.api.attachments.Attachment;
 import uk.gov.companieshouse.extensions.api.attachments.file.FileTransferApiClient;
 import uk.gov.companieshouse.extensions.api.attachments.file.FileTransferApiClientResponse;
+import uk.gov.companieshouse.extensions.api.common.ExtensionDateUtils;
 import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
 import uk.gov.companieshouse.extensions.api.logger.LogMethodCall;
 import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestFullEntity;
@@ -17,7 +18,9 @@ import uk.gov.companieshouse.extensions.api.response.ListResponse;
 import uk.gov.companieshouse.service.ServiceException;
 import uk.gov.companieshouse.service.ServiceResult;
 
-import java.time.*;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -90,12 +93,12 @@ public class ReasonsService {
 
         LocalDateTime startOn = extensionCreateReason.getStartOn();
         if (startOn != null) {
-            extensionReasonEntityBuilder.withStartOn(handleDSTOffsets(startOn));
+            extensionReasonEntityBuilder.withStartOn(ExtensionDateUtils.handleDSTOffsets(startOn));
         }
 
         LocalDateTime endOn = extensionCreateReason.getEndOn();
         if (endOn != null) {
-            extensionReasonEntityBuilder.withEndOn(handleDSTOffsets(endOn));
+            extensionReasonEntityBuilder.withEndOn(ExtensionDateUtils.handleDSTOffsets(endOn));
         }
 
         ExtensionReasonEntity extensionReasonEntity = extensionReasonEntityBuilder.build();
@@ -171,8 +174,8 @@ public class ReasonsService {
                                                          String reasonId) throws ServiceException {
         ExtensionRequestFullEntity extensionRequestFullEntity = getRequest(requestId);
 
-        createReason.setStartOn(handleDSTOffsets(createReason.getStartOn()));
-        createReason.setEndOn(handleDSTOffsets(createReason.getEndOn()));
+        createReason.setStartOn(ExtensionDateUtils.handleDSTOffsets(createReason.getStartOn()));
+        createReason.setEndOn(ExtensionDateUtils.handleDSTOffsets(createReason.getEndOn()));
 
         ExtensionReasonEntity reasonEntity =
             filterReasonToStream(extensionRequestFullEntity, reasonId)
@@ -189,16 +192,6 @@ public class ReasonsService {
         extensionRequestsRepository.save(extensionRequestFullEntity);
 
         return reasonMapper.entityToDTO(newReason);
-    }
-
-    private LocalDateTime handleDSTOffsets(LocalDateTime date) {
-        if (date != null) {
-            ZoneId zone = ZoneId.of("Europe/London");
-            ZoneOffset zoneOffSet = zone.getRules().getOffset(date);
-            LocalDateTime newDate = date.plusSeconds(zoneOffSet.getTotalSeconds());
-            return newDate;
-        }
-        return date;
     }
 
     private Stream<ExtensionReasonEntity> filterReasonToStream(ExtensionRequestFullEntity fullEntity,
