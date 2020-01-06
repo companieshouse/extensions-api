@@ -1,7 +1,9 @@
 package uk.gov.companieshouse.extensions.api;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
 
 import javax.annotation.PostConstruct;
 import java.util.TimeZone;
@@ -15,9 +17,12 @@ public class Application {
     SpringApplication.run(Application.class, args);
   }
 
+    @Autowired
+    private ApiLogger logger;
+
     @PostConstruct
-    public void init(){
-        // Setting Spring Boot SetTimeZone
+    public void init() {
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+        logger.info(String.format("Set Spring Boot Time Zone to %s", TimeZone.getDefault().getID()));
     }
 }
