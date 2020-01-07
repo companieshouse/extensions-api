@@ -16,6 +16,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.companieshouse.extensions.api.groups.Integration;
@@ -56,6 +57,9 @@ public class MongoDBTest {
     private LocalDate summerStart;
     private LocalDate summerEnd;
 
+    @Value("${TEST_MONGO_DB_URL}")
+    private String testMongoUrl;
+
     @Before
     public void init() {
         winterStart = LocalDate.of(2020,1,1);
@@ -63,7 +67,7 @@ public class MongoDBTest {
         summerStart = LocalDate.of(2020,7,1);
         summerEnd = LocalDate.of(2020,7,6);
 
-        MongoClientURI connectionString = new MongoClientURI("mongodb://mongo-db1-waldorf.dev.aws.internal:27017");
+        MongoClientURI connectionString = new MongoClientURI(testMongoUrl);
         mongoClient = new MongoClient(connectionString);
     }
 
