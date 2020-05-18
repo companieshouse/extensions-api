@@ -3,6 +3,7 @@ package uk.gov.companieshouse.extensions.api.attachments.file;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
+import java.util.Optional;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -118,8 +119,9 @@ public class FileTransferApiClient {
      * @param clientHttpResponse the response back from the api we are calling - the file-transfer-api
      */
     private void setResponseHeaders(HttpServletResponse httpServletResponse, ClientHttpResponse clientHttpResponse) {
-        HttpHeaders incomingHeaders = clientHttpResponse.getHeaders();
-        if (incomingHeaders != null) {
+        Optional<HttpHeaders> incomingHeadersOpt = Optional.of(clientHttpResponse.getHeaders());
+        if (incomingHeadersOpt.isPresent()) {
+            HttpHeaders incomingHeaders = incomingHeadersOpt.get();
             MediaType contentType = incomingHeaders.getContentType();
             if (contentType != null) {
                 httpServletResponse.setHeader(CONTENT_TYPE, contentType.toString());

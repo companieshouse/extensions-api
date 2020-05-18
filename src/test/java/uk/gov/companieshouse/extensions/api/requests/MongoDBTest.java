@@ -77,7 +77,7 @@ public class MongoDBTest {
         requestsRepository.deleteById(SUMMER_TEST_DOCUMENT);
     }
 
-    @Ignore
+    @Ignore("This requires an in-memory db similar to Derby but for Mongo")
     @Test
     public void testReasonDatesAreMidnightOnDateSpecifiedInMongoDB_InWinter()  throws JSONException {
         String documentId = WINTER_TEST_DOCUMENT;
@@ -88,7 +88,7 @@ public class MongoDBTest {
          assess(documentId);
     }
 
-    @Ignore
+    @Ignore("This requires an in-memory db similar to Derby but for Mongo")
     @Test
     public void testReasonDatesAreMidnightOnDateSpecifiedInMongoDB_InSummer()  throws JSONException {
         String documentId = SUMMER_TEST_DOCUMENT;
