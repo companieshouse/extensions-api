@@ -3,7 +3,6 @@ package uk.gov.companieshouse.extensions.api.attachments.file;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
-import java.util.Optional;
 
 import javax.servlet.http.HttpServletResponse;
 
