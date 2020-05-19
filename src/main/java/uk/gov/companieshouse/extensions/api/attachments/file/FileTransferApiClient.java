@@ -119,16 +119,13 @@ public class FileTransferApiClient {
      * @param clientHttpResponse the response back from the api we are calling - the file-transfer-api
      */
     private void setResponseHeaders(HttpServletResponse httpServletResponse, ClientHttpResponse clientHttpResponse) {
-        Optional<HttpHeaders> incomingHeadersOpt = Optional.of(clientHttpResponse.getHeaders());
-        if (incomingHeadersOpt.isPresent()) {
-            HttpHeaders incomingHeaders = incomingHeadersOpt.get();
-            MediaType contentType = incomingHeaders.getContentType();
-            if (contentType != null) {
-                httpServletResponse.setHeader(CONTENT_TYPE, contentType.toString());
-            }
-            httpServletResponse.setHeader(CONTENT_LENGTH, String.valueOf(incomingHeaders.getContentLength()));
-            httpServletResponse.setHeader(CONTENT_DISPOSITION, incomingHeaders.getContentDisposition().toString());
+        HttpHeaders incomingHeaders = clientHttpResponse.getHeaders();
+        MediaType contentType = incomingHeaders.getContentType();
+        if (contentType != null) {
+            httpServletResponse.setHeader(CONTENT_TYPE, contentType.toString());
         }
+        httpServletResponse.setHeader(CONTENT_LENGTH, String.valueOf(incomingHeaders.getContentLength()));
+        httpServletResponse.setHeader(CONTENT_DISPOSITION, incomingHeaders.getContentDisposition().toString());
     }
 
     /**
