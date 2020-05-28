@@ -24,7 +24,6 @@ import uk.gov.companieshouse.extensions.api.Utils.Utils;
 import uk.gov.companieshouse.extensions.api.attachments.Attachment;
 import uk.gov.companieshouse.extensions.api.groups.Integration;
 import uk.gov.companieshouse.extensions.api.reasons.ExtensionReasonEntity;
-import uk.gov.companieshouse.service.links.CoreLinkKeys;
 import uk.gov.companieshouse.service.links.Links;
 
 @Category(Integration.class)

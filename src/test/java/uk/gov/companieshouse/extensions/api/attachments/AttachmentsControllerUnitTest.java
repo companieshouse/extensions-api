@@ -1,10 +1,11 @@
 package uk.gov.companieshouse.extensions.api.attachments;
 
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.junit.runner.RunWith;
+
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -13,18 +14,16 @@ import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.multipart.MultipartFile;
 import uk.gov.companieshouse.extensions.api.Utils.Utils;
 import uk.gov.companieshouse.extensions.api.attachments.file.FileTransferApiClientResponse;
-import uk.gov.companieshouse.extensions.api.groups.Unit;
 import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
 import uk.gov.companieshouse.service.ServiceException;
-import uk.gov.companieshouse.service.ServiceResult;
 import uk.gov.companieshouse.service.rest.response.PluggableResponseEntityFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -33,8 +32,8 @@ import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 
-@Category(Unit.class)
-@RunWith(MockitoJUnitRunner.class)
+@Tag("Unit")
+@ExtendWith(MockitoExtension.class)
 public class AttachmentsControllerUnitTest {
 
     private static final String ATTACHMENT_ID = "123";

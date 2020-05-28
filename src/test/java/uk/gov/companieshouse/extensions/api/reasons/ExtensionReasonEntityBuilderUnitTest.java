@@ -1,31 +1,27 @@
 package uk.gov.companieshouse.extensions.api.reasons;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDate;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.junit.rules.ExpectedException;
-
-import uk.gov.companieshouse.extensions.api.groups.Unit;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import uk.gov.companieshouse.extensions.api.requests.ExtensionsLinkKeys;
 import uk.gov.companieshouse.service.links.Links;
 
-@Category(Unit.class)
+@Tag("Unit")
 public class ExtensionReasonEntityBuilderUnitTest {
 
-  @Rule
-  public final ExpectedException expectedException = ExpectedException.none();
 
   @Test
   public void willThrowUnsupportOperationExceptionIfLinksBeforeId() {
-    expectedException.expect(UnsupportedOperationException.class);
-    expectedException.expectMessage("Links cannot be set before ID");
     ExtensionReasonEntityBuilder builder = new ExtensionReasonEntityBuilder();
-    builder.withLinks("requestURI")
-      .withId("id");
+     UnsupportedOperationException thrown = assertThrows(UnsupportedOperationException.class, () ->
+       builder.withLinks("requestURI")
+         .withId("id"));
+      assertTrue(thrown.getMessage().contains("Links cannot be set before ID"));
   }
 
   @Test

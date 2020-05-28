@@ -1,20 +1,19 @@
 package uk.gov.companieshouse.extensions.api.response;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import static junit.framework.TestCase.assertEquals;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import uk.gov.companieshouse.extensions.api.groups.Unit;
 
-@Category(Unit.class)
+@Tag("Unit")
 public class ListResponseUnitTest {
 
     @Test

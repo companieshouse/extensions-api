@@ -1,32 +1,27 @@
 package uk.gov.companieshouse.extensions.api.authorization;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.never;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.http.HttpStatus;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.junit.runner.RunWith;
+
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
-import uk.gov.companieshouse.extensions.api.groups.Unit;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
 
-@Category(Unit.class)
-@RunWith(MockitoJUnitRunner.class)
+@Tag("Unit")
+@ExtendWith(MockitoExtension.class)
 public class CompanyAuthorizationInterceptorTest {
     
     @InjectMocks

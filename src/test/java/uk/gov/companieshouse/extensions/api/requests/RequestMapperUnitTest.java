@@ -1,21 +1,20 @@
 package uk.gov.companieshouse.extensions.api.requests;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static uk.gov.companieshouse.extensions.api.Utils.Utils.REQUEST_ID;
 import static uk.gov.companieshouse.extensions.api.Utils.Utils.TESTURI;
 import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyReasonEntity;
 import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyRequestEntity;
 
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
-import uk.gov.companieshouse.extensions.api.groups.Unit;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import uk.gov.companieshouse.extensions.api.reasons.ExtensionReasonEntity;
 import uk.gov.companieshouse.service.links.Links;
 
-@Category(Unit.class)
+@Tag("Unit")
 public class RequestMapperUnitTest {
 
 

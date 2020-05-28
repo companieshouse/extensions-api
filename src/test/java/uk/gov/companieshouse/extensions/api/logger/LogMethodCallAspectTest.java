@@ -4,18 +4,18 @@ import java.lang.reflect.Method;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.reflect.MethodSignature;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.junit.runner.RunWith;
+
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
 
-import uk.gov.companieshouse.extensions.api.groups.Unit;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-@Category(Unit.class)
-@RunWith(MockitoJUnitRunner.class)
+@Tag("Unit")
+@ExtendWith(MockitoExtension.class)
 public class LogMethodCallAspectTest {
 
     @Mock

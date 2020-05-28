@@ -1,11 +1,14 @@
 package uk.gov.companieshouse.extensions.api.reasons;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.lenient;
 import static uk.gov.companieshouse.extensions.api.Utils.Utils.REQUEST_ID;
 import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyCreateReason;
 import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyReasonEntity;
@@ -16,24 +19,21 @@ import java.util.Arrays;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import uk.gov.companieshouse.extensions.api.attachments.Attachment;
 import uk.gov.companieshouse.extensions.api.attachments.file.FileTransferApiClient;
 import uk.gov.companieshouse.extensions.api.attachments.file.FileTransferApiClientResponse;
-import uk.gov.companieshouse.extensions.api.groups.Unit;
 import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
 import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestFullEntity;
 import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestsRepository;
@@ -45,8 +45,8 @@ import uk.gov.companieshouse.service.ServiceResult;
 import uk.gov.companieshouse.service.ServiceResultStatus;
 import uk.gov.companieshouse.service.links.Links;
 
-@Category(Unit.class)
-@RunWith(MockitoJUnitRunner.class)
+@Tag("Unit")
+@ExtendWith(MockitoExtension.class)
 public class ReasonServiceUnitTest {
 
     @InjectMocks
@@ -70,9 +70,6 @@ public class ReasonServiceUnitTest {
     @Mock
     private ApiLogger logger;
 
-    @Rule
-    public final ExpectedException exception = ExpectedException.none();
-
     @Captor
     private ArgumentCaptor<ExtensionRequestFullEntity> captor;
 
@@ -87,9 +84,9 @@ public class ReasonServiceUnitTest {
         reason2.setId("reason2");
         extensionRequestFullEntity.addReason(reason2);
         when(requestsService.getExtensionsRequestById(REQUEST_ID)).thenReturn(Optional.of(extensionRequestFullEntity));
-        when(reasonMapper.entityToDTO(reason1))
+        lenient().when(reasonMapper.entityToDTO(reason1))
             .thenReturn(mapper.entityToDTO(reason1));
-        when(reasonMapper.entityToDTO(reason2))
+        lenient().when(reasonMapper.entityToDTO(reason2))
             .thenReturn(mapper.entityToDTO(reason2));
 
         ServiceResult<ListResponse<ExtensionReasonDTO>> reasons =
@@ -104,10 +101,8 @@ public class ReasonServiceUnitTest {
 
     @Test
     public void willThrowIfNoRequestExists() throws ServiceException {
-        exception.expect(ServiceException.class);
-        exception.expectMessage("Extension request 123 not found");
 
-        reasonsService.getReasons("123");
+        assertThrows(ServiceException.class, () -> reasonsService.getReasons("123"));
     }
 
     @Test
@@ -169,9 +164,9 @@ public class ReasonServiceUnitTest {
         when(requestsService.getExtensionsRequestById("123"))
             .thenReturn(Optional.empty());
 
-        exception.expect(ServiceException.class);
-        exception.expectMessage("Request 123 not found");
-        reasonsService.addExtensionsReasonToRequest(new ExtensionCreateReason(), "123", "url");
+        ServiceException thrown = assertThrows(ServiceException.class, () ->
+            reasonsService.addExtensionsReasonToRequest(new ExtensionCreateReason(), "123", "url"));
+        assertTrue(thrown.getMessage().contains("Request 123 not found"));
     }
 
     @Test
@@ -192,8 +187,8 @@ public class ReasonServiceUnitTest {
 
         FileTransferApiClientResponse response = new FileTransferApiClientResponse();
         response.setHttpStatus(HttpStatus.NO_CONTENT);
-        when(fileTransferApiClient.delete("1234")).thenReturn(response);
-        when(fileTransferApiClient.delete("5678")).thenReturn(response);
+        lenient().when(fileTransferApiClient.delete("1234")).thenReturn(response);
+        lenient().when(fileTransferApiClient.delete("5678")).thenReturn(response);
 
         when(extensionRequestsRepository.save(any(ExtensionRequestFullEntity.class))).thenReturn
             (extensionRequestFullEntity);
@@ -229,8 +224,8 @@ public class ReasonServiceUnitTest {
 
         HttpClientErrorException clientException = new HttpClientErrorException(HttpStatus.NOT_FOUND);
 
-        when(fileTransferApiClient.delete("1234")).thenThrow(clientException);
-        when(fileTransferApiClient.delete("5678")).thenThrow(clientException);
+        lenient().when(fileTransferApiClient.delete("1234")).thenThrow(clientException);
+        lenient().when(fileTransferApiClient.delete("5678")).thenThrow(clientException);
 
         reasonsService.removeExtensionsReasonFromRequest(extensionRequestFullEntity.getId(),
             extensionRequestFullEntity.getReasons().get(0).getId());
@@ -266,8 +261,8 @@ public class ReasonServiceUnitTest {
 
         HttpServerErrorException serverException = new HttpServerErrorException(HttpStatus.NOT_FOUND);
 
-        when(fileTransferApiClient.delete("1234")).thenThrow(serverException);
-        when(fileTransferApiClient.delete("5678")).thenThrow(serverException);
+        lenient().when(fileTransferApiClient.delete("1234")).thenThrow(serverException);
+        lenient().when(fileTransferApiClient.delete("5678")).thenThrow(serverException);
 
         reasonsService.removeExtensionsReasonFromRequest(extensionRequestFullEntity.getId(),
             extensionRequestFullEntity.getReasons().get(0).getId());
@@ -410,8 +405,8 @@ public class ReasonServiceUnitTest {
         when(requestsService.getExtensionsRequestById("123"))
             .thenReturn(Optional.of(requestEntity));
 
-        exception.expect(ServiceException.class);
-        exception.expectMessage("Reason id 1234 not found in Request 123");
-        reasonsService.patchReason(new ExtensionCreateReason(), "123", "1234");
+        ServiceException thrown = assertThrows(ServiceException.class, () ->
+        reasonsService.patchReason(new ExtensionCreateReason(), "123", "1234"));
+        assertTrue(thrown.getMessage().contains("Reason id 1234 not found in Request 123"));
     }
 }

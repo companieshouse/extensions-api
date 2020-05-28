@@ -2,21 +2,20 @@ package uk.gov.companieshouse.extensions.api.logger;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
-import uk.gov.companieshouse.extensions.api.groups.Unit;
 
-@Category(Unit.class)
-@RunWith(MockitoJUnitRunner.class)
+@Tag("Unit")
+@ExtendWith(MockitoExtension.class)
 public class RequestLoggerInterceptorTest {
 
     @Mock
@@ -28,7 +27,7 @@ public class RequestLoggerInterceptorTest {
     private HttpServletResponse response;
     private MockHttpServletRequest request;
 
-    @Before
+    @BeforeEach
     public void setup() {
         response = new MockHttpServletResponse();
         response.setStatus(200);

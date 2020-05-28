@@ -1,21 +1,21 @@
 package uk.gov.companieshouse.extensions.api.reasons;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyAttachment;
 import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyReasonEntity;
 
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import uk.gov.companieshouse.extensions.api.attachments.Attachment;
-import uk.gov.companieshouse.extensions.api.groups.Unit;
 import uk.gov.companieshouse.extensions.api.requests.ExtensionsLinkKeys;
 
 import java.util.Map;
 
-@Category(Unit.class)
+@Tag("Unit")
 public class ExtensionReasonMapperUnitTest {
 
     @Test

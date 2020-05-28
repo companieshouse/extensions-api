@@ -1,6 +1,6 @@
 package uk.gov.companieshouse.extensions.api.requests;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -15,14 +15,15 @@ import java.util.function.Supplier;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -35,8 +36,8 @@ import uk.gov.companieshouse.extensions.api.authorization.CompanyAuthorizationIn
 import uk.gov.companieshouse.extensions.api.groups.Integration;
 import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
 
-@Category(Integration.class)
-@RunWith(SpringRunner.class)
+@Tag("Integration")
+@ExtendWith(SpringExtension.class)
 @WebMvcTest(value = RequestsController.class)
 public class RequestControllerIntegrationTest {
 
@@ -70,7 +71,7 @@ public class RequestControllerIntegrationTest {
     @MockBean
     private CompanyAuthorizationInterceptor companyInterceptor;
 
-    @Before
+    @BeforeEach
     public void setup() {
         when(companyInterceptor.preHandle(any(HttpServletRequest.class), any(HttpServletResponse.class),
             any(Object.class)))

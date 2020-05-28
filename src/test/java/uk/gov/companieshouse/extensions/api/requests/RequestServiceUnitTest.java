@@ -1,7 +1,9 @@
 package uk.gov.companieshouse.extensions.api.requests;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
@@ -18,22 +20,19 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
-import uk.gov.companieshouse.extensions.api.groups.Unit;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.companieshouse.service.ServiceException;
 
-@Category(Unit.class)
-@RunWith(MockitoJUnitRunner.class)
+@Tag("Unit")
+@ExtendWith(MockitoExtension.class)
 public class RequestServiceUnitTest {
 
     @InjectMocks
@@ -47,9 +46,6 @@ public class RequestServiceUnitTest {
 
     @Captor
     private ArgumentCaptor<ExtensionRequestFullEntity> captor;
-
-    @Rule
-    public final ExpectedException expectedException = ExpectedException.none();
 
     @Test
     public void testGetSingleRequest() {
@@ -119,8 +115,9 @@ public class RequestServiceUnitTest {
         RequestStatus status = new RequestStatus();
         status.setStatus(Status.SUBMITTED);
 
-        expectedException.expect(ServiceException.class);
-        expectedException.expectMessage("Request: request1 cannot be found");
-        requestsService.patchRequest("request1", status);
+        // expectedException.expectMessage("Request: request1 cannot be found");
+        ServiceException thrown =
+            assertThrows(ServiceException.class, () -> requestsService.patchRequest("request1", status));
+        assertTrue(thrown.getMessage().contains("Request: request1 cannot be found"));
     }
 }

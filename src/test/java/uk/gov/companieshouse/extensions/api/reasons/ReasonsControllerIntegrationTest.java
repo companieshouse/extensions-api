@@ -1,6 +1,6 @@
 package uk.gov.companieshouse.extensions.api.reasons;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -12,15 +12,15 @@ import java.util.Arrays;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
@@ -28,7 +28,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.web.client.RestTemplate;
 
 import uk.gov.companieshouse.extensions.api.authorization.CompanyAuthorizationInterceptor;
-import uk.gov.companieshouse.extensions.api.groups.Integration;
 import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
 import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestFullEntity;
 import uk.gov.companieshouse.extensions.api.requests.ExtensionsLinkKeys;
@@ -36,8 +35,8 @@ import uk.gov.companieshouse.extensions.api.response.ListResponse;
 import uk.gov.companieshouse.service.ServiceResult;
 import uk.gov.companieshouse.service.links.Links;
 
-@Category(Integration.class)
-@RunWith(SpringRunner.class)
+@Tag("Integration")
+@ExtendWith(MockitoExtension.class)
 @WebMvcTest(value = ReasonsController.class)
 public class ReasonsControllerIntegrationTest {
 
@@ -66,7 +65,7 @@ public class ReasonsControllerIntegrationTest {
     @MockBean
     private CompanyAuthorizationInterceptor companyInterceptor;
 
-    @Before
+    @BeforeEach
     public void setup() {
         when(companyInterceptor.preHandle(any(HttpServletRequest.class), 
             any(HttpServletResponse.class), any(Object.class)))

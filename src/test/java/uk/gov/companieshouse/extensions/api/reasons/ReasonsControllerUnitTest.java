@@ -1,7 +1,7 @@
 package uk.gov.companieshouse.extensions.api.reasons;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
@@ -18,17 +18,15 @@ import java.util.Objects;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import uk.gov.companieshouse.extensions.api.groups.Unit;
 import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
 import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestFullEntity;
 import uk.gov.companieshouse.extensions.api.requests.ExtensionsLinkKeys;
@@ -39,8 +37,8 @@ import uk.gov.companieshouse.service.links.Links;
 import uk.gov.companieshouse.service.rest.response.ChResponseBody;
 import uk.gov.companieshouse.service.rest.response.PluggableResponseEntityFactory;
 
-@Category(Unit.class)
-@RunWith(MockitoJUnitRunner.class)
+@Tag("Unit")
+@ExtendWith(MockitoExtension.class)
 public class ReasonsControllerUnitTest {
 
     @InjectMocks
@@ -54,11 +52,6 @@ public class ReasonsControllerUnitTest {
 
     @Mock
     private ApiLogger logger;
-
-    @Before
-    public void setup() {
-        when(mockHttpServletRequest.getRequestURI()).thenReturn(BASE_URL);
-    }
 
     @Test
     public void returns404IfServiceThrows() throws ServiceException {
@@ -86,6 +79,8 @@ public class ReasonsControllerUnitTest {
 
         ExtensionRequestFullEntity dummyRequestEntity = dummyRequestEntity();
         dummyRequestEntity.addReason(dummyReasonEntity());
+
+        when(mockHttpServletRequest.getRequestURI()).thenReturn(BASE_URL);
 
         ExtensionReasonDTO dto = new ExtensionReasonDTO();
         dto.setId("123");

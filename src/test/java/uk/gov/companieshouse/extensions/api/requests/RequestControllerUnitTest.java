@@ -1,22 +1,15 @@
 package uk.gov.companieshouse.extensions.api.requests;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.companieshouse.extensions.api.Utils.Utils.BASE_URL;
-import static uk.gov.companieshouse.extensions.api.Utils.Utils.COMPANY_NUMBER;
-import static uk.gov.companieshouse.extensions.api.Utils.Utils.EMAIL;
-import static uk.gov.companieshouse.extensions.api.Utils.Utils.FORENAME;
-import static uk.gov.companieshouse.extensions.api.Utils.Utils.SURNAME;
-import static uk.gov.companieshouse.extensions.api.Utils.Utils.USER_ID;
-import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyRequestDTO;
-import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyRequestEntity;
+import static uk.gov.companieshouse.extensions.api.Utils.Utils.*;
 
 import java.io.UnsupportedEncodingException;
 import java.time.LocalDate;
@@ -29,25 +22,23 @@ import java.util.function.Supplier;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import uk.gov.companieshouse.extensions.api.attachments.Attachment;
-import uk.gov.companieshouse.extensions.api.groups.Unit;
 import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
 import uk.gov.companieshouse.extensions.api.reasons.ExtensionReasonEntity;
 import uk.gov.companieshouse.extensions.api.response.ListResponse;
 import uk.gov.companieshouse.service.ServiceException;
 
-@Category(Unit.class)
-@RunWith(MockitoJUnitRunner.class)
+@Tag("Unit")
+@ExtendWith(MockitoExtension.class)
 public class RequestControllerUnitTest {
 
     @InjectMocks
@@ -71,23 +62,19 @@ public class RequestControllerUnitTest {
     @Mock
     private ApiLogger logger;
 
-    @Before
-    public void setup() throws UnsupportedEncodingException {
-        when(mockHttpServletRequest.getRequestURI()).thenReturn(BASE_URL);
-        when(mockEricHeaderParser.getUserId(mockHttpServletRequest)).thenReturn(USER_ID);
-        when(mockEricHeaderParser.getEmail(mockHttpServletRequest)).thenReturn(EMAIL);
-        when(mockEricHeaderParser.getForename(mockHttpServletRequest)).thenReturn(FORENAME);
-        when(mockEricHeaderParser.getSurname(mockHttpServletRequest)).thenReturn(SURNAME);
-
-    }
-
     @Test
-    public void createsExtensionRequestResource() {
+    public void createsExtensionRequestResource() throws UnsupportedEncodingException {
+        when(mockHttpServletRequest.getRequestURI()).thenReturn(BASE_URL);
+
         ExtensionCreateRequest createRequest = dummyRequest();
         String requestUri = mockHttpServletRequest.getRequestURI();
         ExtensionRequestFullEntity entity = dummyRequestEntity();
         ExtensionRequestFullDTO entityRequestDTO = dummyRequestDTO();
 
+        when(mockEricHeaderParser.getUserId(mockHttpServletRequest)).thenReturn(USER_ID);
+        when(mockEricHeaderParser.getEmail(mockHttpServletRequest)).thenReturn(EMAIL);
+        when(mockEricHeaderParser.getForename(mockHttpServletRequest)).thenReturn(FORENAME);
+        when(mockEricHeaderParser.getSurname(mockHttpServletRequest)).thenReturn(SURNAME);
         when(requestsService.insertExtensionsRequest(eq(createRequest), any(CreatedBy.class), eq(requestUri),
                 any(String.class))).thenReturn(entity);
 

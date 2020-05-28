@@ -1,30 +1,29 @@
 package uk.gov.companieshouse.extensions.api.logger;
 
-import org.junit.Before;
-import org.junit.BeforeClass;
-
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.companieshouse.logging.Logger;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class ApiLoggerTest {
     private static final String COMPANY_NUMBER_KEY = "company_number";
     private static final String THREAD_ID_KEY = "thread_id";
@@ -41,7 +40,7 @@ public class ApiLoggerTest {
     @Captor
     private ArgumentCaptor<Map<String, Object>> mapArgumentCaptor;
 
-    @BeforeClass
+    @BeforeAll
     public static void setupAllTests() throws Exception {
         apiLogger = new ApiLogger();
 
@@ -68,7 +67,7 @@ public class ApiLoggerTest {
         apiLogger.setCompanyNumber(COMPANY_NUMBER);
     }
 
-    @Before
+    @BeforeEach
     public void setup() {
         Mockito.reset(mockLogger);
     }
