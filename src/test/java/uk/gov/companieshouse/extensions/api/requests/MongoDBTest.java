@@ -9,17 +9,16 @@ import org.bson.json.JsonWriterSettings;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
-import uk.gov.companieshouse.extensions.api.groups.Integration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.companieshouse.extensions.api.reasons.ExtensionReasonEntity;
 
 import java.time.Clock;
@@ -38,8 +37,8 @@ import static org.junit.Assert.assertEquals;
  */
 
 
-@Category(Integration.class)
-@RunWith(SpringRunner.class)
+@Tag("Integration")
+@ExtendWith(SpringExtension.class)
 @SpringBootTest
 public class MongoDBTest {
 
@@ -60,7 +59,7 @@ public class MongoDBTest {
     @Value("${TEST_MONGO_DB_URL}")
     private String testMongoUrl;
 
-    @Before
+    @BeforeEach
     public void init() {
         winterStart = LocalDate.of(2020,1,1);
         winterEnd = LocalDate.of(2020,1,6);
@@ -71,14 +70,14 @@ public class MongoDBTest {
         mongoClient = new MongoClient(connectionString);
     }
 
-    @After
+    @AfterEach
     public void removeTestDocuments() {
         requestsRepository.deleteById(WINTER_TEST_DOCUMENT);
         requestsRepository.deleteById(SUMMER_TEST_DOCUMENT);
     }
 
-    @Ignore("This requires an in-memory db similar to Derby but for Mongo")
     @Test
+    @Disabled("This requires an in-memory db similar to Derby but for Mongo")
     public void testReasonDatesAreMidnightOnDateSpecifiedInMongoDB_InWinter()  throws JSONException {
         String documentId = WINTER_TEST_DOCUMENT;
         Instant.now(Clock.fixed(
@@ -88,8 +87,8 @@ public class MongoDBTest {
          assess(documentId);
     }
 
-    @Ignore("This requires an in-memory db similar to Derby but for Mongo")
     @Test
+    @Disabled("This requires an in-memory db similar to Derby but for Mongo")
     public void testReasonDatesAreMidnightOnDateSpecifiedInMongoDB_InSummer()  throws JSONException {
         String documentId = SUMMER_TEST_DOCUMENT;
         Instant.now(Clock.fixed(

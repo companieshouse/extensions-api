@@ -1,7 +1,8 @@
 package uk.gov.companieshouse.extensions.api.attachments.file;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static junit.framework.TestCase.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -15,19 +16,17 @@ import java.nio.file.Files;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -44,11 +43,10 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
-import uk.gov.companieshouse.extensions.api.groups.Unit;
 import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
 
-@Category(Unit.class)
-@RunWith(MockitoJUnitRunner.class)
+@Tag("Unit")
+@ExtendWith(MockitoExtension.class)
 public class FileTransferApiClientUnitTest {
 
     private static final String DUMMY_URL = "http://test";
@@ -69,12 +67,9 @@ public class FileTransferApiClientUnitTest {
     @InjectMocks
     private FileTransferApiClient fileTransferApiClient;
 
-    @Rule
-    public final ExpectedException expectedException = ExpectedException.none();
-
     private MultipartFile file;
 
-    @Before
+    @BeforeEach
     public void setup() {
         ReflectionTestUtils.setField(fileTransferApiClient, "fileTransferApiURL", DUMMY_URL);
         file = new MockMultipartFile("testFile", new byte[10]);
@@ -112,10 +107,9 @@ public class FileTransferApiClientUnitTest {
 
         when(restTemplate.postForEntity(eq(DUMMY_URL), any(), eq(FileTransferApiResponse.class))).thenThrow(exception);
 
-        expectedException.expect(RestClientException.class);
-        expectedException.expectMessage(exception.getMessage());
-
-        fileTransferApiClient.upload(file);
+        RestClientException thrown = assertThrows(RestClientException.class, () ->
+            fileTransferApiClient.upload(file));
+        assertTrue(thrown.getMessage().contains(thrown.getMessage()));
     }
 
     @Test
@@ -176,10 +170,9 @@ public class FileTransferApiClientUnitTest {
         when(restTemplate.execute(eq(DOWNLOAD_URI), eq(HttpMethod.GET), any(RequestCallback.class), ArgumentMatchers.<ResponseExtractor<ClientHttpResponse>>any(), any(FileTransferApiClientResponse.class)))
             .thenThrow(exception);
 
-        expectedException.expect(RestClientException.class);
-        expectedException.expectMessage(exception.getMessage());
-
-        fileTransferApiClient.download(FILE_ID, servletResponse);
+        RestClientException thrown = assertThrows(RestClientException.class, () ->
+            fileTransferApiClient.download(FILE_ID, servletResponse));
+        assertTrue(thrown.getMessage().contains(thrown.getMessage()));
     }
 
     @Test
@@ -213,10 +206,9 @@ public class FileTransferApiClientUnitTest {
 
         when(restTemplate.exchange(eq(DELETE_URL), eq(HttpMethod.DELETE), any(), eq(String.class))).thenThrow(exception);
 
-        expectedException.expect(RestClientException.class);
-        expectedException.expectMessage(exception.getMessage());
-
-        fileTransferApiClient.delete(FILE_ID);
+        RestClientException thrown = assertThrows(RestClientException.class, () ->
+            fileTransferApiClient.delete(FILE_ID));
+        assertTrue(thrown.getMessage().contains(thrown.getMessage()));
     }
 
     private ResponseEntity<FileTransferApiResponse> apiSuccessResponse() {

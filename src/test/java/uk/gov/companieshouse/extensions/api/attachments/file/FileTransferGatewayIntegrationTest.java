@@ -17,21 +17,20 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.awaitility.Duration;
 import org.jetbrains.annotations.NotNull;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.multipart.MultipartFile;
 
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
-import uk.gov.companieshouse.extensions.api.groups.CIIntegration;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.ServletOutputStream;
@@ -40,16 +39,16 @@ import javax.servlet.http.HttpServletResponse;
 
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.when;
 
 /**
  * FileTransferGatewayIntegrationTest
  */
-@Category(CIIntegration.class)
-@RunWith(SpringRunner.class)
+@Tag("CIIntegration")
+@ExtendWith(SpringExtension.class)
 @SpringBootTest
 public class FileTransferGatewayIntegrationTest {
 
