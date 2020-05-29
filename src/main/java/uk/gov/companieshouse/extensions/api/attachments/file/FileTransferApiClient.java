@@ -119,14 +119,12 @@ public class FileTransferApiClient {
      */
     private void setResponseHeaders(HttpServletResponse httpServletResponse, ClientHttpResponse clientHttpResponse) {
         HttpHeaders incomingHeaders = clientHttpResponse.getHeaders();
-        if (incomingHeaders != null) {
-            MediaType contentType = incomingHeaders.getContentType();
-            if (contentType != null) {
-                httpServletResponse.setHeader(CONTENT_TYPE, contentType.toString());
-            }
-            httpServletResponse.setHeader(CONTENT_LENGTH, String.valueOf(incomingHeaders.getContentLength()));
-            httpServletResponse.setHeader(CONTENT_DISPOSITION, incomingHeaders.getContentDisposition().toString());
+        MediaType contentType = incomingHeaders.getContentType();
+        if (contentType != null) {
+            httpServletResponse.setHeader(CONTENT_TYPE, contentType.toString());
         }
+        httpServletResponse.setHeader(CONTENT_LENGTH, String.valueOf(incomingHeaders.getContentLength()));
+        httpServletResponse.setHeader(CONTENT_DISPOSITION, incomingHeaders.getContentDisposition().toString());
     }
 
     /**

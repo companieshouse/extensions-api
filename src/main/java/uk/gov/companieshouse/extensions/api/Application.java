@@ -14,7 +14,7 @@ public class Application {
   public static final String APP_NAMESPACE = "extensions-api";
 
   public static void main(String[] args) {
-    SpringApplication.run(Application.class, args);
+    SpringApplication.run(Application.class);
   }
 
     @Autowired
