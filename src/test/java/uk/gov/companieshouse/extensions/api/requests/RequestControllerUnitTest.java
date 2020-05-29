@@ -9,7 +9,14 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.companieshouse.extensions.api.Utils.Utils.*;
+import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyRequestEntity;
+import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyRequestDTO;
+import static uk.gov.companieshouse.extensions.api.Utils.Utils.BASE_URL;
+import static uk.gov.companieshouse.extensions.api.Utils.Utils.USER_ID;
+import static uk.gov.companieshouse.extensions.api.Utils.Utils.EMAIL;
+import static uk.gov.companieshouse.extensions.api.Utils.Utils.FORENAME;
+import static uk.gov.companieshouse.extensions.api.Utils.Utils.SURNAME;
+import static uk.gov.companieshouse.extensions.api.Utils.Utils.COMPANY_NUMBER;
 
 import java.io.UnsupportedEncodingException;
 import java.time.LocalDate;

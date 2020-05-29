@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -84,10 +85,16 @@ public class ReasonServiceUnitTest {
         reason2.setId("reason2");
         extensionRequestFullEntity.addReason(reason2);
         when(requestsService.getExtensionsRequestById(REQUEST_ID)).thenReturn(Optional.of(extensionRequestFullEntity));
-        lenient().when(reasonMapper.entityToDTO(reason1))
-            .thenReturn(mapper.entityToDTO(reason1));
-        lenient().when(reasonMapper.entityToDTO(reason2))
-            .thenReturn(mapper.entityToDTO(reason2));
+
+        when(reasonMapper.entityToDTO(any(ExtensionReasonEntity.class))).thenAnswer(invocationOnMock -> {
+            if ((invocationOnMock.getArguments()[0].equals(reason1))) {
+                return mapper.entityToDTO(reason1);
+            } else  if ((invocationOnMock.getArguments()[0].equals(reason2))) {
+                return mapper.entityToDTO(reason2);
+            }
+            return null;
+        });
+
 
         ServiceResult<ListResponse<ExtensionReasonDTO>> reasons =
             reasonsService.getReasons(REQUEST_ID);
@@ -100,9 +107,11 @@ public class ReasonServiceUnitTest {
     }
 
     @Test
-    public void willThrowIfNoRequestExists() throws ServiceException {
+    public void willThrowIfNoRequestExists() {
 
-        assertThrows(ServiceException.class, () -> reasonsService.getReasons("123"));
+        ServiceException thrown = assertThrows(ServiceException.class, () -> reasonsService.getReasons("123"));
+        assertEquals("Extension request 123 not found", thrown.getMessage());
+
     }
 
     @Test
@@ -160,13 +169,13 @@ public class ReasonServiceUnitTest {
     }
 
     @Test
-    public void exceptionThrownIfNoRequestFound() throws ServiceException {
+    public void exceptionThrownIfNoRequestFound() {
         when(requestsService.getExtensionsRequestById("123"))
             .thenReturn(Optional.empty());
 
         ServiceException thrown = assertThrows(ServiceException.class, () ->
             reasonsService.addExtensionsReasonToRequest(new ExtensionCreateReason(), "123", "url"));
-        assertTrue(thrown.getMessage().contains("Request 123 not found"));
+        assertEquals("Request 123 not found", thrown.getMessage());
     }
 
     @Test
@@ -187,8 +196,14 @@ public class ReasonServiceUnitTest {
 
         FileTransferApiClientResponse response = new FileTransferApiClientResponse();
         response.setHttpStatus(HttpStatus.NO_CONTENT);
-        lenient().when(fileTransferApiClient.delete("1234")).thenReturn(response);
-        lenient().when(fileTransferApiClient.delete("5678")).thenReturn(response);
+
+        when(fileTransferApiClient.delete(anyString())).thenAnswer( invocationOnMock -> {
+            if ((invocationOnMock.getArguments()[0].equals("1234") ||
+                invocationOnMock.getArguments()[0].equals("5678"))) {
+                return response;
+            }
+            return null;
+        });
 
         when(extensionRequestsRepository.save(any(ExtensionRequestFullEntity.class))).thenReturn
             (extensionRequestFullEntity);
@@ -224,8 +239,13 @@ public class ReasonServiceUnitTest {
 
         HttpClientErrorException clientException = new HttpClientErrorException(HttpStatus.NOT_FOUND);
 
-        lenient().when(fileTransferApiClient.delete("1234")).thenThrow(clientException);
-        lenient().when(fileTransferApiClient.delete("5678")).thenThrow(clientException);
+        when(fileTransferApiClient.delete(anyString())).thenAnswer( invocationOnMock -> {
+            if ((invocationOnMock.getArguments()[0].equals("1234") ||
+                invocationOnMock.getArguments()[0].equals("5678"))) {
+                throw clientException;
+            }
+            return null;
+        });
 
         reasonsService.removeExtensionsReasonFromRequest(extensionRequestFullEntity.getId(),
             extensionRequestFullEntity.getReasons().get(0).getId());
@@ -398,7 +418,7 @@ public class ReasonServiceUnitTest {
     }
 
     @Test
-    public void willThrowIfNoReasonExists() throws ServiceException {
+    public void willThrowIfNoReasonExists() {
         ExtensionRequestFullEntity requestEntity = new ExtensionRequestFullEntity();
         requestEntity.setId("123");
 
@@ -407,6 +427,6 @@ public class ReasonServiceUnitTest {
 
         ServiceException thrown = assertThrows(ServiceException.class, () ->
         reasonsService.patchReason(new ExtensionCreateReason(), "123", "1234"));
-        assertTrue(thrown.getMessage().contains("Reason id 1234 not found in Request 123"));
+        assertEquals("Reason id 1234 not found in Request 123", thrown.getMessage());
     }
 }

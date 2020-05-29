@@ -73,7 +73,7 @@ public class AttachmentsServiceUnitTest {
 
     @Test
     public void canAddAnAttachment() throws Exception {
-         ExtensionRequestFullEntity entity = new ExtensionRequestFullEntity();
+        ExtensionRequestFullEntity entity = new ExtensionRequestFullEntity();
         entity.setId(REQUEST_ID);
         ExtensionReasonEntity reasonEntity = new ExtensionReasonEntity();
         reasonEntity.setId(REASON_ID);

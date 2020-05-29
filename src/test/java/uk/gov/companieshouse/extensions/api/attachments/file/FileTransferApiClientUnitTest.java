@@ -109,7 +109,7 @@ public class FileTransferApiClientUnitTest {
 
         RestClientException thrown = assertThrows(RestClientException.class, () ->
             fileTransferApiClient.upload(file));
-        assertTrue(thrown.getMessage().contains(thrown.getMessage()));
+        assertEquals(thrown.getMessage(), thrown.getMessage());
     }
 
     @Test
@@ -172,7 +172,7 @@ public class FileTransferApiClientUnitTest {
 
         RestClientException thrown = assertThrows(RestClientException.class, () ->
             fileTransferApiClient.download(FILE_ID, servletResponse));
-        assertTrue(thrown.getMessage().contains(thrown.getMessage()));
+        assertEquals(thrown.getMessage(), thrown.getMessage());
     }
 
     @Test
@@ -208,7 +208,7 @@ public class FileTransferApiClientUnitTest {
 
         RestClientException thrown = assertThrows(RestClientException.class, () ->
             fileTransferApiClient.delete(FILE_ID));
-        assertTrue(thrown.getMessage().contains(thrown.getMessage()));
+        assertEquals(thrown.getMessage(), thrown.getMessage());
     }
 
     private ResponseEntity<FileTransferApiResponse> apiSuccessResponse() {

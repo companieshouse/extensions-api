@@ -22,7 +22,7 @@ public class ExtensionReasonEntityBuilderUnitTest {
      UnsupportedOperationException thrown = assertThrows(UnsupportedOperationException.class, () ->
        builder.withLinks("requestURI")
          .withId("id"));
-      assertTrue(thrown.getMessage().contains("Links cannot be set before ID"));
+      assertEquals("Links cannot be set before ID", thrown.getMessage());
   }
 
   @Test

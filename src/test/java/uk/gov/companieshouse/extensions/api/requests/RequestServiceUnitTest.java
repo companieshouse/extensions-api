@@ -106,7 +106,7 @@ public class RequestServiceUnitTest {
     }
 
     @Test
-    public void willThrowServiceExceptionIfNoRequest() throws ServiceException {
+    public void willThrowServiceExceptionIfNoRequest() {
         ExtensionRequestFullEntity extensionRequestFullEntity = new ExtensionRequestFullEntity();
         extensionRequestFullEntity.setStatus(Status.OPEN);
         when(extensionRequestsRepository.findById(anyString()))
@@ -118,6 +118,6 @@ public class RequestServiceUnitTest {
         // expectedException.expectMessage("Request: request1 cannot be found");
         ServiceException thrown =
             assertThrows(ServiceException.class, () -> requestsService.patchRequest("request1", status));
-        assertTrue(thrown.getMessage().contains("Request: request1 cannot be found"));
+        assertEquals("Request: request1 cannot be found", thrown.getMessage());
     }
 }
