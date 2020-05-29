@@ -29,7 +29,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 
 import static com.mongodb.client.model.Filters.eq;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Tests require actual connection to mongo db in order to run so these will be ignored

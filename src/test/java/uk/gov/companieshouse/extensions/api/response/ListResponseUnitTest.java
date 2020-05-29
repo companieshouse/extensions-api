@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import static junit.framework.TestCase.assertEquals;
-import static org.junit.Assert.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
@@ -29,8 +29,8 @@ public class ListResponseUnitTest {
         assertEquals(0, response.getStartIndex());
         assertEquals(2, response.getTotalResults());
         assertEquals("etag", response.getEtag());
-        assertArrayEquals("unmatched array", new String[]{"item1", "item2"},
-            response.getItems().toArray());
+        assertArrayEquals(new String[]{"item1", "item2"},
+            response.getItems().toArray(), "unmatched array");
     }
 
     @Test
