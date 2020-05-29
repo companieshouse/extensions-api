@@ -31,7 +31,7 @@ public class RequestMapperUnitTest {
         dummyReason.setLinks(links);
 
         ExtensionRequestFullDTO dto = extensionRequestMapper.entityToDTO(dummyRequest);
-        assertNotEquals(dto.getReasons().size(), 0);
+        assertNotEquals(0, dto.getReasons().size());
         Links reasonLinks = dto.getReasons().get(0);
         String linkValue = reasonLinks.getLink(ExtensionsLinkKeys.SELF);
 
