@@ -19,7 +19,7 @@ public class ExtensionReasonEntityBuilderUnitTest {
   @Test
   public void willThrowUnsupportOperationExceptionIfLinksBeforeId() {
     ExtensionReasonEntityBuilder builder = new ExtensionReasonEntityBuilder();
-     UnsupportedOperationException thrown = assertThrows(UnsupportedOperationException.class, () ->
+    UnsupportedOperationException thrown = assertThrows(UnsupportedOperationException.class, () ->
        builder.withLinks("requestURI")
          .withId("id"));
       assertEquals("Links cannot be set before ID", thrown.getMessage());
