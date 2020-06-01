@@ -1,6 +1,5 @@
 package uk.gov.companieshouse.extensions.api.reasons;
 
-
 import java.time.LocalDate;
 
 import org.junit.jupiter.api.Tag;
@@ -9,7 +8,6 @@ import uk.gov.companieshouse.extensions.api.requests.ExtensionsLinkKeys;
 import uk.gov.companieshouse.service.links.Links;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Tag("Unit")

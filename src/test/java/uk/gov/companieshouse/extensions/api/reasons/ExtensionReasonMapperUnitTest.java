@@ -1,12 +1,10 @@
 package uk.gov.companieshouse.extensions.api.reasons;
 
-
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyAttachment;
 import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyReasonEntity;
-
 
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;

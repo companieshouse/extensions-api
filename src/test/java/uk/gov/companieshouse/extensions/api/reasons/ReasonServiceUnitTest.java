@@ -2,16 +2,13 @@ package uk.gov.companieshouse.extensions.api.reasons;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.lenient;
 import static uk.gov.companieshouse.extensions.api.Utils.Utils.REQUEST_ID;
 import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyCreateReason;
 import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyReasonEntity;
@@ -266,8 +263,8 @@ public class ReasonServiceUnitTest {
 
         HttpServerErrorException serverException = new HttpServerErrorException(HttpStatus.NOT_FOUND);
 
-        lenient().when(fileTransferApiClient.delete("1234")).thenThrow(serverException);
-        lenient().when(fileTransferApiClient.delete("5678")).thenThrow(serverException);
+        doThrow(serverException).when(fileTransferApiClient).delete("1234");
+        doThrow(serverException).when(fileTransferApiClient).delete("5678");
 
         reasonsService.removeExtensionsReasonFromRequest(extensionRequestFullEntity.getId(),
             extensionRequestFullEntity.getReasons().get(0).getId());
