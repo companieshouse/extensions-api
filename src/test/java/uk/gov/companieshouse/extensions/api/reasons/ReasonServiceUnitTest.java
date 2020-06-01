@@ -6,6 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -86,15 +88,8 @@ public class ReasonServiceUnitTest {
         extensionRequestFullEntity.addReason(reason2);
         when(requestsService.getExtensionsRequestById(REQUEST_ID)).thenReturn(Optional.of(extensionRequestFullEntity));
 
-        when(reasonMapper.entityToDTO(any(ExtensionReasonEntity.class))).thenAnswer(invocationOnMock -> {
-            if ((invocationOnMock.getArguments()[0].equals(reason1))) {
-                return mapper.entityToDTO(reason1);
-            } else  if ((invocationOnMock.getArguments()[0].equals(reason2))) {
-                return mapper.entityToDTO(reason2);
-            }
-            return null;
-        });
-
+        doReturn(mapper.entityToDTO(reason1)).when(reasonMapper).entityToDTO(reason1);
+        doReturn(mapper.entityToDTO(reason2)).when(reasonMapper).entityToDTO(reason2);
 
         ServiceResult<ListResponse<ExtensionReasonDTO>> reasons =
             reasonsService.getReasons(REQUEST_ID);
@@ -197,13 +192,8 @@ public class ReasonServiceUnitTest {
         FileTransferApiClientResponse response = new FileTransferApiClientResponse();
         response.setHttpStatus(HttpStatus.NO_CONTENT);
 
-        when(fileTransferApiClient.delete(anyString())).thenAnswer( invocationOnMock -> {
-            if ((invocationOnMock.getArguments()[0].equals("1234") ||
-                invocationOnMock.getArguments()[0].equals("5678"))) {
-                return response;
-            }
-            return null;
-        });
+        doReturn(response).when(fileTransferApiClient).delete("1234");
+        doReturn(response).when(fileTransferApiClient).delete("5678");
 
         when(extensionRequestsRepository.save(any(ExtensionRequestFullEntity.class))).thenReturn
             (extensionRequestFullEntity);
@@ -239,13 +229,8 @@ public class ReasonServiceUnitTest {
 
         HttpClientErrorException clientException = new HttpClientErrorException(HttpStatus.NOT_FOUND);
 
-        when(fileTransferApiClient.delete(anyString())).thenAnswer( invocationOnMock -> {
-            if ((invocationOnMock.getArguments()[0].equals("1234") ||
-                invocationOnMock.getArguments()[0].equals("5678"))) {
-                throw clientException;
-            }
-            return null;
-        });
+        doThrow(clientException).when(fileTransferApiClient).delete("1234");
+        doThrow(clientException).when(fileTransferApiClient).delete("5678");
 
         reasonsService.removeExtensionsReasonFromRequest(extensionRequestFullEntity.getId(),
             extensionRequestFullEntity.getReasons().get(0).getId());
