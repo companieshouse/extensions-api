@@ -107,8 +107,9 @@ public class FileTransferApiClientUnitTest {
 
         when(restTemplate.postForEntity(eq(DUMMY_URL), any(), eq(FileTransferApiResponse.class))).thenThrow(exception);
 
-        assertThrows(RestClientException.class, () ->
+        RestClientException thrown = assertThrows(RestClientException.class, () ->
             fileTransferApiClient.upload(file));
+        assertEquals(EXCEPTION_MESSAGE, thrown.getMessage());
     }
 
     @Test
@@ -169,8 +170,9 @@ public class FileTransferApiClientUnitTest {
         when(restTemplate.execute(eq(DOWNLOAD_URI), eq(HttpMethod.GET), any(RequestCallback.class), ArgumentMatchers.<ResponseExtractor<ClientHttpResponse>>any(), any(FileTransferApiClientResponse.class)))
             .thenThrow(exception);
 
-        assertThrows(RestClientException.class, () ->
+        RestClientException thrown = assertThrows(RestClientException.class, () ->
             fileTransferApiClient.download(FILE_ID, servletResponse));
+        assertEquals(EXCEPTION_MESSAGE, thrown.getMessage());
     }
 
     @Test
@@ -204,8 +206,9 @@ public class FileTransferApiClientUnitTest {
 
         when(restTemplate.exchange(eq(DELETE_URL), eq(HttpMethod.DELETE), any(), eq(String.class))).thenThrow(exception);
 
-        assertThrows(RestClientException.class, () ->
+        RestClientException thrown = assertThrows(RestClientException.class, () ->
             fileTransferApiClient.delete(FILE_ID));
+        assertEquals(EXCEPTION_MESSAGE, thrown.getMessage());
     }
 
     private ResponseEntity<FileTransferApiResponse> apiSuccessResponse() {
