@@ -10,7 +10,7 @@ import uk.gov.companieshouse.service.links.Links;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@Tag("Unit")
+@Tag("unit")
 public class ExtensionReasonEntityBuilderUnitTest {
 
 

@@ -32,7 +32,7 @@ import uk.gov.companieshouse.extensions.api.requests.ERICHeaderParser;
 import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestMapper;
 import uk.gov.companieshouse.service.rest.response.PluggableResponseEntityFactory;
 
-@Tag("Integration")
+@Tag("integration")
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(value = { AttachmentsController.class })
 @TestPropertySource({ "classpath:application.properties"})

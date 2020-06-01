@@ -34,7 +34,7 @@ import uk.gov.companieshouse.extensions.api.Utils.Utils;
 import uk.gov.companieshouse.extensions.api.authorization.CompanyAuthorizationInterceptor;
 import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
 
-@Tag("Integration")
+@Tag("integration")
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(value = RequestsController.class)
 public class RequestControllerIntegrationTest {

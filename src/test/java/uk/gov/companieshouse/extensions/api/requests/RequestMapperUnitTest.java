@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
 import uk.gov.companieshouse.extensions.api.reasons.ExtensionReasonEntity;
 import uk.gov.companieshouse.service.links.Links;
 
-@Tag("Unit")
+@Tag("unit")
 public class RequestMapperUnitTest {
 
 

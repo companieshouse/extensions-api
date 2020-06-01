@@ -14,7 +14,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 
-@Tag("Unit")
+@Tag("unit")
 @ExtendWith(MockitoExtension.class)
 public class RequestLoggerInterceptorTest {
 

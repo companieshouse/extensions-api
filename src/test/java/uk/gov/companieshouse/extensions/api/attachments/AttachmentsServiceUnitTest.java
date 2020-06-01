@@ -45,7 +45,7 @@ import uk.gov.companieshouse.service.ServiceException;
 import uk.gov.companieshouse.service.ServiceResult;
 import uk.gov.companieshouse.service.ServiceResultStatus;
 
-@Tag("Unit")
+@Tag("unit")
 @ExtendWith(MockitoExtension.class)
 public class AttachmentsServiceUnitTest {
 

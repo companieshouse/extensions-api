@@ -25,15 +25,15 @@ test: clean
 
 .PHONY: test-unit
 test-unit: clean
-	mvn test -Dgroups="uk.gov.companieshouse.extensions.api.groups.Unit"
+	mvn test -Dgroups=unit
 
 .PHONY: test-integration
 test-integration: clean
-	mvn verify -Dgroups="uk.gov.companieshouse.extensions.api.groups.Integration"
+	mvn verify -Dgroups=integration
 
 .PHONY: test-ci-integration
 test-ci-integration: clean
-	mvn verify -Dgroups="uk.gov.companieshouse.extensions.api.groups.CIIntegration"
+	mvn verify -Dgroups=ci-integration
 
 .PHONY: test-contract-consumer
 test-contract-consumer: clean

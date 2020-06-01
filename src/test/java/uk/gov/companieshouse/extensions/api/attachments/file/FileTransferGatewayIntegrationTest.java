@@ -47,7 +47,7 @@ import static org.mockito.Mockito.when;
 /**
  * FileTransferGatewayIntegrationTest
  */
-@Tag("CIIntegration")
+@Tag("ci-integration")
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 public class FileTransferGatewayIntegrationTest {

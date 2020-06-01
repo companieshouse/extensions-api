@@ -13,7 +13,7 @@ import uk.gov.companieshouse.extensions.api.requests.ExtensionsLinkKeys;
 
 import java.util.Map;
 
-@Tag("Unit")
+@Tag("unit")
 public class ExtensionReasonMapperUnitTest {
 
     @Test

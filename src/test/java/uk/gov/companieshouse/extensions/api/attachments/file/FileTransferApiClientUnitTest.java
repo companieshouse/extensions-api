@@ -45,7 +45,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
 
-@Tag("Unit")
+@Tag("unit")
 @ExtendWith(MockitoExtension.class)
 public class FileTransferApiClientUnitTest {
 

@@ -14,7 +14,7 @@ import org.mockito.Mockito;
 
 import org.mockito.junit.jupiter.MockitoExtension;
 
-@Tag("Unit")
+@Tag("unit")
 @ExtendWith(MockitoExtension.class)
 public class LogMethodCallAspectTest {
 

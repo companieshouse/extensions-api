@@ -45,7 +45,7 @@ import uk.gov.companieshouse.service.ServiceResult;
 import uk.gov.companieshouse.service.ServiceResultStatus;
 import uk.gov.companieshouse.service.links.Links;
 
-@Tag("Unit")
+@Tag("unit")
 @ExtendWith(MockitoExtension.class)
 public class ReasonServiceUnitTest {
 

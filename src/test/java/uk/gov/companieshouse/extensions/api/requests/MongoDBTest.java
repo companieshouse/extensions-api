@@ -37,7 +37,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  */
 
 
-@Tag("Integration")
+@Tag("integration")
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 public class MongoDBTest {

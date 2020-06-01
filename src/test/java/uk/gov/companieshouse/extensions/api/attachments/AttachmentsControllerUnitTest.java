@@ -31,7 +31,7 @@ import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 
-@Tag("Unit")
+@Tag("unit")
 @ExtendWith(MockitoExtension.class)
 public class AttachmentsControllerUnitTest {
 

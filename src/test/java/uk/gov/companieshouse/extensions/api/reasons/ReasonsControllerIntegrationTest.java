@@ -35,7 +35,7 @@ import uk.gov.companieshouse.extensions.api.response.ListResponse;
 import uk.gov.companieshouse.service.ServiceResult;
 import uk.gov.companieshouse.service.links.Links;
 
-@Tag("Integration")
+@Tag("integration")
 @ExtendWith(MockitoExtension.class)
 @WebMvcTest(value = ReasonsController.class)
 public class ReasonsControllerIntegrationTest {

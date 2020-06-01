@@ -14,7 +14,7 @@ import uk.gov.companieshouse.service.links.Links;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@Tag("Unit")
+@Tag("unit")
 public class AttachmentDTOUnitTest {
 
     @Test

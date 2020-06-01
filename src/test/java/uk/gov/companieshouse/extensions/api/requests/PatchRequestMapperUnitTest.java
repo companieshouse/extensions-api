@@ -11,7 +11,7 @@ import uk.gov.companieshouse.service.links.Links;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@Tag("Unit")
+@Tag("unit")
 public class PatchRequestMapperUnitTest {
 
     @Test

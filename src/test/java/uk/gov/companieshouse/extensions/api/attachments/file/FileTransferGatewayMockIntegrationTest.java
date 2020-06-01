@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 /**
  * FileTransferGatewayIntegrationTest with mock server for file-transfer-api
  */
-@Tag("Integration")
+@Tag("integration")
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 public class FileTransferGatewayMockIntegrationTest {

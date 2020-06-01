@@ -20,7 +20,7 @@ import uk.gov.companieshouse.extensions.api.attachments.AttachmentsController;
 import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
 import uk.gov.companieshouse.extensions.api.reasons.ReasonsController;
 
-@Tag("Integration")
+@Tag("integration")
 @ExtendWith(SpringExtension.class)
 @WebMvcTest()
 public class ErrorAttributesIntegrationTest {

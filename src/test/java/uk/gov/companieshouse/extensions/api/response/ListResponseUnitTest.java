@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
-@Tag("Unit")
+@Tag("unit")
 public class ListResponseUnitTest {
 
     @Test
