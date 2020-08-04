@@ -110,6 +110,25 @@ public class RequestServiceUnitTest {
     }
 
     @Test
+    public void willCorrectlyPatchFullRequestEntityWhenExtensionRequestIsRejected() throws ServiceException {
+        ExtensionRequestFullEntity extensionRequestFullEntity = new ExtensionRequestFullEntity();
+        extensionRequestFullEntity.setStatus(Status.OPEN);
+        when(extensionRequestsRepository.findById(anyString()))
+            .thenReturn(Optional.of(extensionRequestFullEntity));
+
+        when(extensionRequestsRepository.save(any(ExtensionRequestFullEntity.class)))
+            .thenReturn(extensionRequestFullEntity);
+
+        RequestStatus status = new RequestStatus();
+        status.setStatus(Status.REJECTED_MAX_EXT_LENGTH_EXCEEDED);
+        ExtensionRequestFullEntity entity = requestsService.patchRequest("request", status);
+
+        verify(extensionRequestsRepository).findById("request");
+        verify(extensionRequestsRepository).save(extensionRequestFullEntity);
+        assertEquals(Status.REJECTED_MAX_EXT_LENGTH_EXCEEDED, entity.getStatus());
+    }
+
+    @Test
     public void willThrowServiceExceptionIfNoRequest() throws ServiceException {
         ExtensionRequestFullEntity extensionRequestFullEntity = new ExtensionRequestFullEntity();
         extensionRequestFullEntity.setStatus(Status.OPEN);
