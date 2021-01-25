@@ -20,8 +20,7 @@ build:
 	mvn compile
 
 .PHONY: test
-test: clean
-	mvn verify
+test: clean test-unit
 
 .PHONY: test-unit
 test-unit: clean
