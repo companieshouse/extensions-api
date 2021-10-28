@@ -1,20 +1,15 @@
 package uk.gov.companieshouse.extensions.api.requests;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.companieshouse.extensions.api.Utils.Utils.BASE_URL;
 import static uk.gov.companieshouse.extensions.api.Utils.Utils.COMPANY_NUMBER;
-import static uk.gov.companieshouse.extensions.api.Utils.Utils.EMAIL;
-import static uk.gov.companieshouse.extensions.api.Utils.Utils.FORENAME;
-import static uk.gov.companieshouse.extensions.api.Utils.Utils.SURNAME;
-import static uk.gov.companieshouse.extensions.api.Utils.Utils.USER_ID;
 import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyRequestDTO;
 import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyRequestEntity;
 
@@ -29,26 +24,24 @@ import java.util.function.Supplier;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import uk.gov.companieshouse.extensions.api.attachments.Attachment;
-import uk.gov.companieshouse.extensions.api.groups.Unit;
 import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
 import uk.gov.companieshouse.extensions.api.reasons.ExtensionReasonEntity;
 import uk.gov.companieshouse.extensions.api.response.ListResponse;
 import uk.gov.companieshouse.service.ServiceException;
 
-@Category(Unit.class)
-@RunWith(MockitoJUnitRunner.class)
-public class RequestControllerUnitTest {
+@ExtendWith(MockitoExtension.class)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+class RequestControllerUnitTest {
 
     @InjectMocks
     private RequestsController controller;
@@ -71,18 +64,8 @@ public class RequestControllerUnitTest {
     @Mock
     private ApiLogger logger;
 
-    @Before
-    public void setup() throws UnsupportedEncodingException {
-        when(mockHttpServletRequest.getRequestURI()).thenReturn(BASE_URL);
-        when(mockEricHeaderParser.getUserId(mockHttpServletRequest)).thenReturn(USER_ID);
-        when(mockEricHeaderParser.getEmail(mockHttpServletRequest)).thenReturn(EMAIL);
-        when(mockEricHeaderParser.getForename(mockHttpServletRequest)).thenReturn(FORENAME);
-        when(mockEricHeaderParser.getSurname(mockHttpServletRequest)).thenReturn(SURNAME);
-
-    }
-
     @Test
-    public void createsExtensionRequestResource() {
+    void createsExtensionRequestResource() {
         ExtensionCreateRequest createRequest = dummyRequest();
         String requestUri = mockHttpServletRequest.getRequestURI();
         ExtensionRequestFullEntity entity = dummyRequestEntity();
@@ -104,7 +87,7 @@ public class RequestControllerUnitTest {
     }
 
     @Test
-    public void willGive500IfUnsupportedEncodingException() throws UnsupportedEncodingException {
+    void willGive500IfUnsupportedEncodingException() throws UnsupportedEncodingException {
         ExtensionCreateRequest createRequest = dummyRequest();
 
         when(mockEricHeaderParser.getForename(eq(mockHttpServletRequest)))
@@ -118,7 +101,7 @@ public class RequestControllerUnitTest {
     }
 
     @Test
-    public void canGetExtensionRequestList() {
+    void canGetExtensionRequestList() {
         ExtensionRequestFullEntity extensionRequestFullEntity = dummyRequestEntity();
         ExtensionRequestFullDTO extensionRequestFullDTO = dummyRequestDTO();
         List<ExtensionRequestFullEntity> extensionRequestFullEntityList = new ArrayList<>();
@@ -137,7 +120,7 @@ public class RequestControllerUnitTest {
     }
 
     @Test
-    public void canGetSingleExtensionRequest() {
+    void canGetSingleExtensionRequest() {
         ExtensionRequestFullEntity extensionRequestFullEntity = new ExtensionRequestFullEntity();
         extensionRequestFullEntity.setId("1234");
         ExtensionReasonEntity reasonEntity = new ExtensionReasonEntity();
@@ -155,7 +138,7 @@ public class RequestControllerUnitTest {
     }
 
     @Test
-    public void canGetSingleExtensionRequest_NotFound() {
+    void canGetSingleExtensionRequest_NotFound() {
         when(requestsService.getExtensionsRequestById("1234")).thenReturn(Optional.ofNullable(null));
         ResponseEntity<ExtensionRequestFullEntity> response = controller.getSingleExtensionRequestById("1234");
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
@@ -163,7 +146,7 @@ public class RequestControllerUnitTest {
     }
 
     @Test
-    public void willReturn204WhenAPatchRequestIsSubmitted() throws ServiceException {
+    void willReturn204WhenAPatchRequestIsSubmitted() throws ServiceException {
         when(requestsService.patchRequest(anyString(), any(RequestStatus.class)))
             .thenReturn(new ExtensionRequestFullEntity());
 
@@ -174,7 +157,7 @@ public class RequestControllerUnitTest {
     }
 
     @Test
-    public void willReturn404WhenRequestNotFound() throws ServiceException {
+    void willReturn404WhenRequestNotFound() throws ServiceException {
         when(requestsService.patchRequest(anyString(), any(RequestStatus.class)))
             .thenThrow(new ServiceException("not found"));
 
@@ -185,7 +168,7 @@ public class RequestControllerUnitTest {
     }
 
     @Test
-    public void canDeleteExtensionRequest() {
+    void canDeleteExtensionRequest() {
         boolean response = controller.deleteExtensionRequestById("123");
         assertFalse(response);
     }

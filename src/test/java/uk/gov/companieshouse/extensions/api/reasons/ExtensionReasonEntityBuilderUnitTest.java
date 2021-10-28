@@ -5,15 +5,16 @@ import static org.junit.Assert.assertEquals;
 import java.time.LocalDate;
 
 import org.junit.Rule;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.rules.ExpectedException;
-
-import uk.gov.companieshouse.extensions.api.groups.Unit;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.companieshouse.extensions.api.requests.ExtensionsLinkKeys;
 import uk.gov.companieshouse.service.links.Links;
 
-@Category(Unit.class)
+@ExtendWith(MockitoExtension.class)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class ExtensionReasonEntityBuilderUnitTest {
 
   @Rule

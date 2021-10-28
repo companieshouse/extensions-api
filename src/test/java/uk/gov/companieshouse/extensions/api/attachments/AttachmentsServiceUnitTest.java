@@ -1,10 +1,10 @@
 package uk.gov.companieshouse.extensions.api.attachments;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.never;
@@ -21,12 +21,12 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.web.client.HttpClientErrorException;
@@ -36,7 +36,7 @@ import org.springframework.web.multipart.MultipartFile;
 import uk.gov.companieshouse.extensions.api.Utils.Utils;
 import uk.gov.companieshouse.extensions.api.attachments.file.FileTransferApiClient;
 import uk.gov.companieshouse.extensions.api.attachments.file.FileTransferApiClientResponse;
-import uk.gov.companieshouse.extensions.api.groups.Unit;
+
 import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
 import uk.gov.companieshouse.extensions.api.reasons.ExtensionReasonEntity;
 import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestFullEntity;
@@ -46,8 +46,8 @@ import uk.gov.companieshouse.service.ServiceException;
 import uk.gov.companieshouse.service.ServiceResult;
 import uk.gov.companieshouse.service.ServiceResultStatus;
 
-@Category(Unit.class)
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class AttachmentsServiceUnitTest {
 
     private static final String REQUEST_ID = "123";
@@ -67,7 +67,7 @@ public class AttachmentsServiceUnitTest {
 
     private AttachmentsService service;
 
-    @Before
+    @BeforeEach
     public void setup() {
         service = new AttachmentsService(repo, fileTransferApiClient, apiLogger);
         when(fileTransferApiClient.upload(any(MultipartFile.class))).thenReturn(getSuccessfulUploadResponse());

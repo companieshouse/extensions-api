@@ -2,10 +2,12 @@ package uk.gov.companieshouse.extensions.api.config;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
-import com.mongodb.MongoClientOptions;
+import com.mongodb.ConnectionString;
 
+import com.mongodb.MongoClientSettings;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
@@ -28,20 +30,20 @@ public class ApplicationConfiguration {
     private Integer optionalMaxConnectionLifeTimeMS;
 
     /**
-     * Create a {@link MongoClientOptions} .
+     * Create a {@link MongoClientSettings} .
      *
-     * @return A {@link MongoClientOptions} .
+     * @return A {@link MongoClientSettings} .
      */
     @Bean
-    public MongoClientOptions mongoClientOptions() {
-        MongoDBConnectionPoolProperties connectionPoolProperties = new MongoDBConnectionPoolProperties(
-            optionalMinSize,
-            optionalMaxConnectionIdleTimeMS,
-            optionalMaxConnectionLifeTimeMS);
-        return MongoClientOptions.builder().minConnectionsPerHost(connectionPoolProperties.getMinSize())
-            .maxConnectionIdleTime(connectionPoolProperties.getMaxConnectionIdleTimeMS())
-            .maxConnectionLifeTime(connectionPoolProperties.getMaxConnectionLifeTimeMS())
-            .build();
+    public MongoClientSettings mongoClientSettings(MongoDBConnectionPoolProperties connectionPoolConfig) {
+
+        ConnectionString connectionString = new ConnectionString(connectionPoolConfig.getConnectionString());
+
+        return MongoClientSettings.builder()
+            .applyConnectionString(connectionString)
+            .applyToConnectionPoolSettings(builder -> builder.minSize(connectionPoolConfig.getMinSize())
+                .maxConnectionIdleTime(connectionPoolConfig.getMaxConnectionIdleTimeMS(), TimeUnit.MILLISECONDS)
+                .maxConnectionLifeTime(connectionPoolConfig.getMaxConnectionLifeTimeMS(), TimeUnit.MILLISECONDS)).build();
     }
 
     @Bean

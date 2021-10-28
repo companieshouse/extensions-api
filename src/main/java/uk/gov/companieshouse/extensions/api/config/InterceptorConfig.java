@@ -43,7 +43,7 @@ public class InterceptorConfig implements WebMvcConfigurer {
     @Bean
     public ErrorAttributes errorAttributes() {
         return new DefaultErrorAttributes() {
-            @Override
+            //@Override
             public Map<String, Object> getErrorAttributes(WebRequest request, boolean includeStackTrace) {
                 return null;
             }
