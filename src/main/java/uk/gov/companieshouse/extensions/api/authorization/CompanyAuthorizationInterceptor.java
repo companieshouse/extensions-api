@@ -9,12 +9,12 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
+import org.springframework.web.servlet.HandlerInterceptor;
 
 import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
 import uk.gov.companieshouse.service.ServiceException;
 
-public class CompanyAuthorizationInterceptor extends HandlerInterceptorAdapter {
+public class CompanyAuthorizationInterceptor implements HandlerInterceptor {
 
     private ApiLogger logger;
 
