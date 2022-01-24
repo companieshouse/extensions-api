@@ -1,8 +1,8 @@
 package uk.gov.companieshouse.extensions.api.requests;
 
-import com.mongodb.MongoClient;
 
-import com.mongodb.MongoClientURI;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import org.bson.Document;
 import org.bson.json.JsonWriterSettings;
@@ -50,14 +50,14 @@ public class MongoDBTest {
     @Autowired
     private ExtensionRequestsRepository requestsRepository;
 
-    private MongoClient mongoClient = new MongoClient();
+    private MongoClient mongoClient;
 
     private LocalDate winterStart;
     private LocalDate winterEnd;
     private LocalDate summerStart;
     private LocalDate summerEnd;
 
-    @Value("${TEST_MONGO_DB_URL}")
+    @Value("${EXTENSIONS_API_MONGODB_URL}")
     private String testMongoUrl;
 
     @Before
@@ -67,8 +67,9 @@ public class MongoDBTest {
         summerStart = LocalDate.of(2020,7,1);
         summerEnd = LocalDate.of(2020,7,6);
 
-        MongoClientURI connectionString = new MongoClientURI(testMongoUrl);
-        mongoClient = new MongoClient(connectionString);
+       // MongoClientURI connectionString = new MongoClientURI(testMongoUrl);
+        //mongoClient = new MongoClient(connectionString);
+        mongoClient = MongoClients.create(testMongoUrl);
     }
 
     @After

@@ -4,16 +4,16 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>uk.gov.companieshouse</groupId>
     <artifactId>extensions-api</artifactId>
     <packaging>jar</packaging>
     <version>unversioned</version>
 
     <properties>
+        <log4j2.version>2.17.1</log4j2.version>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <spring-boot-dependencies.version>2.2.0.RELEASE</spring-boot-dependencies.version>
-        <spring-boot-maven-plugin.version>2.2.0.RELEASE</spring-boot-maven-plugin.version>
+        <spring-boot-dependencies.version>2.5.6</spring-boot-dependencies.version>
+        <spring-boot-maven-plugin.version>2.5.6</spring-boot-maven-plugin.version>
         <structured-logging.version>1.2.0-rc1</structured-logging.version>
         <junit.version>4.13.1</junit.version>
         <pact.version>3.6.7</pact.version>
@@ -33,6 +33,13 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-bom</artifactId>
+                <version>${log4j2.version}</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
+            <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
                 <version>${spring-boot-dependencies.version}</version>
@@ -46,6 +53,10 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

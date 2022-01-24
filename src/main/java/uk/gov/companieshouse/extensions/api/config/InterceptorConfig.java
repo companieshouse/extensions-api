@@ -3,6 +3,7 @@ package uk.gov.companieshouse.extensions.api.config;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.error.ErrorAttributeOptions;
 import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.context.annotation.Bean;
@@ -44,7 +45,7 @@ public class InterceptorConfig implements WebMvcConfigurer {
     public ErrorAttributes errorAttributes() {
         return new DefaultErrorAttributes() {
             @Override
-            public Map<String, Object> getErrorAttributes(WebRequest request, boolean includeStackTrace) {
+            public Map<String, Object> getErrorAttributes(WebRequest webRequest, ErrorAttributeOptions options) {
                 return null;
             }
         };
