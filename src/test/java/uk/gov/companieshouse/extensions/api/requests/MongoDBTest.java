@@ -44,8 +44,8 @@ import static org.junit.Assert.assertEquals;
 public class MongoDBTest {
 
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
-    public static final String WINTER_TEST_DOCUMENT = "winter_systime_test_123";
-    public static final String SUMMER_TEST_DOCUMENT = "summer_systime_test_123";
+    private static final String WINTER_TEST_DOCUMENT = "winter_systime_test_123";
+    private static final String SUMMER_TEST_DOCUMENT = "summer_systime_test_123";
 
     @Autowired
     private ExtensionRequestsRepository requestsRepository;
@@ -67,8 +67,6 @@ public class MongoDBTest {
         summerStart = LocalDate.of(2020,7,1);
         summerEnd = LocalDate.of(2020,7,6);
 
-       // MongoClientURI connectionString = new MongoClientURI(testMongoUrl);
-        //mongoClient = new MongoClient(connectionString);
         mongoClient = MongoClients.create(testMongoUrl);
     }
 
