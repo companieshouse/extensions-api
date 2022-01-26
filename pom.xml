@@ -12,8 +12,8 @@
         <log4j2.version>2.17.1</log4j2.version>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <spring-boot-dependencies.version>2.5.6</spring-boot-dependencies.version>
-        <spring-boot-maven-plugin.version>2.5.6</spring-boot-maven-plugin.version>
+        <spring-boot-dependencies.version>2.6.3</spring-boot-dependencies.version>
+        <spring-boot-maven-plugin.version>2.6.3</spring-boot-maven-plugin.version>
         <structured-logging.version>1.9.13</structured-logging.version>
         <junit.version>4.13.1</junit.version>
         <pact.version>3.6.7</pact.version>
