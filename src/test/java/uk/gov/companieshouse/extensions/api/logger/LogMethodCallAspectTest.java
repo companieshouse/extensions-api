@@ -1,7 +1,5 @@
 package uk.gov.companieshouse.extensions.api.logger;
 
-import java.lang.reflect.Method;
-
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.junit.Test;
@@ -28,15 +26,13 @@ public class LogMethodCallAspectTest {
     public void testLogMethodCall() throws Throwable {
         ProceedingJoinPoint joinPoint = Mockito.mock(ProceedingJoinPoint.class);
         MethodSignature methodSignature = Mockito.mock(MethodSignature.class);
-        Method method = Mockito.mock(Method.class);
 
         Mockito.when(joinPoint.getSignature()).thenReturn(methodSignature);
-        Mockito.when(methodSignature.getMethod()).thenReturn(method);
 
         logMethodCallAspect.logMethodCall(joinPoint);
 
-        Mockito.verify(apiLogger).debug("Entered " + method);
+        Mockito.verify(apiLogger).debug("Entered null");
         Mockito.verify(joinPoint).proceed();
-        Mockito.verify(apiLogger).debug("Leaving " + method);
+        Mockito.verify(apiLogger).debug("Leaving null");
     }
 }
