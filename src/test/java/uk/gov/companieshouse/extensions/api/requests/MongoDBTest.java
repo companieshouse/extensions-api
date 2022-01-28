@@ -1,8 +1,8 @@
 package uk.gov.companieshouse.extensions.api.requests;
 
-import com.mongodb.MongoClient;
 
-import com.mongodb.MongoClientURI;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import org.bson.Document;
 import org.bson.json.JsonWriterSettings;
@@ -44,20 +44,20 @@ import static org.junit.Assert.assertEquals;
 public class MongoDBTest {
 
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
-    public static final String WINTER_TEST_DOCUMENT = "winter_systime_test_123";
-    public static final String SUMMER_TEST_DOCUMENT = "summer_systime_test_123";
+    private static final String WINTER_TEST_DOCUMENT = "winter_systime_test_123";
+    private static final String SUMMER_TEST_DOCUMENT = "summer_systime_test_123";
 
     @Autowired
     private ExtensionRequestsRepository requestsRepository;
 
-    private MongoClient mongoClient = new MongoClient();
+    private MongoClient mongoClient;
 
     private LocalDate winterStart;
     private LocalDate winterEnd;
     private LocalDate summerStart;
     private LocalDate summerEnd;
 
-    @Value("${TEST_MONGO_DB_URL}")
+    @Value("${EXTENSIONS_API_MONGODB_URL}")
     private String testMongoUrl;
 
     @Before
@@ -67,8 +67,7 @@ public class MongoDBTest {
         summerStart = LocalDate.of(2020,7,1);
         summerEnd = LocalDate.of(2020,7,6);
 
-        MongoClientURI connectionString = new MongoClientURI(testMongoUrl);
-        mongoClient = new MongoClient(connectionString);
+        mongoClient = MongoClients.create(testMongoUrl);
     }
 
     @After

@@ -2,11 +2,11 @@ package uk.gov.companieshouse.extensions.api.config;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
-import com.mongodb.MongoClientOptions;
-
-import org.springframework.beans.factory.annotation.Value;
+import com.mongodb.ConnectionString;
+import com.mongodb.MongoClientSettings;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,31 +16,18 @@ import org.springframework.web.client.RestTemplate;
 public class ApplicationConfiguration {
 
     /**
-     * Constructs the config using environment variables for
-     * Mongo Connection Pool settings. Sets default values in case
-     * the environment variables are not supplied.
-     */
-    @Value("${MONGO_CONNECTION_POOL_MIN_SIZE}")
-    private Integer optionalMinSize;
-    @Value("${MONGO_CONNECTION_MAX_IDLE_TIME}")
-    private Integer optionalMaxConnectionIdleTimeMS;
-    @Value("${MONGO_CONNECTION_MAX_LIFE_TIME}")
-    private Integer optionalMaxConnectionLifeTimeMS;
-
-    /**
-     * Create a {@link MongoClientOptions} .
-     *
-     * @return A {@link MongoClientOptions} .
+     * Set Mongo client settings
      */
     @Bean
-    public MongoClientOptions mongoClientOptions() {
-        MongoDBConnectionPoolProperties connectionPoolProperties = new MongoDBConnectionPoolProperties(
-            optionalMinSize,
-            optionalMaxConnectionIdleTimeMS,
-            optionalMaxConnectionLifeTimeMS);
-        return MongoClientOptions.builder().minConnectionsPerHost(connectionPoolProperties.getMinSize())
-            .maxConnectionIdleTime(connectionPoolProperties.getMaxConnectionIdleTimeMS())
-            .maxConnectionLifeTime(connectionPoolProperties.getMaxConnectionLifeTimeMS())
+    public MongoClientSettings mongoClientSettings(MongoDBConnectionPoolProperties connectionPoolProperties) {
+        ConnectionString connectionString = new ConnectionString(connectionPoolProperties.getMongoDbConnectionString());
+
+        return MongoClientSettings.builder()
+            .applyConnectionString(connectionString)
+            .applyToConnectionPoolSettings(builder -> builder
+                .minSize(connectionPoolProperties.getMinSize())
+                .maxConnectionIdleTime(connectionPoolProperties.getMaxConnectionIdleTimeMS(), TimeUnit.MILLISECONDS)
+                .maxConnectionLifeTime(connectionPoolProperties.getMaxConnectionLifeTimeMS(), TimeUnit.MILLISECONDS))
             .build();
     }
 

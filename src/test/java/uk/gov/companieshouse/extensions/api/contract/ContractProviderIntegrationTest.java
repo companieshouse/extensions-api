@@ -26,6 +26,28 @@ import static org.mockito.Mockito.when;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+
+/**
+ * HOW TO RUN LOCALLY
+ * ------------------
+ * These have been setup to run as integration tests on the pipeline (extensions-processer-api alsoo has it's own
+ * contract tests).
+ *
+ * The pact file are generated and uploaded to S3 on the extensions-processor-api pipeline
+ * Before the tests are run on the pipeline there is a pipeline job that loads the test data into the TORO1 Mongo DB.
+ * The data to be loaded is found in this project under src/test/resources/mongoTestData.json
+ *
+ * To run locally, you need to download the pact files from AWS S3 bucket chips-assets-dev/pacts and place inside
+ * a 'pacts' folder in the root of this project.
+ * The data should already be loaded into the TORO1 Mongo DB extensions_requests collection by the pipeline.
+ * First time you run it 'should' work.
+ *
+ * The DELETE attachment test for request aaaaaaaaaaaaaaaaaaaaaa15 will only run once, then fail thereafter locally,
+ * due to the test actually removing the attachment from the mongo data. To get it to run again, you have to manually
+ * update the aaaaaaaaaaaaaaaaaaaaaa15 record in mongo using the json data in src/test/resources/mongoTestData.json
+ * to either re-add the attachment, or just replace the whole record with the one from test data.
+ *
+ */
 @Category(ContractProvider.class)
 @RunWith(SpringRestPactRunner.class)
 @Provider("extensions-api")

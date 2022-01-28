@@ -1,33 +1,43 @@
 package uk.gov.companieshouse.extensions.api.config;
 
 
-public class MongoDBConnectionPoolProperties {
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
-    private int minSize;
+@Component
+class MongoDBConnectionPoolProperties {
 
-    private int maxConnectionIdleTimeMS;
+    /**
+     * Constructs the config using environment variables for
+     * Mongo Connection Pool settings. Sets default values in case
+     * the environment variables are not supplied.
+     */
+    @Value("${MONGO_CONNECTION_POOL_MIN_SIZE:1}")
+    private Integer minSize;
+    @Value("${MONGO_CONNECTION_MAX_IDLE_TIME:0}")
+    private Long maxConnectionIdleTimeMS;
+    @Value("${MONGO_CONNECTION_MAX_LIFE_TIME:0}")
+    private Long maxConnectionLifeTimeMS;
 
-    private int maxConnectionLifeTimeMS;
+    /**
+     * Don't set a default here, we want the app to fail to start if mongo url is not supplied
+     */
+    @Value("${EXTENSIONS_API_MONGODB_URL}")
+    private String mongoDbConnectionString;
 
-    public MongoDBConnectionPoolProperties(Integer optionalMinSize,
-                                           Integer optionalMaxConnectionIdleTimeMS,
-                                           Integer optionalMaxConnectionLifeTimeMS) {
-
-        this.minSize = optionalMinSize != null ? optionalMinSize : 1;
-        this.maxConnectionIdleTimeMS = optionalMaxConnectionIdleTimeMS != null ? optionalMaxConnectionIdleTimeMS : 0;
-        this.maxConnectionLifeTimeMS = optionalMaxConnectionLifeTimeMS != null ? optionalMaxConnectionLifeTimeMS : 0;
-
-    }
-
-    public int getMinSize() {
+    Integer getMinSize() {
         return minSize;
     }
 
-    public int getMaxConnectionIdleTimeMS() {
+    Long getMaxConnectionIdleTimeMS() {
         return maxConnectionIdleTimeMS;
     }
 
-    public int getMaxConnectionLifeTimeMS() {
+    Long getMaxConnectionLifeTimeMS() {
         return maxConnectionLifeTimeMS;
+    }
+
+    String getMongoDbConnectionString() {
+        return mongoDbConnectionString;
     }
 }
