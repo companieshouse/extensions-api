@@ -19,7 +19,7 @@
         <pact.version>3.6.7</pact.version>
         <rest-service-common-library.version>0.0.3</rest-service-common-library.version>
         <environment-reader-library.version>1.3.2</environment-reader-library.version>
-        <mapstruct.version>1.3.0.Final</mapstruct.version>
+        <mapstruct.version>1.4.1.Final</mapstruct.version>
         <surefire-plugin.version>2.22.2</surefire-plugin.version>
     </properties>
 
