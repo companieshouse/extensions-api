@@ -3,8 +3,8 @@ package uk.gov.companieshouse.extensions.api.authorization;
 import java.util.Arrays;
 import java.util.Optional;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.http.HttpMethod;

@@ -12,6 +12,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.util.Optional;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
@@ -140,8 +141,22 @@ public class FileTransferApiClientUnitTest {
         httpHeaders.setContentType(contentType);
 
         //tell mocks what to return when download method is executed
-        when(restTemplate.execute(eq(DOWNLOAD_URI), eq(HttpMethod.GET), any(RequestCallback.class), ArgumentMatchers.<ResponseExtractor<ClientHttpResponse>>any(), any(FileTransferApiClientResponse.class)))
-            .thenReturn(responseFromFileTransferApi);
+        when(restTemplate.execute(
+            ArgumentMatchers.anyString(),
+            ArgumentMatchers.eq(HttpMethod.GET),
+            ArgumentMatchers.any(),
+            ArgumentMatchers.any(),
+                Optional.ofNullable(any())))
+            .thenAnswer(invocation -> {
+                RequestCallback requestCallback = invocation.getArgument(2);
+                requestCallback.doWithRequest(null);
+
+                ResponseExtractor<ClientHttpResponse> responseExtractor = invocation.getArgument(3);
+                responseExtractor.extractData(responseFromFileTransferApi);
+
+                return "your_response_data"; // The actual response doesn't matter for this test
+            });
+
         when(responseFromFileTransferApi.getBody()).thenReturn(fileInputStream);
         when(responseFromFileTransferApi.getStatusCode()).thenReturn(HttpStatus.OK);
         when(responseFromFileTransferApi.getHeaders()).thenReturn(httpHeaders);
@@ -150,7 +165,7 @@ public class FileTransferApiClientUnitTest {
         FileTransferApiClientResponse downloadResponse = fileTransferApiClient.download(FILE_ID, servletResponse);
 
         //need to capture the responseExtractor lambda passed to the restTemplate so we can test it - this is what actually does the file copy
-        verify(restTemplate).execute(eq(DOWNLOAD_URI), eq(HttpMethod.GET), any(RequestCallback.class), responseExtractorArgCaptor.capture(), any(FileTransferApiClientResponse.class));
+        verify(restTemplate).execute(eq(DOWNLOAD_URI), eq(HttpMethod.GET), any(), any(), Optional.ofNullable(any()));
 
         //now executing the responseExtractor should cause input stream (file) to be copied to output stream (servletResponse)
         ResponseExtractor<ClientHttpResponse> responseExtractor = responseExtractorArgCaptor.getValue();

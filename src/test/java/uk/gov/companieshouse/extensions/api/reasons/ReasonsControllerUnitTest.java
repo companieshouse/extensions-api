@@ -16,7 +16,7 @@ import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyRequestEntit
 import java.util.List;
 import java.util.Objects;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.junit.Before;
 import org.junit.Test;

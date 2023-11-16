@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -102,7 +102,7 @@ public class FileTransferApiClient {
             clientHttpResponse -> {
                 FileTransferApiClientResponse fileTransferApiClientResponse = new FileTransferApiClientResponse();
                 if (clientHttpResponse != null) {
-                    fileTransferApiClientResponse.setHttpStatus(clientHttpResponse.getStatusCode());
+                    fileTransferApiClientResponse.setHttpStatus(HttpStatus.valueOf(clientHttpResponse.getStatusCode().value()));
                 } else {
                     logger.error(NULL_RESPONSE_MESSAGE + " " + fileTransferApiURL);
                     fileTransferApiClientResponse.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -153,7 +153,7 @@ public class FileTransferApiClient {
             responseEntity -> {
                 FileTransferApiClientResponse fileTransferApiClientResponse = new FileTransferApiClientResponse();
                 if (responseEntity != null) {
-                    fileTransferApiClientResponse.setHttpStatus(responseEntity.getStatusCode());
+                    fileTransferApiClientResponse.setHttpStatus(HttpStatus.valueOf(responseEntity.getStatusCode().value()));
                     FileTransferApiResponse apiResponse = responseEntity.getBody();
                     if (apiResponse != null) {
                         fileTransferApiClientResponse.setFileId(apiResponse.getId());
@@ -210,7 +210,7 @@ public class FileTransferApiClient {
             //  this FileTransferResponseBuilder
             responseEntity -> {
                 FileTransferApiClientResponse response = new FileTransferApiClientResponse();
-                response.setHttpStatus(responseEntity.getStatusCode());
+                response.setHttpStatus(HttpStatus.valueOf(responseEntity.getStatusCode().value()));
                 return response;
             }
         );

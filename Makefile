@@ -25,7 +25,7 @@ test: clean
 
 .PHONY: test-unit
 test-unit: clean
-	mvn test -Dgroups="uk.gov.companieshouse.extensions.api.groups.Unit"
+	mvn test -Dgroups="uk.gov.companieshouse.extensions.api.groups.Unit" -Dmaven.surefire.debug
 
 .PHONY: test-integration
 test-integration: clean
@@ -77,3 +77,9 @@ sonar:
 .PHONY: sonar-pr-analysis
 sonar-pr-analysis:
 	mvn sonar:sonar	-P sonar-pr-analysis
+
+
+.PHONY: security-check
+security-check:
+	mvn org.owasp:dependency-check-maven:update-only
+	mvn org.owasp:dependency-check-maven:check -DfailBuildOnCVSS=4 -DassemblyAnalyzerEnabled=false

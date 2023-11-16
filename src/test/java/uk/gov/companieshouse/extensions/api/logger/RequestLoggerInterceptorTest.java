@@ -1,6 +1,6 @@
 package uk.gov.companieshouse.extensions.api.logger;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.junit.Before;
 import org.junit.Test;

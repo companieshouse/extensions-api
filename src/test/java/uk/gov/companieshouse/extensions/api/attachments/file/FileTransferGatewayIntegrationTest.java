@@ -25,18 +25,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.multipart.MultipartFile;
 
-import org.springframework.web.multipart.commons.CommonsMultipartFile;
+import org.springframework.web.multipart.MultipartFile.*;
 import uk.gov.companieshouse.extensions.api.groups.CIIntegration;
 
-import javax.annotation.PostConstruct;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.WriteListener;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.annotation.PostConstruct;
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.WriteListener;
+import jakarta.servlet.http.HttpServletResponse;
 
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.equalTo;
@@ -185,7 +186,7 @@ public class FileTransferGatewayIntegrationTest {
             fail(e.getMessage());
         }
 
-        MultipartFile multipartFile = new CommonsMultipartFile(fileItem);
+        MultipartFile multipartFile =  new MockMultipartFile("file.txt",fileItem.get());
 
         System.out.println("Calling upload...");
         return gateway.upload(multipartFile);
@@ -199,7 +200,7 @@ public class FileTransferGatewayIntegrationTest {
                     FileTransferApiClientResponse downloadResponse = gateway.download(fileID, httpServletResponse);
                     downloadStatus = downloadResponse.getHttpStatus();
                 } catch (HttpClientErrorException | HttpServerErrorException e) {
-                    downloadStatus = e.getStatusCode();
+                    downloadStatus = HttpStatus.valueOf(e.getStatusCode().value());
                 }
                 return downloadStatus;
         };
