@@ -1,39 +1,22 @@
 package uk.gov.companieshouse.extensions.api.reasons;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static uk.gov.companieshouse.extensions.api.Utils.Utils.REQUEST_ID;
-import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyCreateReason;
-import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyReasonEntity;
-import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyRequestEntity;
-
-import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.Optional;
-import java.util.function.Supplier;
-
 import org.junit.Rule;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import uk.gov.companieshouse.extensions.api.attachments.Attachment;
 import uk.gov.companieshouse.extensions.api.attachments.file.FileTransferApiClient;
 import uk.gov.companieshouse.extensions.api.attachments.file.FileTransferApiClientResponse;
-import uk.gov.companieshouse.extensions.api.groups.Unit;
 import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
 import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestFullEntity;
 import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestsRepository;
@@ -45,8 +28,17 @@ import uk.gov.companieshouse.service.ServiceResult;
 import uk.gov.companieshouse.service.ServiceResultStatus;
 import uk.gov.companieshouse.service.links.Links;
 
-@Category(Unit.class)
-@RunWith(MockitoJUnitRunner.class)
+import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.Optional;
+import java.util.function.Supplier;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+import static uk.gov.companieshouse.extensions.api.Utils.Utils.*;
+
+@Tag("UnitTest")
+@ExtendWith(MockitoExtension.class)
 public class ReasonServiceUnitTest {
 
     @InjectMocks
@@ -95,19 +87,17 @@ public class ReasonServiceUnitTest {
         ServiceResult<ListResponse<ExtensionReasonDTO>> reasons =
             reasonsService.getReasons(REQUEST_ID);
 
-        assertEquals(2, reasons.getData().getItems().size());
-        assertEquals(2, reasons.getData().getTotalResults());
-        assertEquals("reason1", reasons.getData().getItems().get(0).getId());
-        assertEquals("reason2", reasons.getData().getItems().get(1).getId());
-        assertEquals(ServiceResultStatus.FOUND, reasons.getStatus());
+        Assertions.assertEquals(2, reasons.getData().getItems().size());
+        Assertions.assertEquals(2, reasons.getData().getTotalResults());
+        Assertions.assertEquals("reason1", reasons.getData().getItems().get(0).getId());
+        Assertions.assertEquals("reason2", reasons.getData().getItems().get(1).getId());
+        Assertions.assertEquals(ServiceResultStatus.FOUND, reasons.getStatus());
     }
 
     @Test
-    public void willThrowIfNoRequestExists() throws ServiceException {
-        exception.expect(ServiceException.class);
-        exception.expectMessage("Extension request 123 not found");
-
-        reasonsService.getReasons("123");
+    public void willThrowIfNoRequestExists() {
+        ServiceException serviceException = Assertions.assertThrows(ServiceException.class, () -> reasonsService.getReasons("123"));
+        Assertions.assertEquals(serviceException.getMessage(), "Extension request 123 not found");
     }
 
     @Test
@@ -119,9 +109,9 @@ public class ReasonServiceUnitTest {
         ServiceResult<ListResponse<ExtensionReasonDTO>> reasons =
             reasonsService.getReasons(REQUEST_ID);
 
-        assertNotNull(reasons.getData());
-        assertEquals(0, reasons.getData().getItems().size());
-        assertEquals(ServiceResultStatus.FOUND, reasons.getStatus());
+        Assertions.assertNotNull(reasons.getData());
+        Assertions.assertEquals(0, reasons.getData().getItems().size());
+        Assertions.assertEquals(ServiceResultStatus.FOUND, reasons.getStatus());
     }
 
     @Test
@@ -146,32 +136,31 @@ public class ReasonServiceUnitTest {
         ExtensionRequestFullEntity extensionRequestResult = captor.getValue();
         ExtensionReasonEntity extensionReasonResult = extensionRequestResult.getReasons().get(0);
 
-        assertNotNull(extensionReasonResult);
-        assertEquals("string", extensionReasonResult.getReasonInformation());
-        assertEquals("abc", extensionReasonResult.getId());
-        assertEquals(dummyCreateReason.getReasonInformation(), extensionReasonResult.getReasonInformation());
-        assertEquals(dummyCreateReason.getStartOn(), extensionReasonResult.getStartOn());
-        assertEquals(dummyCreateReason.getEndOn(), extensionReasonResult.getEndOn());
-        assertEquals(dummyCreateReason.getReason(), extensionReasonResult.getReason());
-        assertEquals(ReasonStatus.DRAFT, extensionReasonResult.getReasonStatus());
+        Assertions.assertNotNull(extensionReasonResult);
+        Assertions.assertEquals("string", extensionReasonResult.getReasonInformation());
+        Assertions.assertEquals("abc", extensionReasonResult.getId());
+        Assertions.assertEquals(dummyCreateReason.getReasonInformation(), extensionReasonResult.getReasonInformation());
+        Assertions.assertEquals(dummyCreateReason.getStartOn(), extensionReasonResult.getStartOn());
+        Assertions.assertEquals(dummyCreateReason.getEndOn(), extensionReasonResult.getEndOn());
+        Assertions.assertEquals(dummyCreateReason.getReason(), extensionReasonResult.getReason());
+        Assertions.assertEquals(ReasonStatus.DRAFT, extensionReasonResult.getReasonStatus());
 
         Links expectedLinks = new Links();
         expectedLinks.setLink(ExtensionsLinkKeys.SELF, "dummyUri/abc");
-        assertEquals(expectedLinks, result.getData().getLinks());
+        Assertions.assertEquals(expectedLinks, result.getData().getLinks());
 
-        assertEquals(ServiceResultStatus.CREATED, result.getStatus());
-        assertNotNull(result.getData());
-        assertEquals("abc", result.getData().getId());
+        Assertions.assertEquals(ServiceResultStatus.CREATED, result.getStatus());
+        Assertions.assertNotNull(result.getData());
+        Assertions.assertEquals("abc", result.getData().getId());
     }
 
     @Test
-    public void exceptionThrownIfNoRequestFound() throws ServiceException {
+    public void exceptionThrownIfNoRequestFound() {
         when(requestsService.getExtensionsRequestById("123"))
             .thenReturn(Optional.empty());
 
-        exception.expect(ServiceException.class);
-        exception.expectMessage("Request 123 not found");
-        reasonsService.addExtensionsReasonToRequest(new ExtensionCreateReason(), "123", "url");
+        ServiceException serviceException = Assertions.assertThrows(ServiceException.class, () -> reasonsService.addExtensionsReasonToRequest(new ExtensionCreateReason(), "123", "url"));
+        Assertions.assertEquals(serviceException.getMessage(), "Request 123 not found");
     }
 
     @Test
@@ -188,7 +177,7 @@ public class ReasonServiceUnitTest {
         extensionRequestFullEntity.addReason(reason);
 
         when(requestsService.getExtensionsRequestById(extensionRequestFullEntity.getId())).thenReturn(Optional.of(extensionRequestFullEntity));
-        assertEquals(1, extensionRequestFullEntity.getReasons().size());
+        Assertions.assertEquals(1, extensionRequestFullEntity.getReasons().size());
 
         FileTransferApiClientResponse response = new FileTransferApiClientResponse();
         response.setHttpStatus(HttpStatus.NO_CONTENT);
@@ -206,7 +195,7 @@ public class ReasonServiceUnitTest {
         verify(extensionRequestsRepository, times(1)).save(captor.capture());
         ExtensionRequestFullEntity extensionRequestResult = captor.getValue();
 
-        assertEquals(0, extensionRequestResult.getReasons().size());
+        Assertions.assertEquals(0, extensionRequestResult.getReasons().size());
     }
 
     @Test
@@ -223,7 +212,7 @@ public class ReasonServiceUnitTest {
         extensionRequestFullEntity.addReason(reason);
 
         when(requestsService.getExtensionsRequestById(extensionRequestFullEntity.getId())).thenReturn(Optional.of(extensionRequestFullEntity));
-        assertEquals(1, extensionRequestFullEntity.getReasons().size());
+        Assertions.assertEquals(1, extensionRequestFullEntity.getReasons().size());
         when(extensionRequestsRepository.save(any(ExtensionRequestFullEntity.class))).thenReturn
             (extensionRequestFullEntity);
 
@@ -243,7 +232,7 @@ public class ReasonServiceUnitTest {
         verify(extensionRequestsRepository, times(1)).save(captor.capture());
         ExtensionRequestFullEntity extensionRequestResult = captor.getValue();
 
-        assertEquals(0, extensionRequestResult.getReasons().size());
+        Assertions.assertEquals(0, extensionRequestResult.getReasons().size());
     }
 
     @Test
@@ -260,7 +249,7 @@ public class ReasonServiceUnitTest {
         extensionRequestFullEntity.addReason(reason);
 
         when(requestsService.getExtensionsRequestById(extensionRequestFullEntity.getId())).thenReturn(Optional.of(extensionRequestFullEntity));
-        assertEquals(1, extensionRequestFullEntity.getReasons().size());
+        Assertions.assertEquals(1, extensionRequestFullEntity.getReasons().size());
         when(extensionRequestsRepository.save(any(ExtensionRequestFullEntity.class))).thenReturn
             (extensionRequestFullEntity);
 
@@ -280,7 +269,7 @@ public class ReasonServiceUnitTest {
         verify(extensionRequestsRepository, times(1)).save(captor.capture());
         ExtensionRequestFullEntity extensionRequestResult = captor.getValue();
 
-        assertEquals(0, extensionRequestResult.getReasons().size());
+        Assertions.assertEquals(0, extensionRequestResult.getReasons().size());
     }
 
     @Test
@@ -295,7 +284,7 @@ public class ReasonServiceUnitTest {
         extensionRequestFullEntity.addReason(reason);
 
         when(requestsService.getExtensionsRequestById(extensionRequestFullEntity.getId())).thenReturn(Optional.of(extensionRequestFullEntity));
-        assertEquals(1, extensionRequestFullEntity.getReasons().size());
+        Assertions.assertEquals(1, extensionRequestFullEntity.getReasons().size());
         when(extensionRequestsRepository.save(any(ExtensionRequestFullEntity.class))).thenReturn
             (extensionRequestFullEntity);
 
@@ -310,7 +299,7 @@ public class ReasonServiceUnitTest {
         verify(extensionRequestsRepository, times(1)).save(captor.capture());
         ExtensionRequestFullEntity extensionRequestResult = captor.getValue();
 
-        assertEquals(0, extensionRequestResult.getReasons().size());
+        Assertions.assertEquals(0, extensionRequestResult.getReasons().size());
     }
 
     @Test
@@ -325,7 +314,7 @@ public class ReasonServiceUnitTest {
         extensionRequestFullEntity.addReason(reason);
 
         when(requestsService.getExtensionsRequestById(extensionRequestFullEntity.getId())).thenReturn(Optional.of(extensionRequestFullEntity));
-        assertEquals(1, extensionRequestFullEntity.getReasons().size());
+        Assertions.assertEquals(1, extensionRequestFullEntity.getReasons().size());
         when(extensionRequestsRepository.save(any(ExtensionRequestFullEntity.class))).thenReturn
             (extensionRequestFullEntity);
 
@@ -341,7 +330,7 @@ public class ReasonServiceUnitTest {
         verify(extensionRequestsRepository, times(1)).save(captor.capture());
         ExtensionRequestFullEntity extensionRequestResult = captor.getValue();
 
-        assertEquals(0, extensionRequestResult.getReasons().size());
+        Assertions.assertEquals(0, extensionRequestResult.getReasons().size());
     }
 
     @Test
@@ -356,7 +345,7 @@ public class ReasonServiceUnitTest {
         extensionRequestFullEntity.addReason(reason);
 
         when(requestsService.getExtensionsRequestById(extensionRequestFullEntity.getId())).thenReturn(Optional.of(extensionRequestFullEntity));
-        assertEquals(1, extensionRequestFullEntity.getReasons().size());
+        Assertions.assertEquals(1, extensionRequestFullEntity.getReasons().size());
         when(extensionRequestsRepository.save(any(ExtensionRequestFullEntity.class))).thenReturn
             (extensionRequestFullEntity);
 
@@ -373,7 +362,7 @@ public class ReasonServiceUnitTest {
         verify(extensionRequestsRepository, times(1)).save(captor.capture());
         ExtensionRequestFullEntity extensionRequestResult = captor.getValue();
 
-        assertEquals(0, extensionRequestResult.getReasons().size());
+        Assertions.assertEquals(0, extensionRequestResult.getReasons().size());
     }
 
     @Test
@@ -386,7 +375,7 @@ public class ReasonServiceUnitTest {
         ExtensionReasonEntity reasonEntity = new ExtensionReasonEntity();
         requestEntity.setId("123");
 
-        reasonEntity.setEndOn(LocalDate.of(2018,1,1));
+        reasonEntity.setEndOn(LocalDate.of(2018, 1, 1));
         reasonEntity.setReasonInformation("Old text");
         reasonEntity.setId("1234");
 
@@ -395,23 +384,21 @@ public class ReasonServiceUnitTest {
         when(requestsService.getExtensionsRequestById("123"))
             .thenReturn(Optional.of(requestEntity));
 
-        reasonsService.patchReason(reasonCreate,"123","1234");
+        reasonsService.patchReason(reasonCreate, "123", "1234");
 
-        assertEquals(reasonCreate.getReasonInformation(),
-            requestEntity.getReasons().get(0).getReasonInformation());
+        Assertions.assertEquals(reasonCreate.getReasonInformation(), requestEntity.getReasons().get(0).getReasonInformation());
         verify(extensionRequestsRepository).save(requestEntity);
     }
 
     @Test
-    public void willThrowIfNoReasonExists() throws ServiceException {
+    public void willThrowIfNoReasonExists() {
         ExtensionRequestFullEntity requestEntity = new ExtensionRequestFullEntity();
         requestEntity.setId("123");
 
         when(requestsService.getExtensionsRequestById("123"))
             .thenReturn(Optional.of(requestEntity));
+        ServiceException serviceException = Assertions.assertThrows(ServiceException.class, () -> reasonsService.patchReason(new ExtensionCreateReason(), "123", "1234"));
+        Assertions.assertEquals(serviceException.getMessage(), "Reason id 1234 not found in Request 123");
 
-        exception.expect(ServiceException.class);
-        exception.expectMessage("Reason id 1234 not found in Request 123");
-        reasonsService.patchReason(new ExtensionCreateReason(), "123", "1234");
     }
 }

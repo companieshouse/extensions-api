@@ -1,19 +1,17 @@
 package uk.gov.companieshouse.extensions.api.requests;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Tag;
+import uk.gov.companieshouse.extensions.api.reasons.ExtensionReasonEntity;
+import uk.gov.companieshouse.service.links.Links;
 
 import java.time.LocalDate;
 import java.util.Arrays;
 
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
-import uk.gov.companieshouse.extensions.api.groups.Unit;
-import uk.gov.companieshouse.extensions.api.reasons.ExtensionReasonEntity;
-import uk.gov.companieshouse.service.links.Links;
-
-@Category(Unit.class)
+@Tag("UnitTest")
 public class PatchRequestMapperUnitTest {
 
     @Test

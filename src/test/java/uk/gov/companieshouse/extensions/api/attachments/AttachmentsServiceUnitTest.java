@@ -22,11 +22,16 @@ import java.util.stream.Collectors;
 import jakarta.servlet.http.HttpServletResponse;
 
 import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.web.client.HttpClientErrorException;
@@ -46,8 +51,8 @@ import uk.gov.companieshouse.service.ServiceException;
 import uk.gov.companieshouse.service.ServiceResult;
 import uk.gov.companieshouse.service.ServiceResultStatus;
 
-@Category(Unit.class)
-@RunWith(MockitoJUnitRunner.class)
+@Tag("UnitTest")
+@ExtendWith(MockitoExtension.class)
 public class AttachmentsServiceUnitTest {
 
     private static final String REQUEST_ID = "123";
@@ -65,13 +70,8 @@ public class AttachmentsServiceUnitTest {
     @Mock
     private ApiLogger apiLogger;
 
+   @InjectMocks
     private AttachmentsService service;
-
-    @Before
-    public void setup() {
-        service = new AttachmentsService(repo, fileTransferApiClient, apiLogger);
-        when(fileTransferApiClient.upload(any(MultipartFile.class))).thenReturn(getSuccessfulUploadResponse());
-    }
 
     @Test
     public void canAddAnAttachment() throws Exception {
@@ -83,6 +83,7 @@ public class AttachmentsServiceUnitTest {
         entity.setReasons(Arrays.asList(reasonEntity));
         when(repo.findById(anyString())).thenReturn(Optional.of(entity));
 
+        when(fileTransferApiClient.upload(any(MultipartFile.class))).thenReturn(getSuccessfulUploadResponse());
 
         ServiceResult<AttachmentDTO> result =
             service.addAttachment(Utils.mockMultipartFile(),
@@ -127,6 +128,7 @@ public class AttachmentsServiceUnitTest {
         entity.setReasons(Arrays.asList(reasonEntity));
         when(repo.findById(anyString())).thenReturn(Optional.of(entity));
 
+        when(fileTransferApiClient.upload(any(MultipartFile.class))).thenReturn(getSuccessfulUploadResponse());
 
         service.addAttachment(Utils.mockMultipartFile(),
             ACCESS_URL, REQUEST_ID, REASON_ID);
@@ -146,6 +148,7 @@ public class AttachmentsServiceUnitTest {
         ExtensionRequestFullEntity entity = new ExtensionRequestFullEntity();
         entity.setId(REQUEST_ID);
         when(repo.findById(anyString())).thenReturn(Optional.of(entity));
+        when(fileTransferApiClient.upload(any(MultipartFile.class))).thenReturn(getSuccessfulUploadResponse());
 
         try {
             service.addAttachment(Utils.mockMultipartFile(),
@@ -160,6 +163,7 @@ public class AttachmentsServiceUnitTest {
     @Test
     public void willThrowServiceExceptionIfNoReason() throws Exception {
         when(repo.findById(anyString())).thenReturn(Optional.empty());
+        when(fileTransferApiClient.upload(any(MultipartFile.class))).thenReturn(getSuccessfulUploadResponse());
 
         try {
             service.addAttachment(Utils.mockMultipartFile(),

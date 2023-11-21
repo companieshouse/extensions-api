@@ -25,7 +25,7 @@ test: clean
 
 .PHONY: test-unit
 test-unit: clean
-	mvn test -Dgroups="uk.gov.companieshouse.extensions.api.groups.Unit" -Dmaven.surefire.debug
+	mvn test -Dgroups="UnitTest"
 
 .PHONY: test-integration
 test-integration: clean

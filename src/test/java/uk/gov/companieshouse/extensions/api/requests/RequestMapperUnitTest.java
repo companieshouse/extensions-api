@@ -1,21 +1,17 @@
 package uk.gov.companieshouse.extensions.api.requests;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static uk.gov.companieshouse.extensions.api.Utils.Utils.REQUEST_ID;
-import static uk.gov.companieshouse.extensions.api.Utils.Utils.TESTURI;
-import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyReasonEntity;
-import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyRequestEntity;
-
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-
-import uk.gov.companieshouse.extensions.api.groups.Unit;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.companieshouse.extensions.api.reasons.ExtensionReasonEntity;
 import uk.gov.companieshouse.service.links.Links;
 
-@Category(Unit.class)
+import static org.junit.Assert.*;
+import static uk.gov.companieshouse.extensions.api.Utils.Utils.*;
+
+@Tag("UnitTest")
+@ExtendWith(MockitoExtension.class)
 public class RequestMapperUnitTest {
 
 
@@ -26,7 +22,7 @@ public class RequestMapperUnitTest {
         CreatedBy createdBy = dummyRequest.getCreatedBy();
         ExtensionReasonEntity dummyReason = dummyReasonEntity();
         dummyRequest.addReason(dummyReason);
-        String linkToSelf = TESTURI  + "/" + REQUEST_ID;
+        String linkToSelf = TESTURI + "/" + REQUEST_ID;
         Links links = new Links();
         links.setLink(ExtensionsLinkKeys.SELF, linkToSelf);
         dummyReason.setLinks(links);

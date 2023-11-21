@@ -1,40 +1,15 @@
 package uk.gov.companieshouse.extensions.api.attachments.file;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.util.Optional;
-
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.ArgumentMatchers;
-import org.mockito.Captor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.http.ContentDisposition;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.*;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.*;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockMultipartFile;
@@ -44,12 +19,23 @@ import org.springframework.web.client.ResponseExtractor;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
-
-import uk.gov.companieshouse.extensions.api.groups.Unit;
 import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
 
-@Category(Unit.class)
-@RunWith(MockitoJUnitRunner.class)
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+
+import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+@Tag("UnitTest")
+@ExtendWith(MockitoExtension.class)
 public class FileTransferApiClientUnitTest {
 
     private static final String DUMMY_URL = "http://test";
@@ -70,12 +56,9 @@ public class FileTransferApiClientUnitTest {
     @InjectMocks
     private FileTransferApiClient fileTransferApiClient;
 
-    @Rule
-    public final ExpectedException expectedException = ExpectedException.none();
-
     private MultipartFile file;
 
-    @Before
+    @BeforeEach
     public void setup() {
         ReflectionTestUtils.setField(fileTransferApiClient, "fileTransferApiURL", DUMMY_URL);
         file = new MockMultipartFile("testFile", new byte[10]);
@@ -90,8 +73,8 @@ public class FileTransferApiClientUnitTest {
 
         FileTransferApiClientResponse fileTransferApiClientResponse = fileTransferApiClient.upload(file);
 
-        assertEquals(FILE_ID, fileTransferApiClientResponse.getFileId());
-        assertEquals(HttpStatus.OK, fileTransferApiClientResponse.getHttpStatus());
+        Assertions.assertEquals(FILE_ID, fileTransferApiClientResponse.getFileId());
+        Assertions.assertEquals(HttpStatus.OK, fileTransferApiClientResponse.getHttpStatus());
     }
 
     @Test
@@ -103,7 +86,7 @@ public class FileTransferApiClientUnitTest {
         FileTransferApiClientResponse fileTransferApiClientResponse = fileTransferApiClient.upload(file);
 
         assertTrue(fileTransferApiClientResponse.getHttpStatus().isError());
-        assertEquals(apiErrorResponse.getStatusCode(), fileTransferApiClientResponse.getHttpStatus());
+        Assertions.assertEquals(apiErrorResponse.getStatusCode(), fileTransferApiClientResponse.getHttpStatus());
         assertTrue(StringUtils.isBlank(fileTransferApiClientResponse.getFileId()));
     }
 
@@ -113,10 +96,8 @@ public class FileTransferApiClientUnitTest {
 
         when(restTemplate.postForEntity(eq(DUMMY_URL), any(), eq(FileTransferApiResponse.class))).thenThrow(exception);
 
-        expectedException.expect(RestClientException.class);
-        expectedException.expectMessage(exception.getMessage());
 
-        fileTransferApiClient.upload(file);
+        assertThrows(RestClientException.class, () -> fileTransferApiClient.upload(file));
     }
 
     @Test
@@ -141,22 +122,9 @@ public class FileTransferApiClientUnitTest {
         httpHeaders.setContentType(contentType);
 
         //tell mocks what to return when download method is executed
-        when(restTemplate.execute(
-            ArgumentMatchers.anyString(),
-            ArgumentMatchers.eq(HttpMethod.GET),
-            ArgumentMatchers.any(),
-            ArgumentMatchers.any(),
-                Optional.ofNullable(any())))
-            .thenAnswer(invocation -> {
-                RequestCallback requestCallback = invocation.getArgument(2);
-                requestCallback.doWithRequest(null);
-
-                ResponseExtractor<ClientHttpResponse> responseExtractor = invocation.getArgument(3);
-                responseExtractor.extractData(responseFromFileTransferApi);
-
-                return "your_response_data"; // The actual response doesn't matter for this test
-            });
-
+        // Fix the stubbing to accept any string that matches the pattern of DOWNLOAD_URI
+        when(restTemplate.execute(eq(DOWNLOAD_URI), eq(HttpMethod.GET), any(RequestCallback.class), ArgumentMatchers.<ResponseExtractor<ClientHttpResponse>>any()))
+            .thenReturn(responseFromFileTransferApi);
         when(responseFromFileTransferApi.getBody()).thenReturn(fileInputStream);
         when(responseFromFileTransferApi.getStatusCode()).thenReturn(HttpStatus.OK);
         when(responseFromFileTransferApi.getHeaders()).thenReturn(httpHeaders);
@@ -165,22 +133,22 @@ public class FileTransferApiClientUnitTest {
         FileTransferApiClientResponse downloadResponse = fileTransferApiClient.download(FILE_ID, servletResponse);
 
         //need to capture the responseExtractor lambda passed to the restTemplate so we can test it - this is what actually does the file copy
-        verify(restTemplate).execute(eq(DOWNLOAD_URI), eq(HttpMethod.GET), any(), any(), Optional.ofNullable(any()));
+        verify(restTemplate).execute(eq(DOWNLOAD_URI), eq(HttpMethod.GET), any(RequestCallback.class), responseExtractorArgCaptor.capture());
 
         //now executing the responseExtractor should cause input stream (file) to be copied to output stream (servletResponse)
         ResponseExtractor<ClientHttpResponse> responseExtractor = responseExtractorArgCaptor.getValue();
         responseExtractor.extractData(responseFromFileTransferApi);
 
         //check status is ok
-        assertEquals(HttpStatus.OK, downloadResponse.getHttpStatus());
+        Assertions.assertEquals(HttpStatus.OK, downloadResponse.getHttpStatus());
 
         //check input stream was copied to output stream when executing the lambda
         assertTrue(ArrayUtils.isEquals(Files.readAllBytes(file.toPath()), servletResponse.getContentAsByteArray()));
 
         //check headers are correct
-        assertEquals(contentType.toString(), servletResponse.getHeader("Content-Type"));
-        assertEquals(String.valueOf(contentLength), servletResponse.getHeader("Content-Length"));
-        assertEquals(contentDisposition.toString(), servletResponse.getHeader("Content-Disposition"));
+        Assertions.assertEquals(contentType.toString(), servletResponse.getHeader("Content-Type"));
+        Assertions.assertEquals(String.valueOf(contentLength), servletResponse.getHeader("Content-Length"));
+        Assertions.assertEquals(contentDisposition.toString(), servletResponse.getHeader("Content-Disposition"));
     }
 
     @Test
@@ -188,13 +156,12 @@ public class FileTransferApiClientUnitTest {
         final MockHttpServletResponse servletResponse = new MockHttpServletResponse();
         final RestClientException exception = new RestClientException(EXCEPTION_MESSAGE);
 
-        when(restTemplate.execute(eq(DOWNLOAD_URI), eq(HttpMethod.GET), any(RequestCallback.class), ArgumentMatchers.<ResponseExtractor<ClientHttpResponse>>any(), any(FileTransferApiClientResponse.class)))
+        when(restTemplate.execute(eq(DOWNLOAD_URI), eq(HttpMethod.GET), any(RequestCallback.class), ArgumentMatchers.<ResponseExtractor<ClientHttpResponse>>any()))
             .thenThrow(exception);
 
-        expectedException.expect(RestClientException.class);
-        expectedException.expectMessage(exception.getMessage());
 
-        fileTransferApiClient.download(FILE_ID, servletResponse);
+        RestClientException restClientException = Assertions.assertThrows(RestClientException.class, () -> fileTransferApiClient.download(FILE_ID, servletResponse));
+        Assertions.assertEquals(restClientException.getMessage(), exception.getMessage());
     }
 
     @Test
@@ -206,7 +173,7 @@ public class FileTransferApiClientUnitTest {
 
         FileTransferApiClientResponse fileTransferApiClientResponse = fileTransferApiClient.delete(FILE_ID);
 
-        assertEquals(HttpStatus.NO_CONTENT, fileTransferApiClientResponse.getHttpStatus());
+        Assertions.assertEquals(HttpStatus.NO_CONTENT, fileTransferApiClientResponse.getHttpStatus());
     }
 
     @Test
@@ -218,8 +185,8 @@ public class FileTransferApiClientUnitTest {
 
         FileTransferApiClientResponse fileTransferApiClientResponse = fileTransferApiClient.delete(FILE_ID);
 
-        assertTrue(fileTransferApiClientResponse.getHttpStatus().isError());
-        assertEquals(apiResponse.getStatusCode(), fileTransferApiClientResponse.getHttpStatus());
+        Assertions.assertTrue(fileTransferApiClientResponse.getHttpStatus().isError());
+        Assertions.assertEquals(apiResponse.getStatusCode(), fileTransferApiClientResponse.getHttpStatus());
     }
 
     @Test
@@ -227,11 +194,9 @@ public class FileTransferApiClientUnitTest {
         final RestClientException exception = new RestClientException(EXCEPTION_MESSAGE);
 
         when(restTemplate.exchange(eq(DELETE_URL), eq(HttpMethod.DELETE), any(), eq(String.class))).thenThrow(exception);
-
-        expectedException.expect(RestClientException.class);
-        expectedException.expectMessage(exception.getMessage());
-
-        fileTransferApiClient.delete(FILE_ID);
+        Exception exceptionThrown = assertThrows(RestClientException.class, () -> {
+            fileTransferApiClient.delete(FILE_ID);
+        });
     }
 
     private ResponseEntity<FileTransferApiResponse> apiSuccessResponse() {

@@ -1,20 +1,10 @@
 package uk.gov.companieshouse.extensions.api.reasons;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
-import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyReasonEntity;
-import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyRequestEntity;
-
-import java.util.Arrays;
-
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
 import org.junit.Before;
-import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -26,7 +16,6 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.web.client.RestTemplate;
-
 import uk.gov.companieshouse.extensions.api.authorization.CompanyAuthorizationInterceptor;
 import uk.gov.companieshouse.extensions.api.groups.Integration;
 import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
@@ -35,6 +24,15 @@ import uk.gov.companieshouse.extensions.api.requests.ExtensionsLinkKeys;
 import uk.gov.companieshouse.extensions.api.response.ListResponse;
 import uk.gov.companieshouse.service.ServiceResult;
 import uk.gov.companieshouse.service.links.Links;
+
+import java.util.Arrays;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
+import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyReasonEntity;
+import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyRequestEntity;
 
 @Category(Integration.class)
 @RunWith(SpringRunner.class)
@@ -68,31 +66,31 @@ public class ReasonsControllerIntegrationTest {
 
     @Before
     public void setup() {
-        when(companyInterceptor.preHandle(any(HttpServletRequest.class), 
+        when(companyInterceptor.preHandle(any(HttpServletRequest.class),
             any(HttpServletResponse.class), any(Object.class)))
-              .thenReturn(true);
+            .thenReturn(true);
     }
 
     @Test
     public void canReachPostReasonEndpoint() throws Exception {
 
-         ExtensionReasonDTO dto = new ExtensionReasonDTO();
-         dto.setId("123");
+        ExtensionReasonDTO dto = new ExtensionReasonDTO();
+        dto.setId("123");
 
-         Links links = new Links();
-         links.setLink(ExtensionsLinkKeys.SELF, "url");
-         dto.setLinks(links);
-         when(reasonsService.addExtensionsReasonToRequest(any(ExtensionCreateReason.class), any(String.class), any(String.class)))
-             .thenReturn(ServiceResult.created(dto));
-         RequestBuilder requestBuilder = MockMvcRequestBuilders.post(
-                 ROOT_URL)
-                  .contentType(MediaType.APPLICATION_JSON)
-                  .content(buildMockReason())
-                  .accept(MediaType.APPLICATION_JSON);
+        Links links = new Links();
+        links.setLink(ExtensionsLinkKeys.SELF, "url");
+        dto.setLinks(links);
+        when(reasonsService.addExtensionsReasonToRequest(any(ExtensionCreateReason.class), any(String.class), any(String.class)))
+            .thenReturn(ServiceResult.created(dto));
+        RequestBuilder requestBuilder = MockMvcRequestBuilders.post(
+                ROOT_URL)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(buildMockReason())
+            .accept(MediaType.APPLICATION_JSON);
 
-          MvcResult result = mockMvc.perform(requestBuilder).andReturn();
-          assertEquals(201, result.getResponse().getStatus());
-          assertEquals(mockReponse(), result.getResponse().getContentAsString());
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+        assertEquals(201, result.getResponse().getStatus());
+        assertEquals(mockReponse(), result.getResponse().getContentAsString());
     }
 
     @Test
@@ -103,21 +101,21 @@ public class ReasonsControllerIntegrationTest {
 
         when(reasonsService.removeExtensionsReasonFromRequest(any(String.class), any
             (String.class))).thenReturn(dummyRequestEntity);
-         RequestBuilder requestBuilder = MockMvcRequestBuilders.delete(
-                 SPECIFIC_URL)
-                 .accept(MediaType.APPLICATION_JSON);
+        RequestBuilder requestBuilder = MockMvcRequestBuilders.delete(
+                SPECIFIC_URL)
+            .accept(MediaType.APPLICATION_JSON);
 
-         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
-         assertEquals(204, result.getResponse().getStatus());
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+        assertEquals(204, result.getResponse().getStatus());
     }
-    
+
     @Test
     public void canReachUpdateReasonEndpoint() throws Exception {
         RequestBuilder requestBuilder = MockMvcRequestBuilders.patch(
                 SPECIFIC_URL)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(buildMockReason())
-                .accept(MediaType.APPLICATION_JSON);
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(buildMockReason())
+            .accept(MediaType.APPLICATION_JSON);
 
         Links links = new Links();
         links.setLink(ExtensionsLinkKeys.SELF, "url");
@@ -148,11 +146,11 @@ public class ReasonsControllerIntegrationTest {
 
     private String buildMockReason() {
         return "{\n" +
-                "  \"reason\": \"illness\",\n" +
-                "  \"reason_information\": \"string\",\n" +
-                "  \"date_start\": \"2019-02-15\",\n" +
-                "  \"date_end\": \"2019-02-15\"\n" +
-                "}";
+            "  \"reason\": \"illness\",\n" +
+            "  \"reason_information\": \"string\",\n" +
+            "  \"date_start\": \"2019-02-15\",\n" +
+            "  \"date_end\": \"2019-02-15\"\n" +
+            "}";
     }
 
     private String mockReponse() {
@@ -160,7 +158,7 @@ public class ReasonsControllerIntegrationTest {
             "\"id\":\"123\"," +
             "\"reason\":null," +
             "\"links\":{" +
-                "\"self\":\"url\"" +
+            "\"self\":\"url\"" +
             "}," +
             "\"start_on\":null," +
             "\"end_on\":null," +
@@ -168,22 +166,22 @@ public class ReasonsControllerIntegrationTest {
             "\"reason_information\":null," +
             "\"continued_illness\":null," +
             "\"reason_status\":null" +
-        "}";
+            "}";
     }
 
     private String mockGetResponse() {
         return "{" +
             "\"etag\":null," +
             "\"items\":[" +
-                "{\"etag\":null," +
-                "\"id\":null," +
-                "\"reason\":null," +
-                "\"start_on\":null," +
-                "\"end_on\":null," +
-                "\"affected_person\":null," +
-                "\"reason_information\":null," +
-                "\"continued_illness\":null," +
-                "\"reason_status\":null" +
+            "{\"etag\":null," +
+            "\"id\":null," +
+            "\"reason\":null," +
+            "\"start_on\":null," +
+            "\"end_on\":null," +
+            "\"affected_person\":null," +
+            "\"reason_information\":null," +
+            "\"continued_illness\":null," +
+            "\"reason_status\":null" +
             "}]," +
             "\"items_per_page\":0," +
             "\"start_index\":0," +

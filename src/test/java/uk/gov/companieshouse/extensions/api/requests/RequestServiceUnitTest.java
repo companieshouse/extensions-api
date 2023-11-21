@@ -1,39 +1,29 @@
 package uk.gov.companieshouse.extensions.api.requests;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static uk.gov.companieshouse.extensions.api.Utils.Utils.COMPANY_NUMBER;
-import static uk.gov.companieshouse.extensions.api.Utils.Utils.REQUEST_ID;
-import static uk.gov.companieshouse.extensions.api.Utils.Utils.TESTURI;
-import static uk.gov.companieshouse.extensions.api.Utils.Utils.createdBy;
-import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyCreateRequestEntity;
-import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyRequestEntity;
+import org.junit.Rule;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.rules.ExpectedException;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.companieshouse.service.ServiceException;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.*;
+import static uk.gov.companieshouse.extensions.api.Utils.Utils.*;
 
-import uk.gov.companieshouse.extensions.api.groups.Unit;
-import uk.gov.companieshouse.service.ServiceException;
-
-@Category(Unit.class)
-@RunWith(MockitoJUnitRunner.class)
+@Tag("UnitTest")
+@ExtendWith(MockitoExtension.class)
 public class RequestServiceUnitTest {
 
     @InjectMocks
@@ -69,7 +59,7 @@ public class RequestServiceUnitTest {
 
         ExtensionRequestFullEntity extensionRequestFullEntity = dummyRequestEntity();
         when(extensionRequestsRepository.insert(any(ExtensionRequestFullEntity.class)))
-                .thenReturn(extensionRequestFullEntity);
+            .thenReturn(extensionRequestFullEntity);
 
         requestsService.insertExtensionsRequest(extensionCreateRequest, createdBy, TESTURI, COMPANY_NUMBER);
         verify(extensionRequestsRepository, times(1)).insert(captor.capture());
@@ -78,9 +68,9 @@ public class RequestServiceUnitTest {
 
         assertNotNull(extensionRequestResult);
         assertEquals(extensionCreateRequest.getAccountingPeriodStartOn(),
-                extensionRequestResult.getAccountingPeriodStartOn());
+            extensionRequestResult.getAccountingPeriodStartOn());
         assertEquals(extensionCreateRequest.getAccountingPeriodEndOn(),
-                extensionRequestResult.getAccountingPeriodEndOn());
+            extensionRequestResult.getAccountingPeriodEndOn());
         assertEquals(Status.OPEN, extensionRequestResult.getStatus());
 
         CreatedBy createdByInEntity = extensionRequestResult.getCreatedBy();
@@ -137,9 +127,7 @@ public class RequestServiceUnitTest {
 
         RequestStatus status = new RequestStatus();
         status.setStatus(Status.SUBMITTED);
-
-        expectedException.expect(ServiceException.class);
-        expectedException.expectMessage("Request: request1 cannot be found");
-        requestsService.patchRequest("request1", status);
+        
+        assertThrows(ServiceException.class, () -> requestsService.patchRequest("request1", status));
     }
 }

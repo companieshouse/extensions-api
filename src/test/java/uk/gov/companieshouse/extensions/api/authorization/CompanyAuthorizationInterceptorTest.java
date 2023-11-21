@@ -1,34 +1,23 @@
 package uk.gov.companieshouse.extensions.api.authorization;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.util.HashMap;
-import java.util.Map;
-
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
 import org.apache.http.HttpStatus;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-
-import uk.gov.companieshouse.extensions.api.groups.Unit;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
 
-@Category(Unit.class)
-@RunWith(MockitoJUnitRunner.class)
+import static org.mockito.Mockito.*;
+
+@Tag("UnitTest")
+@ExtendWith(MockitoExtension.class)
 public class CompanyAuthorizationInterceptorTest {
-    
+
     @InjectMocks
     private CompanyAuthorizationInterceptor interceptor;
 
@@ -45,13 +34,13 @@ public class CompanyAuthorizationInterceptorTest {
     public void willAuthorizeAdminIfGetRequest() {
         when(request.getHeader("ERIC-Authorised-Roles"))
             .thenReturn("permission /admin/extensions-view anotherPermission");
-        when(request.getRequestURI()) 
+        when(request.getRequestURI())
             .thenReturn("");
         when(request.getMethod())
             .thenReturn("GET");
         boolean result = interceptor.preHandle(request, response, null);
 
-        assertTrue(result);
+        Assertions.assertTrue(result);
         verify(request).getHeader("ERIC-Authorised-Roles");
     }
 
@@ -59,13 +48,13 @@ public class CompanyAuthorizationInterceptorTest {
     public void willAuthorizeAdminIfDownloadGetRequest() {
         when(request.getHeader("ERIC-Authorised-Roles"))
             .thenReturn("permission /admin/extensions-view /admin/extensions-download");
-        when(request.getRequestURI()) 
+        when(request.getRequestURI())
             .thenReturn("download");
         when(request.getMethod())
             .thenReturn("GET");
         boolean result = interceptor.preHandle(request, response, null);
 
-        assertTrue(result);
+        Assertions.assertTrue(result);
         verify(request, times(2)).getHeader("ERIC-Authorised-Roles");
     }
 
@@ -73,13 +62,13 @@ public class CompanyAuthorizationInterceptorTest {
     public void willNotAuthorizeAdminIfDownloadGetRequestWithoutView() {
         when(request.getHeader("ERIC-Authorised-Roles"))
             .thenReturn("permission /admin/extensions-download");
-        when(request.getRequestURI()) 
+        when(request.getRequestURI())
             .thenReturn("download");
         when(request.getMethod())
             .thenReturn("GET");
         boolean result = interceptor.preHandle(request, response, null);
 
-        assertFalse(result);
+        Assertions.assertFalse(result);
         verify(request, times(2)).getHeader("ERIC-Authorised-Roles");
     }
 
@@ -87,25 +76,25 @@ public class CompanyAuthorizationInterceptorTest {
     public void willNotAuthorizeAdminIfDownloadGetRequestWithoutDownload() {
         when(request.getHeader("ERIC-Authorised-Roles"))
             .thenReturn("permission /admin/extensions-view");
-        when(request.getRequestURI()) 
+        when(request.getRequestURI())
             .thenReturn("download");
         when(request.getMethod())
             .thenReturn("GET");
         boolean result = interceptor.preHandle(request, response, null);
 
-        assertFalse(result);
+        Assertions.assertFalse(result);
         verify(request, times(2)).getHeader("ERIC-Authorised-Roles");
     }
 
     @Test
     public void willNotAuthorizeAdminIfPostRequest() {
-        when(request.getHeader("ERIC-Authorised-Roles")) 
+        when(request.getHeader("ERIC-Authorised-Roles"))
             .thenReturn("/admin/extensions-view");
         when(request.getMethod())
             .thenReturn("POST");
         boolean result = interceptor.preHandle(request, response, null);
 
-        assertFalse(result);
+        Assertions.assertFalse(result);
         verify(request).getHeader("ERIC-Authorised-Roles");
         verify(response).setStatus(HttpStatus.SC_UNAUTHORIZED);
     }
@@ -116,7 +105,7 @@ public class CompanyAuthorizationInterceptorTest {
             .thenReturn("POST");
         boolean result = interceptor.preHandle(request, response, null);
 
-        assertTrue(result);
+        Assertions.assertTrue(result);
         verify(request).getHeader("ERIC-Authorised-Roles");
     }
 
@@ -126,7 +115,7 @@ public class CompanyAuthorizationInterceptorTest {
             .thenReturn("GET");
         boolean result = interceptor.preHandle(request, response, null);
 
-        assertFalse(result);
+        Assertions.assertFalse(result);
         verify(request).getHeader("ERIC-Authorised-Roles");
     }
 }

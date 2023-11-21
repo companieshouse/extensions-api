@@ -1,22 +1,19 @@
 package uk.gov.companieshouse.extensions.api.requests;
 
-import static org.mockito.Mockito.when;
+import jakarta.servlet.http.HttpServletRequest;
+import org.junit.Assert;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.UnsupportedEncodingException;
 
-import jakarta.servlet.http.HttpServletRequest;
+import static org.mockito.Mockito.when;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-
-import uk.gov.companieshouse.extensions.api.groups.Unit;
-
-@Category(Unit.class)
-@RunWith(MockitoJUnitRunner.class)
+@Tag("UnitTest")
+@ExtendWith(MockitoExtension.class)
 public class ERICHeaderParserUnitTest {
 
     private static final String ERIC_HEADER_IDENTITY = "ERIC-identity";

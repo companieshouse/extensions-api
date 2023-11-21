@@ -4,8 +4,8 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
-import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockserver.client.ForwardChainExpectation;
@@ -20,6 +20,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.multipart.MultipartFile;
 import uk.gov.companieshouse.extensions.api.groups.Integration;
+
 import java.io.IOException;
 
 /**
@@ -80,7 +81,7 @@ public class FileTransferGatewayMockIntegrationTest {
     }
 
     private ForwardChainExpectation mockServerExpectation(String path, String httpMethod)
-            throws IOException {
+        throws IOException {
         return mockServer
             .when(HttpRequest
                 .request()

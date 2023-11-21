@@ -57,9 +57,9 @@ public class FileTransferApiClient {
         FileTransferApiClientResponse response = new FileTransferApiClientResponse();
 
         try {
-             T operationResponse = operation.execute();
+            T operationResponse = operation.execute();
 
-             response = responseBuilder.createResponse(operationResponse);
+            response = responseBuilder.createResponse(operationResponse);
         } catch (IOException e) {
             logger.error(e);
             response.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);

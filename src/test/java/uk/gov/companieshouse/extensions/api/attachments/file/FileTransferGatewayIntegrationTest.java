@@ -1,24 +1,18 @@
 package uk.gov.companieshouse.extensions.api.attachments.file;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.util.Objects;
-import java.util.concurrent.Callable;
-
+import jakarta.annotation.PostConstruct;
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.WriteListener;
+import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItem;
 import org.apache.commons.io.IOUtils;
-
 import org.apache.commons.lang.StringUtils;
 import org.awaitility.Duration;
 import org.jetbrains.annotations.NotNull;
-import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,20 +24,16 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.multipart.MultipartFile;
-
-import org.springframework.web.multipart.MultipartFile.*;
 import uk.gov.companieshouse.extensions.api.groups.CIIntegration;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.servlet.ServletOutputStream;
-import jakarta.servlet.WriteListener;
-import jakarta.servlet.http.HttpServletResponse;
+import java.io.*;
+import java.nio.file.Files;
+import java.util.Objects;
+import java.util.concurrent.Callable;
 
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
 
 /**
@@ -97,7 +87,7 @@ public class FileTransferGatewayIntegrationTest {
     public void willUploadDownloadDeleteFile() throws IOException {
         final String filename = "test.png";
         final String fileFolder = "./src/test/resources/input/";
-        final String uploadFilePath =  fileFolder + filename;
+        final String uploadFilePath = fileFolder + filename;
         final String downloadFilePath = fileFolder + "download-" + filename;
 
 
@@ -163,19 +153,20 @@ public class FileTransferGatewayIntegrationTest {
     @NotNull
     private ServletOutputStream getServletOutputStream(FileOutputStream fileOutputStream) {
         return new ServletOutputStream() {
-                @Override
-                public boolean isReady() {
-                    return true;
-                }
+            @Override
+            public boolean isReady() {
+                return true;
+            }
 
-                @Override
-                public void setWriteListener(WriteListener writeListener) {}
+            @Override
+            public void setWriteListener(WriteListener writeListener) {
+            }
 
-                @Override
-                public void write(int b) throws IOException {
-                    fileOutputStream.write(b);
-                }
-            };
+            @Override
+            public void write(int b) throws IOException {
+                fileOutputStream.write(b);
+            }
+        };
     }
 
     private FileTransferApiClientResponse uploadFile(File uploadFile) throws IOException {
@@ -186,7 +177,7 @@ public class FileTransferGatewayIntegrationTest {
             fail(e.getMessage());
         }
 
-        MultipartFile multipartFile =  new MockMultipartFile("file.txt",fileItem.get());
+        MultipartFile multipartFile = new MockMultipartFile("file.txt", fileItem.get());
 
         System.out.println("Calling upload...");
         return gateway.upload(multipartFile);
@@ -194,21 +185,21 @@ public class FileTransferGatewayIntegrationTest {
 
     private Callable<HttpStatus> downloadFile(String fileID, HttpServletResponse httpServletResponse) {
         return () -> {
-                HttpStatus downloadStatus;
-                try {
-                    System.out.print(".");
-                    FileTransferApiClientResponse downloadResponse = gateway.download(fileID, httpServletResponse);
-                    downloadStatus = downloadResponse.getHttpStatus();
-                } catch (HttpClientErrorException | HttpServerErrorException e) {
-                    downloadStatus = HttpStatus.valueOf(e.getStatusCode().value());
-                }
-                return downloadStatus;
+            HttpStatus downloadStatus;
+            try {
+                System.out.print(".");
+                FileTransferApiClientResponse downloadResponse = gateway.download(fileID, httpServletResponse);
+                downloadStatus = downloadResponse.getHttpStatus();
+            } catch (HttpClientErrorException | HttpServerErrorException e) {
+                downloadStatus = HttpStatus.valueOf(e.getStatusCode().value());
+            }
+            return downloadStatus;
         };
     }
 
     private void assertFilesAreEqual(File uploadFile, File downloadFile) throws IOException {
         try (InputStream inputStream = new FileInputStream(uploadFile);
-             InputStream downloadStream = new FileInputStream(downloadFile) ) {
+             InputStream downloadStream = new FileInputStream(downloadFile)) {
 
             String md5UploadedFile = DigestUtils.md5Hex(inputStream);
             String md5DownloadedFile = DigestUtils.md5Hex(downloadStream);

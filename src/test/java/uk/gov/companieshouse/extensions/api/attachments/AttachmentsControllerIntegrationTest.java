@@ -1,21 +1,10 @@
 package uk.gov.companieshouse.extensions.api.attachments;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.util.HashMap;
-
-import jakarta.servlet.http.HttpServletResponse;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-
+import jakarta.servlet.http.HttpServletResponse;
 import org.junit.Before;
-import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,13 +20,21 @@ import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.multipart.MultipartFile;
-
 import uk.gov.companieshouse.extensions.api.Utils.Utils;
 import uk.gov.companieshouse.extensions.api.attachments.file.FileTransferApiClientResponse;
 import uk.gov.companieshouse.extensions.api.groups.Integration;
 import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
 import uk.gov.companieshouse.service.ServiceResult;
 import uk.gov.companieshouse.service.rest.response.PluggableResponseEntityFactory;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.util.HashMap;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 
 @Category(Integration.class)
 @RunWith(SpringRunner.class)
@@ -70,32 +67,32 @@ public class AttachmentsControllerIntegrationTest {
 
     @Test
     public void testUploadAttachmentToRequest() throws Exception {
-         File file = new File("./src/test/resources/input/test.txt");
-         MockMultipartFile multipartFile = new MockMultipartFile("file", new FileInputStream(file));
+        File file = new File("./src/test/resources/input/test.txt");
+        MockMultipartFile multipartFile = new MockMultipartFile("file", new FileInputStream(file));
 
-         HashMap<String, String> contentTypeParams = new HashMap<>();
-         MediaType mediaType = new MediaType("multipart", "form-data", contentTypeParams);
+        HashMap<String, String> contentTypeParams = new HashMap<>();
+        MediaType mediaType = new MediaType("multipart", "form-data", contentTypeParams);
 
-         AttachmentDTO expectedDto = AttachmentDTO
-             .builder()
-             .withFile(multipartFile)
-             .withAttachment(new Attachment())
-             .build();
-         when(attachmentsService.addAttachment(any(MultipartFile.class),
-                anyString(), anyString(), anyString()))
+        AttachmentDTO expectedDto = AttachmentDTO
+            .builder()
+            .withFile(multipartFile)
+            .withAttachment(new Attachment())
+            .build();
+        when(attachmentsService.addAttachment(any(MultipartFile.class),
+            anyString(), anyString(), anyString()))
             .thenReturn(ServiceResult.accepted(expectedDto));
 
-         RequestBuilder requestBuilder = MockMvcRequestBuilders.multipart(ROOT_URL)
-                 .file("file", multipartFile.getBytes())
-                 .contentType(mediaType)
-                 .accept(MediaType.APPLICATION_JSON);
+        RequestBuilder requestBuilder = MockMvcRequestBuilders.multipart(ROOT_URL)
+            .file("file", multipartFile.getBytes())
+            .contentType(mediaType)
+            .accept(MediaType.APPLICATION_JSON);
 
-         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
-         String expectedJsonResponse = new ObjectMapper()
-                 .writer()
-                 .writeValueAsString(expectedDto);
-         assertEquals(expectedJsonResponse, result.getResponse().getContentAsString());
-         assertEquals(HttpStatus.ACCEPTED.value(), result.getResponse().getStatus());
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+        String expectedJsonResponse = new ObjectMapper()
+            .writer()
+            .writeValueAsString(expectedDto);
+        assertEquals(expectedJsonResponse, result.getResponse().getContentAsString());
+        assertEquals(HttpStatus.ACCEPTED.value(), result.getResponse().getStatus());
     }
 
     @Test
