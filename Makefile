@@ -29,7 +29,7 @@ test-unit: clean
 
 .PHONY: test-integration
 test-integration: clean
-	mvn verify -Dgroups="uk.gov.companieshouse.extensions.api.groups.Integration"
+	mvn verify -Dgroups="IntegrationTest"
 
 .PHONY: test-ci-integration
 test-ci-integration: clean

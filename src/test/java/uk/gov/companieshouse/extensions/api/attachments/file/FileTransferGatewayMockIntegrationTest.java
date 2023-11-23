@@ -4,10 +4,10 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
 import org.mockserver.client.ForwardChainExpectation;
 import org.mockserver.integration.ClientAndServer;
 import org.mockserver.model.HttpRequest;
@@ -15,19 +15,18 @@ import org.mockserver.model.HttpResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.multipart.MultipartFile;
-import uk.gov.companieshouse.extensions.api.groups.Integration;
 
 import java.io.IOException;
 
 /**
  * FileTransferGatewayIntegrationTest with mock server for file-transfer-api
  */
-@Category(Integration.class)
-@RunWith(SpringRunner.class)
+@Tag("IntegrationTest")
+@ExtendWith(SpringExtension.class)
 @SpringBootTest
 public class FileTransferGatewayMockIntegrationTest {
 

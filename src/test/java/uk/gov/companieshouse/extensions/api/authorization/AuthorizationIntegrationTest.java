@@ -43,8 +43,7 @@
 //import uk.gov.companieshouse.service.links.Links;
 //import uk.gov.companieshouse.service.rest.response.PluggableResponseEntityFactory;
 //
-//@Category(Integration.class)
-//@RunWith(SpringRunner.class)
+//@Tag("IntegrationTest")//@RunWith(SpringRunner.class)
 //@WebMvcTest(value = { AttachmentsController.class })
 //@TestPropertySource({ "classpath:application.properties"})
 //public class AuthorizationIntegrationTest {

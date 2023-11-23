@@ -1,9 +1,16 @@
 package uk.gov.companieshouse.extensions.api.requests;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import org.junit.Test;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Sort;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import uk.gov.companieshouse.extensions.api.Utils.Utils;
+import uk.gov.companieshouse.extensions.api.attachments.Attachment;
+import uk.gov.companieshouse.extensions.api.reasons.ExtensionReasonEntity;
+import uk.gov.companieshouse.service.links.Links;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -12,23 +19,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.Sort;
-import org.springframework.test.context.junit4.SpringRunner;
+import static org.junit.Assert.*;
 
-import uk.gov.companieshouse.extensions.api.Utils.Utils;
-import uk.gov.companieshouse.extensions.api.attachments.Attachment;
-import uk.gov.companieshouse.extensions.api.groups.Integration;
-import uk.gov.companieshouse.extensions.api.reasons.ExtensionReasonEntity;
-import uk.gov.companieshouse.service.links.CoreLinkKeys;
-import uk.gov.companieshouse.service.links.Links;
-
-@Category(Integration.class)
-@RunWith(SpringRunner.class)
+@Tag("IntegrationTest")
+@ExtendWith(SpringExtension.class)
 @SpringBootTest
 public class RequestRepositoryIntegrationTest {
 
@@ -49,7 +43,7 @@ public class RequestRepositoryIntegrationTest {
 
         assertEquals(REQUEST_1, actualEntity.getId());
         assertEquals(Status.OPEN, actualEntity.getStatus());
-        assertEquals(LocalDateTime.of(2019,1, 2, 11, 38, 44), actualEntity.getCreatedOn());
+        assertEquals(LocalDateTime.of(2019, 1, 2, 11, 38, 44), actualEntity.getCreatedOn());
 
         CreatedBy createdBy = new CreatedBy();
         createdBy.setId("Y2VkZWVlMzhlZWFjY2M4MzQ3MT");
@@ -132,7 +126,7 @@ public class RequestRepositoryIntegrationTest {
     @Test
     public void canGetMultipleRequestsFromDB() throws Exception {
         ExtensionRequestFullEntity dummyEntity = requestsRepository.findById(REQUEST_1)
-                .orElseThrow(() -> new Exception("Request not found in DB"));
+            .orElseThrow(() -> new Exception("Request not found in DB"));
 
         List<ExtensionRequestFullEntity> entityList = requestsRepository
             .findAllByCompanyNumber("00008787", Sort.by("_id"));

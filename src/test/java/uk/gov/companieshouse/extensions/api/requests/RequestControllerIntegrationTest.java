@@ -1,10 +1,24 @@
 package uk.gov.companieshouse.extensions.api.requests;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.companieshouse.extensions.api.Utils.Utils.COMPANY_NUMBER;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.RequestBuilder;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.web.client.RestTemplate;
+import uk.gov.companieshouse.extensions.api.Utils.Utils;
+import uk.gov.companieshouse.extensions.api.authorization.CompanyAuthorizationInterceptor;
+import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -12,31 +26,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.companieshouse.extensions.api.Utils.Utils.COMPANY_NUMBER;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.RequestBuilder;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.web.client.RestTemplate;
-
-import uk.gov.companieshouse.extensions.api.Utils.Utils;
-import uk.gov.companieshouse.extensions.api.authorization.CompanyAuthorizationInterceptor;
-import uk.gov.companieshouse.extensions.api.groups.Integration;
-import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
-
-@Category(Integration.class)
-@RunWith(SpringRunner.class)
+@Tag("IntegrationTest")
+@ExtendWith(SpringExtension.class)
 @WebMvcTest(value = RequestsController.class)
 public class RequestControllerIntegrationTest {
 
@@ -45,7 +42,7 @@ public class RequestControllerIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;
- 
+
     @MockBean
     private RequestsService requestsService;
 
@@ -74,7 +71,7 @@ public class RequestControllerIntegrationTest {
     public void setup() {
         when(companyInterceptor.preHandle(any(HttpServletRequest.class), any(HttpServletResponse.class),
             any(Object.class)))
-                .thenReturn(true);
+            .thenReturn(true);
     }
 
     @Test
@@ -92,10 +89,10 @@ public class RequestControllerIntegrationTest {
             .thenReturn(Utils.dummyRequestEntity());
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders.post(
-             ROOT_URL)
-              .contentType(MediaType.APPLICATION_JSON)
-              .content(request)
-              .accept(MediaType.APPLICATION_JSON);
+                ROOT_URL)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(request)
+            .accept(MediaType.APPLICATION_JSON);
 
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
         assertEquals(201, result.getResponse().getStatus());
@@ -120,7 +117,7 @@ public class RequestControllerIntegrationTest {
         assertEquals(200, result.getResponse().getStatus());
 
     }
-    
+
     @Test
     public void testGetSingleExtensionRequest() throws Exception {
         RequestBuilder requestBuilder = MockMvcRequestBuilders
@@ -149,17 +146,17 @@ public class RequestControllerIntegrationTest {
 
     private String buildMockRequest() {
         return "{\n" +
-               "  \"user\": \"Micky Mock\",\n" +
-               "  \"accounting_period_start_date\": \"2019-02-15\",\n" +
-               "  \"accounting_period_end_date\": \"2019-02-15\",\n" +
-               "  \"extensionReasons\": [\n" +
-               "    {\n" +
-               "      \"reason\": \"string\",\n" +
-               "      \"reason_information\": \"string\",\n" +
-               "      \"date_start\": \"2019-02-15\",\n" +
-               "      \"date_end\": \"2019-02-15\"\n" +
-               "    }\n" +
-               "  ]\n" +
-               "}";
-      }
+            "  \"user\": \"Micky Mock\",\n" +
+            "  \"accounting_period_start_date\": \"2019-02-15\",\n" +
+            "  \"accounting_period_end_date\": \"2019-02-15\",\n" +
+            "  \"extensionReasons\": [\n" +
+            "    {\n" +
+            "      \"reason\": \"string\",\n" +
+            "      \"reason_information\": \"string\",\n" +
+            "      \"date_start\": \"2019-02-15\",\n" +
+            "      \"date_end\": \"2019-02-15\"\n" +
+            "    }\n" +
+            "  ]\n" +
+            "}";
+    }
 }

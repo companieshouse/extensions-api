@@ -1,23 +1,21 @@
 package uk.gov.companieshouse.extensions.api.reasons;
 
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import org.junit.Before;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.companieshouse.extensions.api.authorization.CompanyAuthorizationInterceptor;
-import uk.gov.companieshouse.extensions.api.groups.Integration;
 import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
 import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestFullEntity;
 import uk.gov.companieshouse.extensions.api.requests.ExtensionsLinkKeys;
@@ -34,8 +32,8 @@ import static org.mockito.Mockito.when;
 import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyReasonEntity;
 import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyRequestEntity;
 
-@Category(Integration.class)
-@RunWith(SpringRunner.class)
+@Tag("IntegrationTest")
+@ExtendWith(SpringExtension.class)
 @WebMvcTest(value = ReasonsController.class)
 public class ReasonsControllerIntegrationTest {
 
@@ -64,10 +62,10 @@ public class ReasonsControllerIntegrationTest {
     @MockBean
     private CompanyAuthorizationInterceptor companyInterceptor;
 
-    @Before
+    @BeforeEach
     public void setup() {
-        when(companyInterceptor.preHandle(any(HttpServletRequest.class),
-            any(HttpServletResponse.class), any(Object.class)))
+        when(companyInterceptor.preHandle(any(),
+            any(), any()))
             .thenReturn(true);
     }
 
@@ -129,9 +127,9 @@ public class ReasonsControllerIntegrationTest {
 
     @Test
     public void canReachGetReasonsEndPoint() throws Exception {
-        RequestBuilder requestBuilder = MockMvcRequestBuilders.get(ROOT_URL)
-            .contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.APPLICATION_JSON);
+        RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/company/00006400/extensions/requests/a1/reasons/")
+            .accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON);
+
 
         ServiceResult<ListResponse<ExtensionReasonDTO>> expectedResult =
             ServiceResult.found(ListResponse.<ExtensionReasonDTO>builder()
