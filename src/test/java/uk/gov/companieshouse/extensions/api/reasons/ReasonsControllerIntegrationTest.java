@@ -5,15 +5,16 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.companieshouse.extensions.api.authorization.CompanyAuthorizationInterceptor;
 import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
@@ -34,14 +35,14 @@ import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyRequestEntit
 
 @Tag("IntegrationTest")
 @ExtendWith(SpringExtension.class)
-@WebMvcTest(value = ReasonsController.class)
+@TestPropertySource({"classpath:application-test.properties"})
+@TestConfiguration
 public class ReasonsControllerIntegrationTest {
 
     private static final String ROOT_URL = "/company/00006400/extensions/requests/a1/reasons/";
     private static final String SPECIFIC_URL = "/company/00006400/extensions/requests/a1/reasons" +
         "/b2";
 
-    @Autowired
     private MockMvc mockMvc;
 
     @MockBean
@@ -64,6 +65,9 @@ public class ReasonsControllerIntegrationTest {
 
     @BeforeEach
     public void setup() {
+
+        mockMvc = MockMvcBuilders.standaloneSetup(new ReasonsController(reasonsService, apiLogger)).build();
+
         when(companyInterceptor.preHandle(any(),
             any(), any()))
             .thenReturn(true);
