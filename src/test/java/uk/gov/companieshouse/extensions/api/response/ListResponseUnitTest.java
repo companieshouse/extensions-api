@@ -2,6 +2,7 @@ package uk.gov.companieshouse.extensions.api.response;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -21,10 +22,10 @@ public class ListResponseUnitTest {
             .withItems(Arrays.asList("item1", "item2"))
             .build();
 
-        assertEquals(10, response.getItemsPerPage());
-        assertEquals(0, response.getStartIndex());
-        assertEquals(2, response.getTotalResults());
-        assertEquals("etag", response.getEtag());
+        Assertions.assertEquals(10, response.getItemsPerPage());
+        Assertions.assertEquals(0, response.getStartIndex());
+        Assertions.assertEquals(2, response.getTotalResults());
+        Assertions.assertEquals("etag", response.getEtag());
         assertArrayEquals("unmatched array", new String[]{"item1", "item2"},
             response.getItems().toArray());
     }

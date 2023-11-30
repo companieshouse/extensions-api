@@ -1,7 +1,8 @@
 package uk.gov.companieshouse.extensions.api.logger;
 
-import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -15,7 +16,8 @@ import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
@@ -62,7 +64,7 @@ public class ApiLoggerTest {
         apiLogger.setCompanyNumber(COMPANY_NUMBER);
     }
 
-    @Before
+    @BeforeEach
     public void setup() {
         Mockito.reset(mockLogger);
     }
@@ -141,7 +143,7 @@ public class ApiLoggerTest {
     private void assertMapIsValid(ArgumentCaptor<Map<String, Object>> mapArgumentCaptor) {
         Map<String, Object> mapLogged = mapArgumentCaptor.getValue();
         assertTrue(mapLogged.containsKey(COMPANY_NUMBER_KEY));
-        assertEquals(COMPANY_NUMBER, mapLogged.get(COMPANY_NUMBER_KEY));
+        Assertions.assertEquals(COMPANY_NUMBER, mapLogged.get(COMPANY_NUMBER_KEY));
         assertTrue(mapLogged.containsKey(THREAD_ID_KEY));
         assertNotNull(mapLogged.get(THREAD_ID_KEY));
     }
@@ -159,7 +161,7 @@ public class ApiLoggerTest {
         Map<String, Object> mapLogged = mapArgumentCaptor.getValue();
         extraValues.forEach((extraKey, extraValue) -> {
             assertTrue(mapLogged.containsKey(extraKey));
-            assertEquals(extraValue, mapLogged.get(extraKey));
+            Assertions.assertEquals(extraValue, mapLogged.get(extraKey));
         });
     }
 }

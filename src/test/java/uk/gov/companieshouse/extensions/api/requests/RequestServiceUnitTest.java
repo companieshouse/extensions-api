@@ -1,6 +1,7 @@
 package uk.gov.companieshouse.extensions.api.requests;
 
 import org.junit.Rule;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,7 +17,8 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
@@ -48,7 +50,7 @@ public class RequestServiceUnitTest {
         when(extensionRequestsRepository.findById(REQUEST_ID)).thenReturn(Optional.of(entity));
 
         Optional<ExtensionRequestFullEntity> request = requestsService.getExtensionsRequestById(REQUEST_ID);
-        assertEquals("id 1234 Acc period start: 2018-12-12  Acc period end: 2019-12-12", request.get().toString());
+        Assertions.assertEquals("id 1234 Acc period start: 2018-12-12  Acc period end: 2019-12-12", request.get().toString());
     }
 
     @Test
@@ -67,17 +69,17 @@ public class RequestServiceUnitTest {
         ExtensionRequestFullEntity extensionRequestResult = captor.getValue();
 
         assertNotNull(extensionRequestResult);
-        assertEquals(extensionCreateRequest.getAccountingPeriodStartOn(),
+        Assertions.assertEquals(extensionCreateRequest.getAccountingPeriodStartOn(),
             extensionRequestResult.getAccountingPeriodStartOn());
-        assertEquals(extensionCreateRequest.getAccountingPeriodEndOn(),
+        Assertions.assertEquals(extensionCreateRequest.getAccountingPeriodEndOn(),
             extensionRequestResult.getAccountingPeriodEndOn());
-        assertEquals(Status.OPEN, extensionRequestResult.getStatus());
+        Assertions.assertEquals(Status.OPEN, extensionRequestResult.getStatus());
 
         CreatedBy createdByInEntity = extensionRequestResult.getCreatedBy();
-        assertEquals(createdBy.getEmail(), createdByInEntity.getEmail());
-        assertEquals(createdBy.getForename(), createdByInEntity.getForename());
-        assertEquals(createdBy.getId(), createdByInEntity.getId());
-        assertEquals(createdBy.getSurname(), createdByInEntity.getSurname());
+        Assertions.assertEquals(createdBy.getEmail(), createdByInEntity.getEmail());
+        Assertions.assertEquals(createdBy.getForename(), createdByInEntity.getForename());
+        Assertions.assertEquals(createdBy.getId(), createdByInEntity.getId());
+        Assertions.assertEquals(createdBy.getSurname(), createdByInEntity.getSurname());
     }
 
     @Test
@@ -96,7 +98,7 @@ public class RequestServiceUnitTest {
 
         verify(extensionRequestsRepository).findById("request");
         verify(extensionRequestsRepository).save(extensionRequestFullEntity);
-        assertEquals(Status.SUBMITTED, entity.getStatus());
+        Assertions.assertEquals(Status.SUBMITTED, entity.getStatus());
     }
 
     @Test
@@ -115,7 +117,7 @@ public class RequestServiceUnitTest {
 
         verify(extensionRequestsRepository).findById("request");
         verify(extensionRequestsRepository).save(extensionRequestFullEntity);
-        assertEquals(Status.REJECTED_MAX_EXT_LENGTH_EXCEEDED, entity.getStatus());
+        Assertions.assertEquals(Status.REJECTED_MAX_EXT_LENGTH_EXCEEDED, entity.getStatus());
     }
 
     @Test
@@ -127,7 +129,7 @@ public class RequestServiceUnitTest {
 
         RequestStatus status = new RequestStatus();
         status.setStatus(Status.SUBMITTED);
-        
+
         assertThrows(ServiceException.class, () -> requestsService.patchRequest("request1", status));
     }
 }

@@ -1,14 +1,13 @@
 package uk.gov.companieshouse.extensions.api.reasons;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -26,7 +25,6 @@ import uk.gov.companieshouse.service.links.Links;
 
 import java.util.Arrays;
 
-import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -35,8 +33,6 @@ import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyRequestEntit
 
 @Tag("IntegrationTest")
 @ExtendWith(SpringExtension.class)
-@TestPropertySource({"classpath:application-test.properties"})
-@TestConfiguration
 public class ReasonsControllerIntegrationTest {
 
     private static final String ROOT_URL = "/company/00006400/extensions/requests/a1/reasons/";
@@ -44,6 +40,7 @@ public class ReasonsControllerIntegrationTest {
         "/b2";
 
     private MockMvc mockMvc;
+
 
     @MockBean
     private ReasonsService reasonsService;
@@ -66,7 +63,7 @@ public class ReasonsControllerIntegrationTest {
     @BeforeEach
     public void setup() {
 
-        mockMvc = MockMvcBuilders.standaloneSetup(new ReasonsController(reasonsService, apiLogger)).build();
+        mockMvc = MockMvcBuilders.standaloneSetup(new ReasonsController(reasonsService, apiLogger)).addPlaceholderValue("api.endpoint.extensions", "/company/{companyNumber}/extensions/requests").build();
 
         when(companyInterceptor.preHandle(any(),
             any(), any()))
@@ -91,8 +88,8 @@ public class ReasonsControllerIntegrationTest {
             .accept(MediaType.APPLICATION_JSON);
 
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
-        assertEquals(201, result.getResponse().getStatus());
-        assertEquals(mockReponse(), result.getResponse().getContentAsString());
+        Assertions.assertEquals(201, result.getResponse().getStatus());
+        Assertions.assertEquals(mockReponse(), result.getResponse().getContentAsString());
     }
 
     @Test
@@ -108,7 +105,7 @@ public class ReasonsControllerIntegrationTest {
             .accept(MediaType.APPLICATION_JSON);
 
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
-        assertEquals(204, result.getResponse().getStatus());
+        Assertions.assertEquals(204, result.getResponse().getStatus());
     }
 
     @Test
@@ -126,7 +123,7 @@ public class ReasonsControllerIntegrationTest {
         when(reasonsService.patchReason(any(ExtensionCreateReason.class), any(String.class), any(String.class)))
             .thenReturn(dto);
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
-        assertEquals(200, result.getResponse().getStatus());
+        Assertions.assertEquals(200, result.getResponse().getStatus());
     }
 
     @Test
@@ -142,8 +139,8 @@ public class ReasonsControllerIntegrationTest {
         when(reasonsService.getReasons(anyString()))
             .thenReturn(expectedResult);
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
-        assertEquals(200, result.getResponse().getStatus());
-        assertEquals(mockGetResponse(), result.getResponse().getContentAsString());
+        Assertions.assertEquals(200, result.getResponse().getStatus());
+        Assertions.assertEquals(mockGetResponse(), result.getResponse().getContentAsString());
     }
 
     private String buildMockReason() {

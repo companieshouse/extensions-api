@@ -33,7 +33,7 @@ test-integration: clean
 
 .PHONY: test-ci-integration
 test-ci-integration: clean
-	mvn verify -Dgroups="uk.gov.companieshouse.extensions.api.groups.CIIntegration"
+	mvn verify -Dgroups="CIIntegrationTest"
 
 .PHONY: test-contract-consumer
 test-contract-consumer: clean
@@ -83,3 +83,7 @@ sonar-pr-analysis:
 security-check:
 	mvn org.owasp:dependency-check-maven:update-only
 	mvn org.owasp:dependency-check-maven:check -DfailBuildOnCVSS=4 -DassemblyAnalyzerEnabled=false
+
+.PHONY: build-image
+build-image:
+    mvn compile jib:buildTar -f ./pom.xml

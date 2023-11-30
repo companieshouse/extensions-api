@@ -2,31 +2,35 @@ package uk.gov.companieshouse.extensions.api.requests;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.mockito.InjectMocks;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.util.ReflectionUtils;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.companieshouse.extensions.api.Utils.Utils;
 import uk.gov.companieshouse.extensions.api.authorization.CompanyAuthorizationInterceptor;
 import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
 
+import java.lang.reflect.Field;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -34,13 +38,22 @@ import static uk.gov.companieshouse.extensions.api.Utils.Utils.COMPANY_NUMBER;
 
 @Tag("IntegrationTest")
 @ExtendWith(SpringExtension.class)
-@WebMvcTest(value = RequestsController.class)
+@TestPropertySource(properties = {"EXTENSIONS_API_MONGODB_URL=mongodb://mongo-db1-toro1.development.aws.internal:27017", "server.port=8093",
+    "api.endpoint.extensions=/company/{companyNumber}/extensions/requests",
+    "spring.data.mongodb.uri=mongodb://mongo-db1-toro1.development.aws.internal:27017/extension_requests",
+    "FILE_TRANSFER_API_URL=http://localhost:8081/",
+    "FILE_TRANSFER_API_KEY=12345",
+    "MONGO_CONNECTION_POOL_MIN_SIZE=0",
+    "MONGO_CONNECTION_MAX_IDLE_TIME=0",
+    "MONGO_CONNECTION_MAX_LIFE_TIME=0",
+    "spring.servlet.multipart.max-file-size=100",
+    "spring.servlet.multipart.max-request-size=200"})
+@SpringBootTest(classes = RequestsController.class)
 public class RequestControllerIntegrationTest {
 
     private static final String ROOT_URL = "/company/00006400/extensions/requests/";
     private static final String REQUEST_BY_ID_URL = "/company/00006400/extensions/requests/a1";
 
-    @Autowired
     private MockMvc mockMvc;
 
     @MockBean
@@ -67,11 +80,33 @@ public class RequestControllerIntegrationTest {
     @MockBean
     private CompanyAuthorizationInterceptor companyInterceptor;
 
-    @Before
+    @InjectMocks
+    RequestsController requestsController;
+
+    @BeforeEach
     public void setup() {
+        mockMvc = MockMvcBuilders.standaloneSetup(requestsController).addPlaceholderValue("api.endpoint.extensions", "/company/{companyNumber}/extensions/requests").build();
+        autowireFields(requestsController, requestsService,
+            ericHeaderParser, extensionRequestMapper,
+            apiLogger);
         when(companyInterceptor.preHandle(any(HttpServletRequest.class), any(HttpServletResponse.class),
             any(Object.class)))
             .thenReturn(true);
+    }
+
+    public void autowireFields(RequestsController requestsController, RequestsService requestsService,
+                               ERICHeaderParser ericHeaderParser, ExtensionRequestMapper extensionRequestMapper,
+                               ApiLogger logger) {
+        autowireField(requestsController, "requestsService", requestsService);
+        autowireField(requestsController, "ericHeaderParser", ericHeaderParser);
+        autowireField(requestsController, "extensionRequestMapper", extensionRequestMapper);
+        autowireField(requestsController, "logger", logger);
+    }
+
+    private void autowireField(Object targetObject, String fieldName, Object fieldValue) {
+        Field field = ReflectionUtils.findField(targetObject.getClass(), fieldName);
+        ReflectionUtils.makeAccessible(field);
+        ReflectionUtils.setField(field, targetObject, fieldValue);
     }
 
     @Test
@@ -95,7 +130,7 @@ public class RequestControllerIntegrationTest {
             .accept(MediaType.APPLICATION_JSON);
 
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
-        assertEquals(201, result.getResponse().getStatus());
+        Assertions.assertEquals(201, result.getResponse().getStatus());
     }
 
     @Test
@@ -114,7 +149,7 @@ public class RequestControllerIntegrationTest {
             (extensionRequestFullDTO);
 
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
-        assertEquals(200, result.getResponse().getStatus());
+        Assertions.assertEquals(200, result.getResponse().getStatus());
 
     }
 
@@ -141,7 +176,7 @@ public class RequestControllerIntegrationTest {
             .accept(MediaType.APPLICATION_JSON);
 
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
-        assertEquals(200, result.getResponse().getStatus());
+        Assertions.assertEquals(200, result.getResponse().getStatus());
     }
 
     private String buildMockRequest() {

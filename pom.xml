@@ -9,7 +9,6 @@
     <version>unversioned</version>
 
     <properties>
-        <!--        <junit.vintage.engine.version>5.10.1</junit.vintage.engine.version>-->
         <log4j2.version>2.17.1</log4j2.version>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
@@ -34,18 +33,6 @@
 
     <dependencyManagement>
         <dependencies>
-            <!--            <dependency>-->
-            <!--            <groupId>org.junit.jupiter</groupId>-->
-            <!--            <artifactId>junit-jupiter-api</artifactId>-->
-            <!--            <version>${junit.jupiter.version}</version>-->
-            <!--            <scope>test</scope>-->
-            <!--        </dependency>-->
-            <!--        <dependency>-->
-            <!--            <groupId>org.junit.jupiter</groupId>-->
-            <!--            <artifactId>junit-jupiter-engine</artifactId>-->
-            <!--            <version>${junit.jupiter.version}</version>-->
-            <!--            <scope>test</scope>-->
-            <!--        </dependency>-->
             <dependency>
                 <groupId>org.apache.logging.log4j</groupId>
                 <artifactId>log4j-bom</artifactId>
@@ -161,15 +148,8 @@
         </dependency>
         <dependency>
             <groupId>org.mock-server</groupId>
-            <artifactId>mockserver-netty</artifactId>
-            <version>5.5.4</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mock-server</groupId>
-            <artifactId>mockserver-client-java</artifactId>
-            <version>5.5.4</version>
-            <scope>test</scope>
+            <artifactId>mockserver-junit-jupiter-no-dependencies</artifactId>
+            <version>5.14.0</version>
         </dependency>
         <dependency>
             <groupId>org.mapstruct</groupId>
@@ -181,6 +161,8 @@
             <artifactId>mapstruct-processor</artifactId>
             <version>${mapstruct.version}</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.junit-pioneer/junit-pioneer -->
+
         <dependency>
             <groupId>au.com.dius</groupId>
             <artifactId>pact-jvm-provider-spring_2.12</artifactId>
@@ -251,10 +233,10 @@
                 <version>${jib-maven-plugin.version}</version>
                 <configuration>
                     <from>
-                        <image>416670754337.dkr.ecr.eu-west-2.amazonaws.com/ci-corretto-runtime-21:latest</image>
+                        <image>416670754337.dkr.ecr.eu-west-2.amazonaws.com/ci-corretto-build-21:latest</image>
                     </from>
                     <to>
-                        <image>416670754337.dkr.ecr.eu-west-2.amazonaws.com/local/extensions-api:latest
+                        <image>416670754337.dkr.ecr.eu-west-2.amazonaws.com/extensions-api:latest
                         </image>
                     </to>
                 </configuration>

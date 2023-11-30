@@ -1,11 +1,13 @@
 package uk.gov.companieshouse.extensions.api.requests;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Sort;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.companieshouse.extensions.api.Utils.Utils;
 import uk.gov.companieshouse.extensions.api.attachments.Attachment;
@@ -19,10 +21,20 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 @Tag("IntegrationTest")
 @ExtendWith(SpringExtension.class)
+@TestPropertySource(properties = {"EXTENSIONS_API_MONGODB_URL=mongodb://mongo-db1-toro1.development.aws.internal:27017", "server.port=8093",
+    "api.endpoint.extensions=/company/{companyNumber}/extensions/requests",
+    "spring.data.mongodb.uri=mongodb://mongo-db1-toro1.development.aws.internal:27017/extension_requests",
+    "FILE_TRANSFER_API_URL=http://localhost:8081/",
+    "FILE_TRANSFER_API_KEY=12345",
+    "MONGO_CONNECTION_POOL_MIN_SIZE=0",
+    "MONGO_CONNECTION_MAX_IDLE_TIME=0",
+    "MONGO_CONNECTION_MAX_LIFE_TIME=0",
+    "spring.servlet.multipart.max-file-size=100",
+    "spring.servlet.multipart.max-request-size=200"})
 @SpringBootTest
 public class RequestRepositoryIntegrationTest {
 
@@ -37,18 +49,18 @@ public class RequestRepositoryIntegrationTest {
     public void canGetRequestFromDB() {
         Optional<ExtensionRequestFullEntity> dummyData = requestsRepository.findById(REQUEST_1);
 
-        assertTrue(dummyData.isPresent());
+        Assertions.assertTrue(dummyData.isPresent());
 
         ExtensionRequestFullEntity actualEntity = dummyData.get();
 
-        assertEquals(REQUEST_1, actualEntity.getId());
-        assertEquals(Status.OPEN, actualEntity.getStatus());
-        assertEquals(LocalDateTime.of(2019, 1, 2, 11, 38, 44), actualEntity.getCreatedOn());
+        Assertions.assertEquals(REQUEST_1, actualEntity.getId());
+        Assertions.assertEquals(Status.OPEN, actualEntity.getStatus());
+        Assertions.assertEquals(LocalDateTime.of(2019, 1, 2, 11, 38, 44), actualEntity.getCreatedOn());
 
         CreatedBy createdBy = new CreatedBy();
         createdBy.setId("Y2VkZWVlMzhlZWFjY2M4MzQ3MT");
         createdBy.setEmail("demo@ch.gov.uk");
-        assertEquals(createdBy, actualEntity.getCreatedBy());
+        Assertions.assertEquals(createdBy, actualEntity.getCreatedBy());
     }
 
     @Test
@@ -60,11 +72,11 @@ public class RequestRepositoryIntegrationTest {
 
         assertNotNull(savedEntity.getId());
         assertTrue(savedEntity.getReasons().isEmpty());
-        assertEquals(LocalDate.of(2019, 12, 12), savedEntity.getAccountingPeriodEndOn());
-        assertEquals(LocalDate.of(2018, 12, 12), savedEntity.getAccountingPeriodStartOn());
-        assertEquals("etag", savedEntity.getEtag());
-        assertEquals(Status.OPEN, savedEntity.getStatus());
-        assertEquals(expectedEntity.getCreatedBy(), savedEntity.getCreatedBy());
+        Assertions.assertEquals(LocalDate.of(2019, 12, 12), savedEntity.getAccountingPeriodEndOn());
+        Assertions.assertEquals(LocalDate.of(2018, 12, 12), savedEntity.getAccountingPeriodStartOn());
+        Assertions.assertEquals("etag", savedEntity.getEtag());
+        Assertions.assertEquals(Status.OPEN, savedEntity.getStatus());
+        Assertions.assertEquals(expectedEntity.getCreatedBy(), savedEntity.getCreatedBy());
     }
 
     @Test

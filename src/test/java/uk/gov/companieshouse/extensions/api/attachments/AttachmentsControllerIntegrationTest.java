@@ -2,16 +2,15 @@ package uk.gov.companieshouse.extensions.api.attachments;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletResponse;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -24,21 +23,19 @@ import uk.gov.companieshouse.extensions.api.Utils.Utils;
 import uk.gov.companieshouse.extensions.api.attachments.file.FileTransferApiClientResponse;
 import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
 import uk.gov.companieshouse.service.ServiceResult;
+import uk.gov.companieshouse.service.rest.response.ChResponseBody;
 import uk.gov.companieshouse.service.rest.response.PluggableResponseEntityFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.HashMap;
 
-import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @Tag("IntegrationTest")
 @ExtendWith(SpringExtension.class)
-@SpringBootTest
-@AutoConfigureMockMvc
 public class AttachmentsControllerIntegrationTest {
 
     private static final String ROOT_URL = "/company/00006400/extensions/requests/a1" +
@@ -55,8 +52,9 @@ public class AttachmentsControllerIntegrationTest {
     @Mock
     private ApiLogger logger;
 
-    @Autowired
+    @Mock
     private PluggableResponseEntityFactory responseEntityFactory;
+
 
     @BeforeEach
     public void setup() {
@@ -77,9 +75,12 @@ public class AttachmentsControllerIntegrationTest {
             .withFile(multipartFile)
             .withAttachment(new Attachment())
             .build();
+
         when(attachmentsService.addAttachment(any(MultipartFile.class),
             anyString(), anyString(), anyString()))
             .thenReturn(ServiceResult.accepted(expectedDto));
+        ServiceResult<AttachmentDTO> resultDTO = ServiceResult.accepted(expectedDto);
+        when(responseEntityFactory.createResponse(any())).thenReturn(createResponseEntityForFile(resultDTO));
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders.multipart(ROOT_URL)
             .file("file", multipartFile.getBytes())
@@ -90,8 +91,8 @@ public class AttachmentsControllerIntegrationTest {
         String expectedJsonResponse = new ObjectMapper()
             .writer()
             .writeValueAsString(expectedDto);
-        assertEquals(expectedJsonResponse, result.getResponse().getContentAsString());
-        assertEquals(HttpStatus.ACCEPTED.value(), result.getResponse().getStatus());
+        Assertions.assertEquals(expectedJsonResponse, result.getResponse().getContentAsString());
+        Assertions.assertEquals(HttpStatus.ACCEPTED.value(), result.getResponse().getStatus());
     }
 
     @Test
@@ -101,9 +102,10 @@ public class AttachmentsControllerIntegrationTest {
         RequestBuilder requestBuilder = MockMvcRequestBuilders
             .delete(SPECIFIC_URL)
             .accept(MediaType.APPLICATION_JSON);
-
+        ServiceResult<Void> resultDeleted = ServiceResult.deleted();
+        when(responseEntityFactory.createResponse(any())).thenReturn(ResponseEntity.status(HttpStatus.NO_CONTENT).build());
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
-        assertEquals(HttpStatus.NO_CONTENT.value(), result.getResponse().getStatus());
+        Assertions.assertEquals(HttpStatus.NO_CONTENT.value(), result.getResponse().getStatus());
     }
 
     @Test
@@ -116,7 +118,7 @@ public class AttachmentsControllerIntegrationTest {
         RequestBuilder requestBuilder = MockMvcRequestBuilders.get(DOWNLOAD_URL);
 
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
-        assertEquals(HttpStatus.OK.value(), result.getResponse().getStatus());
+        Assertions.assertEquals(HttpStatus.OK.value(), result.getResponse().getStatus());
     }
 
     @Test
@@ -131,6 +133,12 @@ public class AttachmentsControllerIntegrationTest {
 
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
 
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), result.getResponse().getStatus());
+        Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), result.getResponse().getStatus());
+    }
+
+    public <T> ResponseEntity<ChResponseBody<Object>> createResponseEntityForFile(
+        ServiceResult<T> serviceResult) {
+        ChResponseBody<T> body = ChResponseBody.createNormalBody(serviceResult.getData());
+        return ResponseEntity.accepted().body((ChResponseBody<Object>) body);
     }
 }

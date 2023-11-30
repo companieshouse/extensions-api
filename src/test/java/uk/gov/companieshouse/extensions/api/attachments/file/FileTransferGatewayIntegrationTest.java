@@ -11,7 +11,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.awaitility.Duration;
 import org.jetbrains.annotations.NotNull;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -24,7 +24,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.multipart.MultipartFile;
-import uk.gov.companieshouse.extensions.api.groups.CIIntegration;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -39,7 +38,7 @@ import static org.mockito.Mockito.when;
 /**
  * FileTransferGatewayIntegrationTest
  */
-@Category(CIIntegration.class)
+@Tag("CIIntegrationTest")
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class FileTransferGatewayIntegrationTest {

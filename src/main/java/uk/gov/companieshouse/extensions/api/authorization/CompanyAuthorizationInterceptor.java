@@ -2,6 +2,9 @@ package uk.gov.companieshouse.extensions.api.authorization;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.servlet.HandlerInterceptor;
 import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
 import uk.gov.companieshouse.service.ServiceException;
@@ -19,25 +22,24 @@ public class CompanyAuthorizationInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-        return true;
-//        if (!HttpMethod.GET.matches(request.getMethod())) {
-//            if (StringUtils.isEmpty(request.getHeader(AuthorizedRoles.ERIC_AUTHORISED_ROLES))) {
-//                logger.debug("User is permitted to update attachment", request);
-//                return true;
-//            } else {
-//                logger.debug("Admin user is not permitted to modify an attachment", request);
-//                response.setStatus(HttpStatus.UNAUTHORIZED.value());
-//                return false;
-//            }
-//        }
-//
-//        if (adminCanGetResource(request)) {
-//            return true;
-//        }
-//
-//        logger.debug("User is not authorized to view this resource", request);
-//        response.setStatus(HttpStatus.UNAUTHORIZED.value());
-//        return false;
+        if (!HttpMethod.GET.matches(request.getMethod())) {
+            if (StringUtils.isEmpty(request.getHeader(AuthorizedRoles.ERIC_AUTHORISED_ROLES))) {
+                logger.debug("User is permitted to update attachment", request);
+                return true;
+            } else {
+                logger.debug("Admin user is not permitted to modify an attachment", request);
+                response.setStatus(HttpStatus.UNAUTHORIZED.value());
+                return false;
+            }
+        }
+
+        if (adminCanGetResource(request)) {
+            return true;
+        }
+
+        logger.debug("User is not authorized to view this resource", request);
+        response.setStatus(HttpStatus.UNAUTHORIZED.value());
+        return false;
     }
 
     private boolean hasPrivilege(HttpServletRequest request, String privilege) throws ServiceException {
