@@ -8,8 +8,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.companieshouse.extensions.api.reasons.ExtensionReasonEntity;
 import uk.gov.companieshouse.service.links.Links;
 
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static uk.gov.companieshouse.extensions.api.Utils.Utils.*;
 
 @Tag("UnitTest")

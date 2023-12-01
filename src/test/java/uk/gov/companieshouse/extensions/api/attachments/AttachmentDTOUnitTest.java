@@ -10,7 +10,7 @@ import uk.gov.companieshouse.service.links.Links;
 
 import java.io.IOException;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Tag("UnitTest")
 public class AttachmentDTOUnitTest {
