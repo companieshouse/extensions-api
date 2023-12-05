@@ -1,28 +1,19 @@
 package uk.gov.companieshouse.extensions.api.requests;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import jakarta.servlet.http.HttpServletRequest;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.web.bind.annotation.*;
 import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
 import uk.gov.companieshouse.extensions.api.logger.LogMethodCall;
 import uk.gov.companieshouse.extensions.api.response.ListResponse;
 import uk.gov.companieshouse.service.ServiceException;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/")
@@ -41,10 +32,10 @@ public class RequestsController {
     private ApiLogger logger;
 
     @LogMethodCall
-    @PostMapping("${api.endpoint.extensions}")
+    @PostMapping("${api.endpoint.extensions}/")
     public ResponseEntity<ExtensionRequestFullDTO> createExtensionRequestResource(
-            @RequestBody ExtensionCreateRequest extensionCreateRequest, HttpServletRequest request,
-            @PathVariable String companyNumber) {
+        @RequestBody ExtensionCreateRequest extensionCreateRequest, HttpServletRequest request,
+        @PathVariable String companyNumber) {
 
         CreatedBy createdBy = new CreatedBy();
         createdBy.setId(ericHeaderParser.getUserId(request));
@@ -52,7 +43,7 @@ public class RequestsController {
         try {
             createdBy.setForename(ericHeaderParser.getForename(request));
             createdBy.setSurname(ericHeaderParser.getSurname(request));
-        } catch(UnsupportedEncodingException ex) {
+        } catch (UnsupportedEncodingException ex) {
             logger.debug("Cannot parse username from eric header", request);
             logger.error(ex);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -61,27 +52,27 @@ public class RequestsController {
         String reqUri = request.getRequestURI();
 
         ExtensionRequestFullEntity extensionRequestFullEntity = requestsService
-                .insertExtensionsRequest(extensionCreateRequest, createdBy, reqUri, companyNumber);
+            .insertExtensionsRequest(extensionCreateRequest, createdBy, reqUri, companyNumber);
 
         ExtensionRequestFullDTO extensionRequestFullDTO = extensionRequestMapper
-                .entityToDTO(extensionRequestFullEntity);
+            .entityToDTO(extensionRequestFullEntity);
 
         return ResponseEntity
-                .created(URI.create(extensionRequestFullEntity.getLinks().getLink(ExtensionsLinkKeys.SELF)))
-                .body(extensionRequestFullDTO);
+            .created(URI.create(extensionRequestFullEntity.getLinks().getLink(ExtensionsLinkKeys.SELF)))
+            .body(extensionRequestFullDTO);
     }
 
     @LogMethodCall
     @GetMapping("${api.endpoint.extensions}")
     public ResponseEntity<ListResponse<ExtensionRequestFullDTO>> getExtensionRequestsListByCompanyNumber(
-            @PathVariable String companyNumber) {
+        @PathVariable String companyNumber) {
 
         List<ExtensionRequestFullDTO> requestFullDTOList = requestsService
-                .getExtensionsRequestListByCompanyNumber(companyNumber).stream()
-                .map(extensionRequestMapper::entityToDTO).collect(Collectors.toList());
+            .getExtensionsRequestListByCompanyNumber(companyNumber).stream()
+            .map(extensionRequestMapper::entityToDTO).collect(Collectors.toList());
 
         ListResponse<ExtensionRequestFullDTO> extensionRequestList = ListResponse.<ExtensionRequestFullDTO>builder()
-                .withItems(requestFullDTOList).build();
+            .withItems(requestFullDTOList).build();
         return ResponseEntity.ok(extensionRequestList);
     }
 
@@ -89,13 +80,13 @@ public class RequestsController {
     @GetMapping("${api.endpoint.extensions}/{requestId}")
     public ResponseEntity<ExtensionRequestFullEntity> getSingleExtensionRequestById(@PathVariable String requestId) {
         return requestsService.getExtensionsRequestById(requestId).map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+            .orElse(ResponseEntity.notFound().build());
     }
 
     @LogMethodCall
     @PatchMapping("${api.endpoint.extensions}/{requestId}")
     public ResponseEntity<ExtensionRequestFullEntity> patchRequest(@PathVariable String requestId,
-            @RequestBody RequestStatus requestStatus) {
+                                                                   @RequestBody RequestStatus requestStatus) {
         try {
             requestsService.patchRequest(requestId, requestStatus);
             return ResponseEntity.noContent().build();
@@ -107,6 +98,6 @@ public class RequestsController {
     @LogMethodCall
     @DeleteMapping("${api.endpoint.extensions}/{requestId}")
     public boolean deleteExtensionRequestById(@PathVariable String requestId) {
-      return false;
+        return false;
     }
 }
