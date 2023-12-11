@@ -146,11 +146,14 @@
             <artifactId>environment-reader-library</artifactId>
             <version>${environment-reader-library.version}</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.mock-server/mockserver-junit-jupiter-no-dependencies -->
         <dependency>
             <groupId>org.mock-server</groupId>
             <artifactId>mockserver-junit-jupiter-no-dependencies</artifactId>
-            <version>5.14.0</version>
+            <version>5.15.0</version>
+            <scope>test</scope>
         </dependency>
+
         <dependency>
             <groupId>org.mapstruct</groupId>
             <artifactId>mapstruct</artifactId>
