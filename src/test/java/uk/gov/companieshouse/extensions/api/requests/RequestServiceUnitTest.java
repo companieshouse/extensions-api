@@ -21,8 +21,15 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
-import static uk.gov.companieshouse.extensions.api.Utils.Utils.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static uk.gov.companieshouse.extensions.api.Utils.Utils.COMPANY_NUMBER;
+import static uk.gov.companieshouse.extensions.api.Utils.Utils.REQUEST_ID;
+import static uk.gov.companieshouse.extensions.api.Utils.Utils.TESTURI;
+import static uk.gov.companieshouse.extensions.api.Utils.Utils.createdBy;
+import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyCreateRequestEntity;
+import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyRequestEntity;
 
 @Tag("UnitTest")
 @ExtendWith(MockitoExtension.class)

@@ -27,7 +27,11 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.companieshouse.extensions.api.Utils.Utils.*;
+import static uk.gov.companieshouse.extensions.api.Utils.Utils.REASON_ID;
+import static uk.gov.companieshouse.extensions.api.Utils.Utils.REQUEST_ID;
+import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyCreateReason;
+import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyReasonEntity;
+import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyRequestEntity;
 
 @Tag("UnitTest")
 @ExtendWith(MockitoExtension.class)
