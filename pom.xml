@@ -12,15 +12,15 @@
         <log4j2.version>2.17.1</log4j2.version>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
-        <spring-boot-dependencies.version>3.1.6</spring-boot-dependencies.version>
-        <spring-boot-maven-plugin.version>3.1.6</spring-boot-maven-plugin.version>
+        <spring-boot-dependencies.version>3.2.1</spring-boot-dependencies.version>
+        <spring-boot-maven-plugin.version>3.2.1</spring-boot-maven-plugin.version>
         <structured-logging.version>2.0.3</structured-logging.version>
         <pact.version>3.6.7</pact.version>
         <rest-service-common-library.version>1.0.1</rest-service-common-library.version>
         <environment-reader-library.version>2.0.2</environment-reader-library.version>
         <mapstruct.version>1.4.1.Final</mapstruct.version>
         <surefire-plugin.version>2.22.2</surefire-plugin.version>
-        <junit.jupiter.version>5.8.0</junit.jupiter.version>
+        <junit.jupiter.version>5.10.1</junit.jupiter.version>
         <jib-maven-plugin.version>3.4.0</jib-maven-plugin.version>
     </properties>
 
@@ -94,14 +94,14 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-junit-jupiter</artifactId>
-            <version>3.6.28</version>
+            <version>5.8.0</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
-            <version>5.8.0</version>
+            <version>${junit.jupiter.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -221,6 +221,13 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${surefire-plugin.version}</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <parameters>true</parameters>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>com.google.cloud.tools</groupId>
