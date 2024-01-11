@@ -1,9 +1,18 @@
 package uk.gov.companieshouse.extensions.api.requests;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Sort;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import uk.gov.companieshouse.extensions.api.Utils.Utils;
+import uk.gov.companieshouse.extensions.api.attachments.Attachment;
+import uk.gov.companieshouse.extensions.api.reasons.ExtensionReasonEntity;
+import uk.gov.companieshouse.service.links.Links;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -12,23 +21,23 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.Sort;
-import org.springframework.test.context.junit4.SpringRunner;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import uk.gov.companieshouse.extensions.api.Utils.Utils;
-import uk.gov.companieshouse.extensions.api.attachments.Attachment;
-import uk.gov.companieshouse.extensions.api.groups.Integration;
-import uk.gov.companieshouse.extensions.api.reasons.ExtensionReasonEntity;
-import uk.gov.companieshouse.service.links.CoreLinkKeys;
-import uk.gov.companieshouse.service.links.Links;
-
-@Category(Integration.class)
-@RunWith(SpringRunner.class)
+@Tag("IntegrationTest")
+@ExtendWith(SpringExtension.class)
+@TestPropertySource(properties = {"EXTENSIONS_API_MONGODB_URL=mongodb://mongo-db1-toro1.development.aws.internal:27017", "server.port=8093",
+    "api.endpoint.extensions=/company/{companyNumber}/extensions/requests",
+    "spring.data.mongodb.uri=mongodb://mongo-db1-toro1.development.aws.internal:27017/extension_requests",
+    "FILE_TRANSFER_API_URL=http://localhost:8081/",
+    "FILE_TRANSFER_API_KEY=12345",
+    "MONGO_CONNECTION_POOL_MIN_SIZE=0",
+    "MONGO_CONNECTION_MAX_IDLE_TIME=0",
+    "MONGO_CONNECTION_MAX_LIFE_TIME=0",
+    "spring.servlet.multipart.max-file-size=100",
+    "spring.servlet.multipart.max-request-size=200"})
 @SpringBootTest
 public class RequestRepositoryIntegrationTest {
 
@@ -43,18 +52,18 @@ public class RequestRepositoryIntegrationTest {
     public void canGetRequestFromDB() {
         Optional<ExtensionRequestFullEntity> dummyData = requestsRepository.findById(REQUEST_1);
 
-        assertTrue(dummyData.isPresent());
+        Assertions.assertTrue(dummyData.isPresent());
 
         ExtensionRequestFullEntity actualEntity = dummyData.get();
 
-        assertEquals(REQUEST_1, actualEntity.getId());
-        assertEquals(Status.OPEN, actualEntity.getStatus());
-        assertEquals(LocalDateTime.of(2019,1, 2, 11, 38, 44), actualEntity.getCreatedOn());
+        Assertions.assertEquals(REQUEST_1, actualEntity.getId());
+        Assertions.assertEquals(Status.OPEN, actualEntity.getStatus());
+        Assertions.assertEquals(LocalDateTime.of(2019, 1, 2, 11, 38, 44), actualEntity.getCreatedOn());
 
         CreatedBy createdBy = new CreatedBy();
         createdBy.setId("Y2VkZWVlMzhlZWFjY2M4MzQ3MT");
         createdBy.setEmail("demo@ch.gov.uk");
-        assertEquals(createdBy, actualEntity.getCreatedBy());
+        Assertions.assertEquals(createdBy, actualEntity.getCreatedBy());
     }
 
     @Test
@@ -66,11 +75,11 @@ public class RequestRepositoryIntegrationTest {
 
         assertNotNull(savedEntity.getId());
         assertTrue(savedEntity.getReasons().isEmpty());
-        assertEquals(LocalDate.of(2019, 12, 12), savedEntity.getAccountingPeriodEndOn());
-        assertEquals(LocalDate.of(2018, 12, 12), savedEntity.getAccountingPeriodStartOn());
-        assertEquals("etag", savedEntity.getEtag());
-        assertEquals(Status.OPEN, savedEntity.getStatus());
-        assertEquals(expectedEntity.getCreatedBy(), savedEntity.getCreatedBy());
+        Assertions.assertEquals(LocalDate.of(2019, 12, 12), savedEntity.getAccountingPeriodEndOn());
+        Assertions.assertEquals(LocalDate.of(2018, 12, 12), savedEntity.getAccountingPeriodStartOn());
+        Assertions.assertEquals("etag", savedEntity.getEtag());
+        Assertions.assertEquals(Status.OPEN, savedEntity.getStatus());
+        Assertions.assertEquals(expectedEntity.getCreatedBy(), savedEntity.getCreatedBy());
     }
 
     @Test
@@ -132,7 +141,7 @@ public class RequestRepositoryIntegrationTest {
     @Test
     public void canGetMultipleRequestsFromDB() throws Exception {
         ExtensionRequestFullEntity dummyEntity = requestsRepository.findById(REQUEST_1)
-                .orElseThrow(() -> new Exception("Request not found in DB"));
+            .orElseThrow(() -> new Exception("Request not found in DB"));
 
         List<ExtensionRequestFullEntity> entityList = requestsRepository
             .findAllByCompanyNumber("00008787", Sort.by("_id"));

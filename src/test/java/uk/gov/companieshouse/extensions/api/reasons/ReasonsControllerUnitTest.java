@@ -1,34 +1,15 @@
 package uk.gov.companieshouse.extensions.api.reasons;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static uk.gov.companieshouse.extensions.api.Utils.Utils.BASE_URL;
-import static uk.gov.companieshouse.extensions.api.Utils.Utils.REASON_ID;
-import static uk.gov.companieshouse.extensions.api.Utils.Utils.REQUEST_ID;
-import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyCreateReason;
-import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyReasonEntity;
-import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyRequestEntity;
-
-import java.util.List;
-import java.util.Objects;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.junit.runner.RunWith;
+import jakarta.servlet.http.HttpServletRequest;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
-import uk.gov.companieshouse.extensions.api.groups.Unit;
 import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
 import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestFullEntity;
 import uk.gov.companieshouse.extensions.api.requests.ExtensionsLinkKeys;
@@ -39,8 +20,21 @@ import uk.gov.companieshouse.service.links.Links;
 import uk.gov.companieshouse.service.rest.response.ChResponseBody;
 import uk.gov.companieshouse.service.rest.response.PluggableResponseEntityFactory;
 
-@Category(Unit.class)
-@RunWith(MockitoJUnitRunner.class)
+import java.util.List;
+import java.util.Objects;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static uk.gov.companieshouse.extensions.api.Utils.Utils.REASON_ID;
+import static uk.gov.companieshouse.extensions.api.Utils.Utils.REQUEST_ID;
+import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyCreateReason;
+import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyReasonEntity;
+import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyRequestEntity;
+
+@Tag("UnitTest")
+@ExtendWith(MockitoExtension.class)
 public class ReasonsControllerUnitTest {
 
     @InjectMocks
@@ -55,10 +49,6 @@ public class ReasonsControllerUnitTest {
     @Mock
     private ApiLogger logger;
 
-    @Before
-    public void setup() {
-        when(mockHttpServletRequest.getRequestURI()).thenReturn(BASE_URL);
-    }
 
     @Test
     public void returns404IfServiceThrows() throws ServiceException {
@@ -76,8 +66,8 @@ public class ReasonsControllerUnitTest {
 
         verify(reasonsService).getReasons(REQUEST_ID);
         verify(logger).info(serviceException.getMessage());
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertEquals(expectedEntity, response);
+        Assertions.assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        Assertions.assertEquals(expectedEntity, response);
     }
 
     @Test
@@ -99,10 +89,10 @@ public class ReasonsControllerUnitTest {
         ResponseEntity<ExtensionReasonDTO> response =
             reasonsController.addReasonToRequest(dummyCreateReason, REQUEST_ID, mockHttpServletRequest);
 
-        assertNotNull(response.getBody());
-        assertEquals(dto.getLinks(), response.getBody().getLinks());
-        assertEquals(dto.getId(), response.getBody().getId());
-        assertEquals("requestURL", Objects.requireNonNull(response.getHeaders().getLocation()).toString());
+        Assertions.assertNotNull(response.getBody());
+        Assertions.assertEquals(dto.getLinks(), response.getBody().getLinks());
+        Assertions.assertEquals(dto.getId(), response.getBody().getId());
+        Assertions.assertEquals("requestURL", Objects.requireNonNull(response.getHeaders().getLocation()).toString());
     }
 
     @Test
@@ -114,7 +104,7 @@ public class ReasonsControllerUnitTest {
         ResponseEntity<ExtensionReasonDTO> response = reasonsController.deleteReasonFromRequest
             (REQUEST_ID, REASON_ID);
 
-        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        Assertions.assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
     }
 
     @Test
@@ -126,8 +116,8 @@ public class ReasonsControllerUnitTest {
 
         ResponseEntity<ExtensionReasonDTO> response =
             reasonsController.patchReason(dummyCreateReason(), "1234", "");
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(dto.toString(), response.getBody().toString());
+        Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
+        Assertions.assertEquals(dto.toString(), response.getBody().toString());
     }
 
 }

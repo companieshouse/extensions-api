@@ -1,22 +1,19 @@
 package uk.gov.companieshouse.extensions.api.requests;
 
-import static org.mockito.Mockito.when;
+import jakarta.servlet.http.HttpServletRequest;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.UnsupportedEncodingException;
 
-import javax.servlet.http.HttpServletRequest;
+import static org.mockito.Mockito.when;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-
-import uk.gov.companieshouse.extensions.api.groups.Unit;
-
-@Category(Unit.class)
-@RunWith(MockitoJUnitRunner.class)
+@Tag("UnitTest")
+@ExtendWith(MockitoExtension.class)
 public class ERICHeaderParserUnitTest {
 
     private static final String ERIC_HEADER_IDENTITY = "ERIC-identity";
@@ -33,66 +30,66 @@ public class ERICHeaderParserUnitTest {
     @Test
     public void testGetUserId() {
         when(request.getHeader(ERIC_HEADER_IDENTITY)).thenReturn(ERIC_IDENTITY);
-        Assert.assertEquals(ERIC_IDENTITY, ericHeaderParser.getUserId(request));
+        Assertions.assertEquals(ERIC_IDENTITY, ericHeaderParser.getUserId(request));
     }
 
     @Test
     public void testGetUserId_null() {
         when(request.getHeader(ERIC_HEADER_IDENTITY)).thenReturn("");
-        Assert.assertNull(ericHeaderParser.getUserId(request));
+        Assertions.assertNull(ericHeaderParser.getUserId(request));
     }
 
     @Test
     public void testGetEmail() {
         when(request.getHeader(ERIC_AUTHORISED_USER)).thenReturn(AUTH_USER);
-        Assert.assertEquals("demo@ch.gov.uk", ericHeaderParser.getEmail(request));
+        Assertions.assertEquals("demo@ch.gov.uk", ericHeaderParser.getEmail(request));
     }
 
     @Test
     public void testGetEmail_UTF8() {
         when(request.getHeader(ERIC_AUTHORISED_USER)).thenReturn(UTF8_AUTH_USER);
-        Assert.assertEquals("demo@ch.gov.uk", ericHeaderParser.getEmail(request));
+        Assertions.assertEquals("demo@ch.gov.uk", ericHeaderParser.getEmail(request));
     }
 
     @Test
     public void testGetEmail_null() {
         when(request.getHeader(ERIC_AUTHORISED_USER)).thenReturn("");
-        Assert.assertNull(ericHeaderParser.getEmail(request));
+        Assertions.assertNull(ericHeaderParser.getEmail(request));
     }
 
     @Test
     public void testGetForename() throws UnsupportedEncodingException {
         when(request.getHeader(ERIC_AUTHORISED_USER)).thenReturn(AUTH_USER);
-        Assert.assertEquals("demoForename", ericHeaderParser.getForename(request));
+        Assertions.assertEquals("demoForename", ericHeaderParser.getForename(request));
     }
 
     @Test
     public void testGetForename_UTF8() throws UnsupportedEncodingException {
         when(request.getHeader(ERIC_AUTHORISED_USER)).thenReturn(UTF8_AUTH_USER);
-        Assert.assertEquals("demo ;Forename", ericHeaderParser.getForename(request));
+        Assertions.assertEquals("demo ;Forename", ericHeaderParser.getForename(request));
     }
 
     @Test
     public void testGetForename_null() throws UnsupportedEncodingException {
         when(request.getHeader(ERIC_AUTHORISED_USER)).thenReturn("");
-        Assert.assertNull(ericHeaderParser.getForename(request));
+        Assertions.assertNull(ericHeaderParser.getForename(request));
     }
 
     @Test
     public void testGetSurname() throws UnsupportedEncodingException {
         when(request.getHeader(ERIC_AUTHORISED_USER)).thenReturn(AUTH_USER);
-        Assert.assertEquals("demoSurname", ericHeaderParser.getSurname(request));
+        Assertions.assertEquals("demoSurname", ericHeaderParser.getSurname(request));
     }
 
     @Test
     public void testGetSurname_UTF8() throws UnsupportedEncodingException {
         when(request.getHeader(ERIC_AUTHORISED_USER)).thenReturn(UTF8_AUTH_USER);
-        Assert.assertEquals("demo;Surname", ericHeaderParser.getSurname(request));
+        Assertions.assertEquals("demo;Surname", ericHeaderParser.getSurname(request));
     }
 
     @Test
     public void testGetSurname_null() throws UnsupportedEncodingException {
         when(request.getHeader(ERIC_AUTHORISED_USER)).thenReturn("");
-        Assert.assertNull(ericHeaderParser.getSurname(request));
+        Assertions.assertNull(ericHeaderParser.getSurname(request));
     }
 }

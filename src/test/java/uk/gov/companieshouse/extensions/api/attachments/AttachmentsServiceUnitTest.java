@@ -1,42 +1,20 @@
 package uk.gov.companieshouse.extensions.api.attachments;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.only;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import javax.servlet.http.HttpServletResponse;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.junit.runner.RunWith;
+import jakarta.servlet.http.HttpServletResponse;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.multipart.MultipartFile;
-
 import uk.gov.companieshouse.extensions.api.Utils.Utils;
 import uk.gov.companieshouse.extensions.api.attachments.file.FileTransferApiClient;
 import uk.gov.companieshouse.extensions.api.attachments.file.FileTransferApiClientResponse;
-import uk.gov.companieshouse.extensions.api.groups.Unit;
 import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
 import uk.gov.companieshouse.extensions.api.reasons.ExtensionReasonEntity;
 import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestFullEntity;
@@ -46,8 +24,27 @@ import uk.gov.companieshouse.service.ServiceException;
 import uk.gov.companieshouse.service.ServiceResult;
 import uk.gov.companieshouse.service.ServiceResultStatus;
 
-@Category(Unit.class)
-@RunWith(MockitoJUnitRunner.class)
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.only;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+@Tag("UnitTest")
+@ExtendWith(MockitoExtension.class)
 public class AttachmentsServiceUnitTest {
 
     private static final String REQUEST_ID = "123";
@@ -65,13 +62,8 @@ public class AttachmentsServiceUnitTest {
     @Mock
     private ApiLogger apiLogger;
 
+    @InjectMocks
     private AttachmentsService service;
-
-    @Before
-    public void setup() {
-        service = new AttachmentsService(repo, fileTransferApiClient, apiLogger);
-        when(fileTransferApiClient.upload(any(MultipartFile.class))).thenReturn(getSuccessfulUploadResponse());
-    }
 
     @Test
     public void canAddAnAttachment() throws Exception {
@@ -83,6 +75,7 @@ public class AttachmentsServiceUnitTest {
         entity.setReasons(Arrays.asList(reasonEntity));
         when(repo.findById(anyString())).thenReturn(Optional.of(entity));
 
+        when(fileTransferApiClient.upload(any(MultipartFile.class))).thenReturn(getSuccessfulUploadResponse());
 
         ServiceResult<AttachmentDTO> result =
             service.addAttachment(Utils.mockMultipartFile(),
@@ -127,6 +120,7 @@ public class AttachmentsServiceUnitTest {
         entity.setReasons(Arrays.asList(reasonEntity));
         when(repo.findById(anyString())).thenReturn(Optional.of(entity));
 
+        when(fileTransferApiClient.upload(any(MultipartFile.class))).thenReturn(getSuccessfulUploadResponse());
 
         service.addAttachment(Utils.mockMultipartFile(),
             ACCESS_URL, REQUEST_ID, REASON_ID);
@@ -146,12 +140,13 @@ public class AttachmentsServiceUnitTest {
         ExtensionRequestFullEntity entity = new ExtensionRequestFullEntity();
         entity.setId(REQUEST_ID);
         when(repo.findById(anyString())).thenReturn(Optional.of(entity));
+        when(fileTransferApiClient.upload(any(MultipartFile.class))).thenReturn(getSuccessfulUploadResponse());
 
         try {
             service.addAttachment(Utils.mockMultipartFile(),
                 ACCESS_URL, REQUEST_ID, REASON_ID);
             fail();
-        } catch(ServiceException e) {
+        } catch (ServiceException e) {
             assertEquals(String.format("Reason %s not found in " +
                 "Request %s", REASON_ID, REQUEST_ID), e.getMessage());
         }
@@ -160,12 +155,13 @@ public class AttachmentsServiceUnitTest {
     @Test
     public void willThrowServiceExceptionIfNoReason() throws Exception {
         when(repo.findById(anyString())).thenReturn(Optional.empty());
+        when(fileTransferApiClient.upload(any(MultipartFile.class))).thenReturn(getSuccessfulUploadResponse());
 
         try {
             service.addAttachment(Utils.mockMultipartFile(),
                 ACCESS_URL, REQUEST_ID, REASON_ID);
             fail();
-        } catch(ServiceException e) {
+        } catch (ServiceException e) {
             assertEquals(String.format("No request found with request id %s", REQUEST_ID), e.getMessage());
         }
     }
@@ -178,7 +174,7 @@ public class AttachmentsServiceUnitTest {
             service.addAttachment(Utils.mockMultipartFile(),
                 ACCESS_URL, REQUEST_ID, REASON_ID);
             fail();
-        } catch(ServiceException e) {
+        } catch (ServiceException e) {
             assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.toString(), e.getMessage());
         }
     }
@@ -191,7 +187,7 @@ public class AttachmentsServiceUnitTest {
             service.addAttachment(Utils.mockMultipartFile(),
                 ACCESS_URL, REQUEST_ID, REASON_ID);
             fail();
-        } catch(HttpServerErrorException e) {
+        } catch (HttpServerErrorException e) {
             assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.toString(), e.getMessage());
         }
     }
@@ -204,7 +200,7 @@ public class AttachmentsServiceUnitTest {
             service.addAttachment(Utils.mockMultipartFile(),
                 ACCESS_URL, REQUEST_ID, REASON_ID);
             fail();
-        } catch(HttpClientErrorException e) {
+        } catch (HttpClientErrorException e) {
             assertEquals(HttpStatus.BAD_REQUEST.toString(), e.getMessage());
         }
     }
@@ -219,7 +215,7 @@ public class AttachmentsServiceUnitTest {
             service.addAttachment(Utils.mockMultipartFile(),
                 ACCESS_URL, REQUEST_ID, REASON_ID);
             fail();
-        } catch(ServiceException e) {
+        } catch (ServiceException e) {
             assertEquals(NO_FILE_ID_MESSAGE, e.getMessage());
         }
     }
@@ -280,7 +276,7 @@ public class AttachmentsServiceUnitTest {
             service.removeAttachment(entity.getId(),
                 entity.getReasons().stream().findAny().get().getId(), "12345");
             fail();
-        } catch(ServiceException e) {
+        } catch (ServiceException e) {
             assertEquals(String.format("Reason %s contains no attachment to delete: %s",
                 entity.getReasons().stream().findAny().get().getId(), "12345"), e.getMessage());
         }
@@ -312,7 +308,7 @@ public class AttachmentsServiceUnitTest {
             service.removeAttachment(entity.getId(),
                 entity.getReasons().stream().findAny().get().getId(), "12345ab");
             fail();
-        } catch(ServiceException e) {
+        } catch (ServiceException e) {
             assertEquals(String.format("Attachment %s does not exist in reason %s", "12345ab",
                 entity.getReasons().stream().findAny().get().getId()), e.getMessage());
         }
@@ -344,7 +340,7 @@ public class AttachmentsServiceUnitTest {
             .thenReturn(Optional.of(entity));
 
         service.removeAttachment(entity.getId(),
-                entity.getReasons().stream().findAny().get().getId(), "12345");
+            entity.getReasons().stream().findAny().get().getId(), "12345");
 
         verify(repo).save(entity);
         verify(fileTransferApiClient, times(1)).delete("12345");

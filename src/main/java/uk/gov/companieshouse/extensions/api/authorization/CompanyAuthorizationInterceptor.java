@@ -1,18 +1,16 @@
 package uk.gov.companieshouse.extensions.api.authorization;
 
-import java.util.Arrays;
-import java.util.Optional;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.servlet.HandlerInterceptor;
-
 import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
 import uk.gov.companieshouse.service.ServiceException;
+
+import java.util.Arrays;
+import java.util.Optional;
 
 public class CompanyAuthorizationInterceptor implements HandlerInterceptor {
 
@@ -21,7 +19,7 @@ public class CompanyAuthorizationInterceptor implements HandlerInterceptor {
     public CompanyAuthorizationInterceptor(ApiLogger logger) {
         this.logger = logger;
     }
-    
+
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         if (!HttpMethod.GET.matches(request.getMethod())) {
@@ -46,9 +44,9 @@ public class CompanyAuthorizationInterceptor implements HandlerInterceptor {
 
     private boolean hasPrivilege(HttpServletRequest request, String privilege) throws ServiceException {
         logger.debug("Checking admin privileges", request);
-        return 
+        return
             Arrays.stream(
-                Optional.ofNullable(request.getHeader(AuthorizedRoles.ERIC_AUTHORISED_ROLES))
+                    Optional.ofNullable(request.getHeader(AuthorizedRoles.ERIC_AUTHORISED_ROLES))
                         .orElseThrow(() -> new ServiceException("Header missing: " + AuthorizedRoles.ERIC_AUTHORISED_ROLES))
                         .split(" "))
                 .anyMatch(privilege::equals);
@@ -59,7 +57,7 @@ public class CompanyAuthorizationInterceptor implements HandlerInterceptor {
             boolean viewPrivilege = hasPrivilege(request, AuthorizedRoles.ADMIN_VIEW);
             if (request.getRequestURI().endsWith("download")) {
                 boolean downloadPrivilege = hasPrivilege(request, AuthorizedRoles.ADMIN_DOWNLOAD);
-                if(downloadPrivilege && viewPrivilege) {
+                if (downloadPrivilege && viewPrivilege) {
                     logger.debug("Admin download privileges detected, granting access to download resource", request);
                     return true;
                 }
@@ -67,7 +65,7 @@ public class CompanyAuthorizationInterceptor implements HandlerInterceptor {
                 logger.debug("Admin view privilege detected, granting access to GET resource", request);
                 return true;
             }
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             logger.error(ex);
         }
         return false;

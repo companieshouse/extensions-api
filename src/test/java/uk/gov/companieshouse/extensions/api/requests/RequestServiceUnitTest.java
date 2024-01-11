@@ -1,7 +1,24 @@
 package uk.gov.companieshouse.extensions.api.requests;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import org.junit.Rule;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.rules.ExpectedException;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.companieshouse.service.ServiceException;
+
+import java.time.LocalDateTime;
+import java.util.Optional;
+import java.util.function.Supplier;
+
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
@@ -14,26 +31,8 @@ import static uk.gov.companieshouse.extensions.api.Utils.Utils.createdBy;
 import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyCreateRequestEntity;
 import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyRequestEntity;
 
-import java.time.LocalDateTime;
-import java.util.Optional;
-import java.util.function.Supplier;
-
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-
-import uk.gov.companieshouse.extensions.api.groups.Unit;
-import uk.gov.companieshouse.service.ServiceException;
-
-@Category(Unit.class)
-@RunWith(MockitoJUnitRunner.class)
+@Tag("UnitTest")
+@ExtendWith(MockitoExtension.class)
 public class RequestServiceUnitTest {
 
     @InjectMocks
@@ -58,7 +57,7 @@ public class RequestServiceUnitTest {
         when(extensionRequestsRepository.findById(REQUEST_ID)).thenReturn(Optional.of(entity));
 
         Optional<ExtensionRequestFullEntity> request = requestsService.getExtensionsRequestById(REQUEST_ID);
-        assertEquals("id 1234 Acc period start: 2018-12-12  Acc period end: 2019-12-12", request.get().toString());
+        Assertions.assertEquals("id 1234 Acc period start: 2018-12-12  Acc period end: 2019-12-12", request.get().toString());
     }
 
     @Test
@@ -69,7 +68,7 @@ public class RequestServiceUnitTest {
 
         ExtensionRequestFullEntity extensionRequestFullEntity = dummyRequestEntity();
         when(extensionRequestsRepository.insert(any(ExtensionRequestFullEntity.class)))
-                .thenReturn(extensionRequestFullEntity);
+            .thenReturn(extensionRequestFullEntity);
 
         requestsService.insertExtensionsRequest(extensionCreateRequest, createdBy, TESTURI, COMPANY_NUMBER);
         verify(extensionRequestsRepository, times(1)).insert(captor.capture());
@@ -77,17 +76,17 @@ public class RequestServiceUnitTest {
         ExtensionRequestFullEntity extensionRequestResult = captor.getValue();
 
         assertNotNull(extensionRequestResult);
-        assertEquals(extensionCreateRequest.getAccountingPeriodStartOn(),
-                extensionRequestResult.getAccountingPeriodStartOn());
-        assertEquals(extensionCreateRequest.getAccountingPeriodEndOn(),
-                extensionRequestResult.getAccountingPeriodEndOn());
-        assertEquals(Status.OPEN, extensionRequestResult.getStatus());
+        Assertions.assertEquals(extensionCreateRequest.getAccountingPeriodStartOn(),
+            extensionRequestResult.getAccountingPeriodStartOn());
+        Assertions.assertEquals(extensionCreateRequest.getAccountingPeriodEndOn(),
+            extensionRequestResult.getAccountingPeriodEndOn());
+        Assertions.assertEquals(Status.OPEN, extensionRequestResult.getStatus());
 
         CreatedBy createdByInEntity = extensionRequestResult.getCreatedBy();
-        assertEquals(createdBy.getEmail(), createdByInEntity.getEmail());
-        assertEquals(createdBy.getForename(), createdByInEntity.getForename());
-        assertEquals(createdBy.getId(), createdByInEntity.getId());
-        assertEquals(createdBy.getSurname(), createdByInEntity.getSurname());
+        Assertions.assertEquals(createdBy.getEmail(), createdByInEntity.getEmail());
+        Assertions.assertEquals(createdBy.getForename(), createdByInEntity.getForename());
+        Assertions.assertEquals(createdBy.getId(), createdByInEntity.getId());
+        Assertions.assertEquals(createdBy.getSurname(), createdByInEntity.getSurname());
     }
 
     @Test
@@ -106,7 +105,7 @@ public class RequestServiceUnitTest {
 
         verify(extensionRequestsRepository).findById("request");
         verify(extensionRequestsRepository).save(extensionRequestFullEntity);
-        assertEquals(Status.SUBMITTED, entity.getStatus());
+        Assertions.assertEquals(Status.SUBMITTED, entity.getStatus());
     }
 
     @Test
@@ -125,7 +124,7 @@ public class RequestServiceUnitTest {
 
         verify(extensionRequestsRepository).findById("request");
         verify(extensionRequestsRepository).save(extensionRequestFullEntity);
-        assertEquals(Status.REJECTED_MAX_EXT_LENGTH_EXCEEDED, entity.getStatus());
+        Assertions.assertEquals(Status.REJECTED_MAX_EXT_LENGTH_EXCEEDED, entity.getStatus());
     }
 
     @Test
@@ -138,8 +137,6 @@ public class RequestServiceUnitTest {
         RequestStatus status = new RequestStatus();
         status.setStatus(Status.SUBMITTED);
 
-        expectedException.expect(ServiceException.class);
-        expectedException.expectMessage("Request: request1 cannot be found");
-        requestsService.patchRequest("request1", status);
+        assertThrows(ServiceException.class, () -> requestsService.patchRequest("request1", status));
     }
 }

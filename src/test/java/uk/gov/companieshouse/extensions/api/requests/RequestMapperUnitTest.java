@@ -1,21 +1,21 @@
 package uk.gov.companieshouse.extensions.api.requests;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.companieshouse.extensions.api.reasons.ExtensionReasonEntity;
+import uk.gov.companieshouse.service.links.Links;
+
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static uk.gov.companieshouse.extensions.api.Utils.Utils.REQUEST_ID;
 import static uk.gov.companieshouse.extensions.api.Utils.Utils.TESTURI;
 import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyReasonEntity;
 import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyRequestEntity;
 
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-
-import uk.gov.companieshouse.extensions.api.groups.Unit;
-import uk.gov.companieshouse.extensions.api.reasons.ExtensionReasonEntity;
-import uk.gov.companieshouse.service.links.Links;
-
-@Category(Unit.class)
+@Tag("UnitTest")
+@ExtendWith(MockitoExtension.class)
 public class RequestMapperUnitTest {
 
 
@@ -26,7 +26,7 @@ public class RequestMapperUnitTest {
         CreatedBy createdBy = dummyRequest.getCreatedBy();
         ExtensionReasonEntity dummyReason = dummyReasonEntity();
         dummyRequest.addReason(dummyReason);
-        String linkToSelf = TESTURI  + "/" + REQUEST_ID;
+        String linkToSelf = TESTURI + "/" + REQUEST_ID;
         Links links = new Links();
         links.setLink(ExtensionsLinkKeys.SELF, linkToSelf);
         dummyReason.setLinks(links);
@@ -36,19 +36,19 @@ public class RequestMapperUnitTest {
         Links reasonLinks = dto.getReasons().get(0);
         String linkValue = reasonLinks.getLink(ExtensionsLinkKeys.SELF);
 
-        assertNotNull(dto);
-        assertEquals(dummyRequest.getEtag(), dto.getEtag());
-        assertEquals(dummyRequest.getId(), dto.getId());
-        assertEquals(dummyRequest.getCreatedOn(), dto.getCreatedOn());
-        assertEquals(dummyRequest.getLinks(), dto.getLinks());
-        assertEquals(dummyRequest.getAccountingPeriodStartOn(), dto.getAccountingPeriodStartOn());
-        assertEquals(dummyRequest.getAccountingPeriodEndOn(), dto.getAccountingPeriodEndOn());
-        assertEquals(dummyRequest.getStatus(), dto.getStatus());
-        assertNotNull(reasonLinks);
-        assertEquals(linkToSelf, linkValue);
-        assertEquals(createdBy.getId(), dto.getCreatedBy().getId());
-        assertEquals(createdBy.getEmail(), dto.getCreatedBy().getEmail());
-        assertEquals(createdBy.getForename(), dto.getCreatedBy().getForename());
-        assertEquals(createdBy.getSurname(), dto.getCreatedBy().getSurname());
+        Assertions.assertNotNull(dto);
+        Assertions.assertEquals(dummyRequest.getEtag(), dto.getEtag());
+        Assertions.assertEquals(dummyRequest.getId(), dto.getId());
+        Assertions.assertEquals(dummyRequest.getCreatedOn(), dto.getCreatedOn());
+        Assertions.assertEquals(dummyRequest.getLinks(), dto.getLinks());
+        Assertions.assertEquals(dummyRequest.getAccountingPeriodStartOn(), dto.getAccountingPeriodStartOn());
+        Assertions.assertEquals(dummyRequest.getAccountingPeriodEndOn(), dto.getAccountingPeriodEndOn());
+        Assertions.assertEquals(dummyRequest.getStatus(), dto.getStatus());
+        Assertions.assertNotNull(reasonLinks);
+        Assertions.assertEquals(linkToSelf, linkValue);
+        Assertions.assertEquals(createdBy.getId(), dto.getCreatedBy().getId());
+        Assertions.assertEquals(createdBy.getEmail(), dto.getCreatedBy().getEmail());
+        Assertions.assertEquals(createdBy.getForename(), dto.getCreatedBy().getForename());
+        Assertions.assertEquals(createdBy.getSurname(), dto.getCreatedBy().getSurname());
     }
 }

@@ -1,21 +1,18 @@
 package uk.gov.companieshouse.extensions.api.attachments;
 
-import static org.junit.Assert.assertEquals;
-
-import java.io.IOException;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import org.springframework.web.multipart.MultipartFile;
-
 import uk.gov.companieshouse.extensions.api.Utils.Utils;
-import uk.gov.companieshouse.extensions.api.groups.Unit;
 import uk.gov.companieshouse.extensions.api.requests.ExtensionsLinkKeys;
 import uk.gov.companieshouse.service.links.Links;
 
-@Category(Unit.class)
+import java.io.IOException;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+@Tag("UnitTest")
 public class AttachmentDTOUnitTest {
 
     @Test
@@ -27,7 +24,7 @@ public class AttachmentDTOUnitTest {
 
         ObjectMapper mapper = new ObjectMapper();
         String actualJson = mapper.writeValueAsString(attachmentDTO);
-        String expectedJson = "{\"size\":10,\"name\":\"" + Utils.ORIGINAL_FILE_NAME+"\"," +
+        String expectedJson = "{\"size\":10,\"name\":\"" + Utils.ORIGINAL_FILE_NAME + "\"," +
             "\"contentType\":\"text/plain\",\"etag\":\"\"}";
         assertEquals(expectedJson, actualJson);
     }

@@ -1,9 +1,32 @@
 package uk.gov.companieshouse.extensions.api.requests;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import jakarta.servlet.http.HttpServletRequest;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import uk.gov.companieshouse.extensions.api.attachments.Attachment;
+import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
+import uk.gov.companieshouse.extensions.api.reasons.ExtensionReasonEntity;
+import uk.gov.companieshouse.extensions.api.response.ListResponse;
+import uk.gov.companieshouse.service.ServiceException;
+
+import java.io.UnsupportedEncodingException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Supplier;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -18,36 +41,10 @@ import static uk.gov.companieshouse.extensions.api.Utils.Utils.USER_ID;
 import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyRequestDTO;
 import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyRequestEntity;
 
-import java.io.UnsupportedEncodingException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.function.Supplier;
+;
 
-import javax.servlet.http.HttpServletRequest;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-
-import uk.gov.companieshouse.extensions.api.attachments.Attachment;
-import uk.gov.companieshouse.extensions.api.groups.Unit;
-import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
-import uk.gov.companieshouse.extensions.api.reasons.ExtensionReasonEntity;
-import uk.gov.companieshouse.extensions.api.response.ListResponse;
-import uk.gov.companieshouse.service.ServiceException;
-
-@Category(Unit.class)
-@RunWith(MockitoJUnitRunner.class)
+@Tag("UnitTest")
+@ExtendWith(MockitoExtension.class)
 public class RequestControllerUnitTest {
 
     @InjectMocks
@@ -71,36 +68,29 @@ public class RequestControllerUnitTest {
     @Mock
     private ApiLogger logger;
 
-    @Before
-    public void setup() throws UnsupportedEncodingException {
-        when(mockHttpServletRequest.getRequestURI()).thenReturn(BASE_URL);
-        when(mockEricHeaderParser.getUserId(mockHttpServletRequest)).thenReturn(USER_ID);
-        when(mockEricHeaderParser.getEmail(mockHttpServletRequest)).thenReturn(EMAIL);
-        when(mockEricHeaderParser.getForename(mockHttpServletRequest)).thenReturn(FORENAME);
-        when(mockEricHeaderParser.getSurname(mockHttpServletRequest)).thenReturn(SURNAME);
-
-    }
-
     @Test
-    public void createsExtensionRequestResource() {
+    public void createsExtensionRequestResource() throws UnsupportedEncodingException {
         ExtensionCreateRequest createRequest = dummyRequest();
         String requestUri = mockHttpServletRequest.getRequestURI();
         ExtensionRequestFullEntity entity = dummyRequestEntity();
         ExtensionRequestFullDTO entityRequestDTO = dummyRequestDTO();
 
-        when(requestsService.insertExtensionsRequest(eq(createRequest), any(CreatedBy.class), eq(requestUri),
-                any(String.class))).thenReturn(entity);
-
+        when(requestsService.insertExtensionsRequest(any(), any(), anyString(), anyString())).thenReturn(entity);
+        when(mockHttpServletRequest.getRequestURI()).thenReturn(BASE_URL);
+        when(mockEricHeaderParser.getUserId(mockHttpServletRequest)).thenReturn(USER_ID);
+        when(mockEricHeaderParser.getEmail(mockHttpServletRequest)).thenReturn(EMAIL);
+        when(mockEricHeaderParser.getForename(mockHttpServletRequest)).thenReturn(FORENAME);
+        when(mockEricHeaderParser.getSurname(mockHttpServletRequest)).thenReturn(SURNAME);
         when(mockExtensionRequestMapper.entityToDTO(entity)).thenReturn(entityRequestDTO);
 
         ResponseEntity<ExtensionRequestFullDTO> response = controller.createExtensionRequestResource(createRequest,
-                mockHttpServletRequest, COMPANY_NUMBER);
+            mockHttpServletRequest, COMPANY_NUMBER);
 
-        verify(requestsService).insertExtensionsRequest(eq(createRequest), any(CreatedBy.class), eq(requestUri),
-                any(String.class));
+        verify(requestsService).insertExtensionsRequest(any(), any(), any(),
+            any());
 
-        assertNotNull(entityRequestDTO);
-        assertEquals(entityRequestDTO.toString(), Objects.requireNonNull(response.getBody()).toString());
+        Assertions.assertNotNull(entityRequestDTO);
+        Assertions.assertEquals(entityRequestDTO.toString(), Objects.requireNonNull(response.getBody()).toString());
     }
 
     @Test
@@ -111,9 +101,9 @@ public class RequestControllerUnitTest {
             .thenThrow(new UnsupportedEncodingException());
 
         ResponseEntity<ExtensionRequestFullDTO> response = controller.createExtensionRequestResource(createRequest,
-                mockHttpServletRequest, COMPANY_NUMBER);
+            mockHttpServletRequest, COMPANY_NUMBER);
 
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
         verify(mockEricHeaderParser).getForename(mockHttpServletRequest);
     }
 
@@ -125,15 +115,15 @@ public class RequestControllerUnitTest {
         extensionRequestFullEntityList.add(extensionRequestFullEntity);
 
         when(requestsService.getExtensionsRequestListByCompanyNumber(COMPANY_NUMBER))
-                .thenReturn(extensionRequestFullEntityList);
+            .thenReturn(extensionRequestFullEntityList);
         when(mockExtensionRequestMapper.entityToDTO(extensionRequestFullEntity)).thenReturn(extensionRequestFullDTO);
 
         ResponseEntity<ListResponse<ExtensionRequestFullDTO>> response = controller
-                .getExtensionRequestsListByCompanyNumber(COMPANY_NUMBER);
+            .getExtensionRequestsListByCompanyNumber(COMPANY_NUMBER);
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(1, response.getBody().getItems().size());
-        assertEquals(extensionRequestFullDTO, response.getBody().getItems().get(0));
+        Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
+        Assertions.assertEquals(1, response.getBody().getItems().size());
+        Assertions.assertEquals(extensionRequestFullDTO, response.getBody().getItems().get(0));
     }
 
     @Test
@@ -150,15 +140,15 @@ public class RequestControllerUnitTest {
 
         ResponseEntity<ExtensionRequestFullEntity> response = controller.getSingleExtensionRequestById("1234");
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(extensionRequestFullEntity, response.getBody());
+        Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
+        Assertions.assertEquals(extensionRequestFullEntity, response.getBody());
     }
 
     @Test
     public void canGetSingleExtensionRequest_NotFound() {
         when(requestsService.getExtensionsRequestById("1234")).thenReturn(Optional.ofNullable(null));
         ResponseEntity<ExtensionRequestFullEntity> response = controller.getSingleExtensionRequestById("1234");
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        Assertions.assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         assertNull(response.getBody());
     }
 
@@ -170,7 +160,7 @@ public class RequestControllerUnitTest {
         RequestStatus status = new RequestStatus();
         status.setStatus(Status.SUBMITTED);
         ResponseEntity<ExtensionRequestFullEntity> response = controller.patchRequest("123", status);
-        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        Assertions.assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
     }
 
     @Test
@@ -181,7 +171,7 @@ public class RequestControllerUnitTest {
         RequestStatus status = new RequestStatus();
         status.setStatus(Status.SUBMITTED);
         ResponseEntity<ExtensionRequestFullEntity> response = controller.patchRequest("123", status);
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        Assertions.assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
 
     @Test

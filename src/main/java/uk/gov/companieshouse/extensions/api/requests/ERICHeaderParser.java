@@ -3,7 +3,7 @@ package uk.gov.companieshouse.extensions.api.requests;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;

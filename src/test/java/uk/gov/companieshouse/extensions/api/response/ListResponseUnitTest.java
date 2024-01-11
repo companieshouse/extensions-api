@@ -1,20 +1,18 @@
 package uk.gov.companieshouse.extensions.api.response;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
-import uk.gov.companieshouse.extensions.api.groups.Unit;
-
-@Category(Unit.class)
+@Tag("UnitTest")
 public class ListResponseUnitTest {
 
     @Test
@@ -26,11 +24,11 @@ public class ListResponseUnitTest {
             .withItems(Arrays.asList("item1", "item2"))
             .build();
 
-        assertEquals(10, response.getItemsPerPage());
-        assertEquals(0, response.getStartIndex());
-        assertEquals(2, response.getTotalResults());
-        assertEquals("etag", response.getEtag());
-        assertArrayEquals("unmatched array", new String[]{"item1", "item2"},
+        Assertions.assertEquals(10, response.getItemsPerPage());
+        Assertions.assertEquals(0, response.getStartIndex());
+        Assertions.assertEquals(2, response.getTotalResults());
+        Assertions.assertEquals("etag", response.getEtag());
+        Assertions.assertArrayEquals(new String[]{"item1", "item2"},
             response.getItems().toArray());
     }
 

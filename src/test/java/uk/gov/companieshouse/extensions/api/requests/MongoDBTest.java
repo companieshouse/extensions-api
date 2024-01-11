@@ -9,17 +9,18 @@ import org.bson.json.JsonWriterSettings;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
-import uk.gov.companieshouse.extensions.api.groups.Integration;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.companieshouse.extensions.api.reasons.ExtensionReasonEntity;
 
 import java.time.Clock;
@@ -30,7 +31,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 
 import static com.mongodb.client.model.Filters.eq;
-import static org.junit.Assert.assertEquals;
 
 /**
  * Tests require actual connection to mongo db in order to run so these will be ignored
@@ -38,9 +38,19 @@ import static org.junit.Assert.assertEquals;
  */
 
 
-@Category(Integration.class)
-@RunWith(SpringRunner.class)
+@Tag("IntegrationTest")
+@ExtendWith(SpringExtension.class)
 @SpringBootTest
+@TestPropertySource(properties = {"EXTENSIONS_API_MONGODB_URL=mongodb://mongo-db1-toro1.development.aws.internal:27017", "server.port=8093",
+    "api.endpoint.extensions=/company/{companyNumber}/extensions/requests",
+    "spring.data.mongodb.uri=mongodb://mongo-db1-toro1.development.aws.internal:27017/extension_requests",
+    "FILE_TRANSFER_API_URL=http://localhost:8081/",
+    "FILE_TRANSFER_API_KEY=12345",
+    "MONGO_CONNECTION_POOL_MIN_SIZE=0",
+    "MONGO_CONNECTION_MAX_IDLE_TIME=0",
+    "MONGO_CONNECTION_MAX_LIFE_TIME=0",
+    "spring.servlet.multipart.max-file-size=100",
+    "spring.servlet.multipart.max-request-size=200"})
 public class MongoDBTest {
 
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
@@ -60,36 +70,36 @@ public class MongoDBTest {
     @Value("${EXTENSIONS_API_MONGODB_URL}")
     private String testMongoUrl;
 
-    @Before
+    @BeforeEach
     public void init() {
-        winterStart = LocalDate.of(2020,1,1);
-        winterEnd = LocalDate.of(2020,1,6);
-        summerStart = LocalDate.of(2020,7,1);
-        summerEnd = LocalDate.of(2020,7,6);
+        winterStart = LocalDate.of(2020, 1, 1);
+        winterEnd = LocalDate.of(2020, 1, 6);
+        summerStart = LocalDate.of(2020, 7, 1);
+        summerEnd = LocalDate.of(2020, 7, 6);
 
         mongoClient = MongoClients.create(testMongoUrl);
     }
 
-    @After
+    @AfterEach
     public void removeTestDocuments() {
         requestsRepository.deleteById(WINTER_TEST_DOCUMENT);
         requestsRepository.deleteById(SUMMER_TEST_DOCUMENT);
     }
 
-    @Ignore("This requires an in-memory db similar to Derby but for Mongo")
+    @Disabled("This requires an in-memory db similar to Derby but for Mongo")
     @Test
-    public void testReasonDatesAreMidnightOnDateSpecifiedInMongoDB_InWinter()  throws JSONException {
+    public void testReasonDatesAreMidnightOnDateSpecifiedInMongoDB_InWinter() throws JSONException {
         String documentId = WINTER_TEST_DOCUMENT;
         Instant.now(Clock.fixed(
             Instant.parse("2020-02-01T10:00:00Z"),
             ZoneOffset.UTC));
-            createTestDocument(documentId);
-         assess(documentId);
+        createTestDocument(documentId);
+        assess(documentId);
     }
 
-    @Ignore("This requires an in-memory db similar to Derby but for Mongo")
+    @Disabled("This requires an in-memory db similar to Derby but for Mongo")
     @Test
-    public void testReasonDatesAreMidnightOnDateSpecifiedInMongoDB_InSummer()  throws JSONException {
+    public void testReasonDatesAreMidnightOnDateSpecifiedInMongoDB_InSummer() throws JSONException {
         String documentId = SUMMER_TEST_DOCUMENT;
         Instant.now(Clock.fixed(
             Instant.parse("2020-08-01T10:00:00Z"),
@@ -101,17 +111,17 @@ public class MongoDBTest {
     private void assess(String documentId) throws JSONException {
         JSONObject winter = queryMongoDbForReason(documentId, 0);
         JSONObject summer = queryMongoDbForReason(documentId, 1);
-        assertEquals(formatter.format(
-            winterStart.atTime(0,0,0)),
+        Assertions.assertEquals(formatter.format(
+                winterStart.atTime(0, 0, 0)),
             winter.getJSONObject("startOn").getString("$date"));
-        assertEquals(formatter.format(
-            winterEnd.atTime(0,0,0)),
+        Assertions.assertEquals(formatter.format(
+                winterEnd.atTime(0, 0, 0)),
             winter.getJSONObject("endOn").getString("$date"));
-        assertEquals(formatter.format(
-            summerStart.atTime(0,0,0)),
+        Assertions.assertEquals(formatter.format(
+                summerStart.atTime(0, 0, 0)),
             summer.getJSONObject("startOn").getString("$date"));
-        assertEquals(formatter.format(
-            summerEnd.atTime(0,0,0)),
+        Assertions.assertEquals(formatter.format(
+                summerEnd.atTime(0, 0, 0)),
             summer.getJSONObject("endOn").getString("$date"));
     }
 
@@ -137,7 +147,7 @@ public class MongoDBTest {
         Document document = collection.find(eq("_id", documentId)).first();
 
         String jsonRequestStr = document.toJson(JsonWriterSettings.builder().build());
-        JSONObject request  = new JSONObject(jsonRequestStr);
+        JSONObject request = new JSONObject(jsonRequestStr);
         JSONArray reasons = request.getJSONArray("reasons");
         return reasons.getJSONObject(index);
     }

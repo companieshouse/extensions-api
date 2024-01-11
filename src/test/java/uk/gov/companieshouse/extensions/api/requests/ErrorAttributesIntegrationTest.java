@@ -1,28 +1,25 @@
 package uk.gov.companieshouse.extensions.api.requests;
 
+import jakarta.servlet.RequestDispatcher;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.client.RestTemplate;
+import uk.gov.companieshouse.extensions.api.attachments.AttachmentsController;
+import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
+import uk.gov.companieshouse.extensions.api.reasons.ReasonsController;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import javax.servlet.RequestDispatcher;
-
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.web.client.RestTemplate;
-
-import uk.gov.companieshouse.extensions.api.attachments.AttachmentsController;
-import uk.gov.companieshouse.extensions.api.groups.Integration;
-import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
-import uk.gov.companieshouse.extensions.api.reasons.ReasonsController;
-
-@Category(Integration.class)
-@RunWith(SpringRunner.class)
+@Tag("IntegrationTest")
+@ExtendWith(SpringExtension.class)
 @WebMvcTest()
 public class ErrorAttributesIntegrationTest {
 

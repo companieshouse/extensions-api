@@ -1,14 +1,9 @@
 package uk.gov.companieshouse.extensions.api.logger;
 
-import org.junit.Before;
 import org.junit.BeforeClass;
-
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -16,9 +11,13 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.companieshouse.logging.Logger;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -30,8 +29,7 @@ public class ApiLoggerTest {
     private static final String THREAD_ID_KEY = "thread_id";
     private static final String TEST_MESSAGE = "hello";
     private static final String COMPANY_NUMBER = "12345678";
-    private static final Map<String, Object> EXTRA_VALUES_MAP = new HashMap<String, Object>()
-    {{
+    private static final Map<String, Object> EXTRA_VALUES_MAP = new HashMap<String, Object>() {{
         put("my_key", "my_data");
     }};
 
@@ -68,7 +66,7 @@ public class ApiLoggerTest {
         apiLogger.setCompanyNumber(COMPANY_NUMBER);
     }
 
-    @Before
+    @BeforeEach
     public void setup() {
         Mockito.reset(mockLogger);
     }
@@ -83,7 +81,7 @@ public class ApiLoggerTest {
 
     @Test
     public void testDebugWithValues() {
-        apiLogger.debug(TEST_MESSAGE,  EXTRA_VALUES_MAP);
+        apiLogger.debug(TEST_MESSAGE, EXTRA_VALUES_MAP);
         verify(mockLogger, times(1)).debug(eq(TEST_MESSAGE), mapArgumentCaptor.capture());
 
         assertMapIsValid(mapArgumentCaptor, EXTRA_VALUES_MAP);
@@ -99,7 +97,7 @@ public class ApiLoggerTest {
 
     @Test
     public void testInfoWithValues() {
-        apiLogger.info(TEST_MESSAGE,  EXTRA_VALUES_MAP);
+        apiLogger.info(TEST_MESSAGE, EXTRA_VALUES_MAP);
         verify(mockLogger, times(1)).info(eq(TEST_MESSAGE), mapArgumentCaptor.capture());
 
         assertMapIsValid(mapArgumentCaptor, EXTRA_VALUES_MAP);
@@ -133,7 +131,7 @@ public class ApiLoggerTest {
 
     @Test
     public void testErrorWithValues() {
-        apiLogger.error(TEST_MESSAGE,  EXTRA_VALUES_MAP);
+        apiLogger.error(TEST_MESSAGE, EXTRA_VALUES_MAP);
         verify(mockLogger, times(1)).error(eq(TEST_MESSAGE), mapArgumentCaptor.capture());
 
         assertMapIsValid(mapArgumentCaptor, EXTRA_VALUES_MAP);
@@ -141,18 +139,20 @@ public class ApiLoggerTest {
 
     /**
      * Check map contains default values
+     *
      * @param mapArgumentCaptor
      */
     private void assertMapIsValid(ArgumentCaptor<Map<String, Object>> mapArgumentCaptor) {
         Map<String, Object> mapLogged = mapArgumentCaptor.getValue();
         assertTrue(mapLogged.containsKey(COMPANY_NUMBER_KEY));
-        assertEquals(COMPANY_NUMBER, mapLogged.get(COMPANY_NUMBER_KEY));
+        Assertions.assertEquals(COMPANY_NUMBER, mapLogged.get(COMPANY_NUMBER_KEY));
         assertTrue(mapLogged.containsKey(THREAD_ID_KEY));
         assertNotNull(mapLogged.get(THREAD_ID_KEY));
     }
 
     /**
      * Check map contains default + extra values
+     *
      * @param mapArgumentCaptor
      * @param extraValues
      */
@@ -163,7 +163,7 @@ public class ApiLoggerTest {
         Map<String, Object> mapLogged = mapArgumentCaptor.getValue();
         extraValues.forEach((extraKey, extraValue) -> {
             assertTrue(mapLogged.containsKey(extraKey));
-            assertEquals(extraValue, mapLogged.get(extraKey));
+            Assertions.assertEquals(extraValue, mapLogged.get(extraKey));
         });
     }
 }
