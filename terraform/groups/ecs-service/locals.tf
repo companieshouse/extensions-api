@@ -8,7 +8,7 @@ locals {
   eric_port                   = "10000"
   docker_repo                 = "extensions-api"
   kms_alias                   = "alias/${var.aws_profile}/environment-services-kms"
-  lb_listener_rule_priority   = 31
+  lb_listener_rule_priority   = 35
   lb_listener_paths           = ["/company/.*/extensions/requests/.*"]
   healthcheck_path            = "/extensions-api/healthcheck" #healthcheck path for extensions-api
   healthcheck_matcher         = "200"
