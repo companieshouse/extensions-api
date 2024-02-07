@@ -40,7 +40,7 @@ public class RequestsController {
     private ApiLogger logger;
 
     @LogMethodCall
-    @PostMapping("${api.endpoint.extensions}/")
+    @PostMapping("${api.endpoint.extensions}")
     public ResponseEntity<ExtensionRequestFullDTO> createExtensionRequestResource(
         @RequestBody ExtensionCreateRequest extensionCreateRequest, HttpServletRequest request,
         @PathVariable String companyNumber) {
