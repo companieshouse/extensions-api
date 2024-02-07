@@ -32,6 +32,9 @@ target/
 .idea/
 *.iml
 
+# vscode files
+.vscode/
+
 # Local .terraform directories
 **/.terraform/*
 
