@@ -15,8 +15,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import uk.gov.companieshouse.extensions.api.attachments.Attachment;
-import uk.gov.companieshouse.extensions.api.attachments.file.FileTransferApiClient;
 import uk.gov.companieshouse.extensions.api.attachments.file.FileTransferApiClientResponse;
+import uk.gov.companieshouse.extensions.api.attachments.file.FileTransferServiceClient;
 import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
 import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestFullEntity;
 import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestsRepository;
@@ -62,7 +62,7 @@ public class ReasonServiceUnitTest {
     private Supplier<String> mockRandomUUid;
 
     @Mock
-    private FileTransferApiClient fileTransferApiClient;
+    private FileTransferServiceClient fileTransferServiceClient;
 
     @Mock
     private ApiLogger logger;
@@ -132,7 +132,7 @@ public class ReasonServiceUnitTest {
         ExtensionCreateReason dummyCreateReason = dummyCreateReason();
 
         ReasonsService service = new ReasonsService(requestsService, extensionRequestsRepository,
-            new ExtensionReasonMapper(), mockRandomUUid, fileTransferApiClient, logger);
+            new ExtensionReasonMapper(), mockRandomUUid, fileTransferServiceClient, logger);
         ServiceResult<ExtensionReasonDTO> result =
             service.addExtensionsReasonToRequest(dummyCreateReason,
                 REQUEST_ID, "dummyUri");
@@ -186,8 +186,8 @@ public class ReasonServiceUnitTest {
 
         FileTransferApiClientResponse response = new FileTransferApiClientResponse();
         response.setHttpStatus(HttpStatus.NO_CONTENT);
-        when(fileTransferApiClient.delete("1234")).thenReturn(response);
-        when(fileTransferApiClient.delete("5678")).thenReturn(response);
+        when(fileTransferServiceClient.delete("1234")).thenReturn(response);
+        when(fileTransferServiceClient.delete("5678")).thenReturn(response);
 
         when(extensionRequestsRepository.save(any(ExtensionRequestFullEntity.class))).thenReturn
             (extensionRequestFullEntity);
@@ -195,8 +195,8 @@ public class ReasonServiceUnitTest {
         reasonsService.removeExtensionsReasonFromRequest(extensionRequestFullEntity.getId(),
             extensionRequestFullEntity.getReasons().get(0).getId());
 
-        verify(fileTransferApiClient).delete("1234");
-        verify(fileTransferApiClient).delete("5678");
+        verify(fileTransferServiceClient).delete("1234");
+        verify(fileTransferServiceClient).delete("5678");
         verify(extensionRequestsRepository, times(1)).save(captor.capture());
         ExtensionRequestFullEntity extensionRequestResult = captor.getValue();
 
@@ -223,15 +223,15 @@ public class ReasonServiceUnitTest {
 
         HttpClientErrorException clientException = new HttpClientErrorException(HttpStatus.NOT_FOUND);
 
-        when(fileTransferApiClient.delete("1234")).thenThrow(clientException);
-        when(fileTransferApiClient.delete("5678")).thenThrow(clientException);
+        when(fileTransferServiceClient.delete("1234")).thenThrow(clientException);
+        when(fileTransferServiceClient.delete("5678")).thenThrow(clientException);
 
         reasonsService.removeExtensionsReasonFromRequest(extensionRequestFullEntity.getId(),
             extensionRequestFullEntity.getReasons().get(0).getId());
 
-        verify(fileTransferApiClient).delete("1234");
+        verify(fileTransferServiceClient).delete("1234");
         verify(logger).error("Unable to delete attachment 1234, status code 404 NOT_FOUND", clientException);
-        verify(fileTransferApiClient).delete("5678");
+        verify(fileTransferServiceClient).delete("5678");
         verify(logger).error("Unable to delete attachment 5678, status code 404 NOT_FOUND", clientException);
 
         verify(extensionRequestsRepository, times(1)).save(captor.capture());
@@ -260,15 +260,15 @@ public class ReasonServiceUnitTest {
 
         HttpServerErrorException serverException = new HttpServerErrorException(HttpStatus.NOT_FOUND);
 
-        when(fileTransferApiClient.delete("1234")).thenThrow(serverException);
-        when(fileTransferApiClient.delete("5678")).thenThrow(serverException);
+        when(fileTransferServiceClient.delete("1234")).thenThrow(serverException);
+        when(fileTransferServiceClient.delete("5678")).thenThrow(serverException);
 
         reasonsService.removeExtensionsReasonFromRequest(extensionRequestFullEntity.getId(),
             extensionRequestFullEntity.getReasons().get(0).getId());
 
-        verify(fileTransferApiClient).delete("1234");
+        verify(fileTransferServiceClient).delete("1234");
         verify(logger).error("Unable to delete attachment 1234, status code 404 NOT_FOUND", serverException);
-        verify(fileTransferApiClient).delete("5678");
+        verify(fileTransferServiceClient).delete("5678");
         verify(logger).error("Unable to delete attachment 1234, status code 404 NOT_FOUND", serverException);
 
         verify(extensionRequestsRepository, times(1)).save(captor.capture());
@@ -293,12 +293,12 @@ public class ReasonServiceUnitTest {
         when(extensionRequestsRepository.save(any(ExtensionRequestFullEntity.class))).thenReturn
             (extensionRequestFullEntity);
 
-        when(fileTransferApiClient.delete("1234")).thenReturn(null);
+        when(fileTransferServiceClient.delete("1234")).thenReturn(null);
 
         reasonsService.removeExtensionsReasonFromRequest(extensionRequestFullEntity.getId(),
             extensionRequestFullEntity.getReasons().get(0).getId());
 
-        verify(fileTransferApiClient).delete("1234");
+        verify(fileTransferServiceClient).delete("1234");
         verify(logger).error("Unable to delete attachment 1234");
 
         verify(extensionRequestsRepository, times(1)).save(captor.capture());
@@ -324,12 +324,12 @@ public class ReasonServiceUnitTest {
             (extensionRequestFullEntity);
 
         FileTransferApiClientResponse response = new FileTransferApiClientResponse();
-        when(fileTransferApiClient.delete("1234")).thenReturn(response);
+        when(fileTransferServiceClient.delete("1234")).thenReturn(response);
 
         reasonsService.removeExtensionsReasonFromRequest(extensionRequestFullEntity.getId(),
             extensionRequestFullEntity.getReasons().get(0).getId());
 
-        verify(fileTransferApiClient).delete("1234");
+        verify(fileTransferServiceClient).delete("1234");
         verify(logger).error("Unable to delete attachment 1234");
 
         verify(extensionRequestsRepository, times(1)).save(captor.capture());
@@ -356,12 +356,12 @@ public class ReasonServiceUnitTest {
 
         FileTransferApiClientResponse response = new FileTransferApiClientResponse();
         response.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-        when(fileTransferApiClient.delete("1234")).thenReturn(response);
+        when(fileTransferServiceClient.delete("1234")).thenReturn(response);
 
         reasonsService.removeExtensionsReasonFromRequest(extensionRequestFullEntity.getId(),
             extensionRequestFullEntity.getReasons().get(0).getId());
 
-        verify(fileTransferApiClient).delete("1234");
+        verify(fileTransferServiceClient).delete("1234");
         verify(logger).error("Unable to delete attachment 1234, status code 500 INTERNAL_SERVER_ERROR");
 
         verify(extensionRequestsRepository, times(1)).save(captor.capture());

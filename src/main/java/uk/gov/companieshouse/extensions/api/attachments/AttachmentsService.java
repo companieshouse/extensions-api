@@ -1,5 +1,7 @@
 package uk.gov.companieshouse.extensions.api.attachments;
 
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.constraints.NotNull;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -7,8 +9,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.multipart.MultipartFile;
-import uk.gov.companieshouse.extensions.api.attachments.file.FileTransferApiClient;
 import uk.gov.companieshouse.extensions.api.attachments.file.FileTransferApiClientResponse;
+import uk.gov.companieshouse.extensions.api.attachments.file.FileTransferServiceClient;
 import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
 import uk.gov.companieshouse.extensions.api.logger.LogMethodCall;
 import uk.gov.companieshouse.extensions.api.reasons.ExtensionReasonEntity;
@@ -19,8 +21,6 @@ import uk.gov.companieshouse.service.ServiceException;
 import uk.gov.companieshouse.service.ServiceResult;
 import uk.gov.companieshouse.service.links.Links;
 
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -29,15 +29,15 @@ import java.util.stream.Collectors;
 public class AttachmentsService {
 
     private ExtensionRequestsRepository requestsRepo;
-    private FileTransferApiClient fileTransferApiClient;
+    private FileTransferServiceClient fileTransferServiceClient;
     private ApiLogger apiLogger;
 
     @Autowired
     public AttachmentsService(ExtensionRequestsRepository requestsRepo,
-                              FileTransferApiClient fileTransferApiClient,
+                              FileTransferServiceClient fileTransferServiceClient,
                               ApiLogger logger) {
         this.requestsRepo = requestsRepo;
-        this.fileTransferApiClient = fileTransferApiClient;
+        this.fileTransferServiceClient = fileTransferServiceClient;
         this.apiLogger = logger;
     }
 
@@ -71,7 +71,7 @@ public class AttachmentsService {
     }
 
     private String uploadFile(@NotNull MultipartFile file) throws ServiceException {
-        FileTransferApiClientResponse response = fileTransferApiClient.upload(file);
+        FileTransferApiClientResponse response = fileTransferServiceClient.upload(file);
 
         HttpStatus responseHttpStatus = response.getHttpStatus();
         if (responseHttpStatus != null && responseHttpStatus.isError()) {
@@ -142,7 +142,7 @@ public class AttachmentsService {
         final String errorMessage = "Unable to delete attachment %s, status code %s";
         final String errorMessageShort = "Unable to delete attachment %s";
         try {
-            FileTransferApiClientResponse response = fileTransferApiClient.delete(attachmentId);
+            FileTransferApiClientResponse response = fileTransferServiceClient.delete(attachmentId);
             if (response == null || response.getHttpStatus() == null) {
                 apiLogger.error(String.format(errorMessageShort,
                     attachmentId));
@@ -168,6 +168,6 @@ public class AttachmentsService {
     }
 
     public FileTransferApiClientResponse downloadAttachment(String attachmentId, HttpServletResponse httpServletResponse) {
-        return fileTransferApiClient.download(attachmentId, httpServletResponse);
+        return fileTransferServiceClient.download(attachmentId, httpServletResponse);
     }
 }
