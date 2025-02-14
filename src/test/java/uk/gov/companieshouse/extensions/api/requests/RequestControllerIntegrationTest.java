@@ -51,7 +51,7 @@ import static uk.gov.companieshouse.extensions.api.Utils.Utils.COMPANY_NUMBER;
 @SpringBootTest(classes = RequestsController.class)
 public class RequestControllerIntegrationTest {
 
-    private static final String ROOT_URL = "/company/00006400/extensions/requests/";
+    private static final String ROOT_URL = "/company/00006400/extensions/requests";
     private static final String REQUEST_BY_ID_URL = "/company/00006400/extensions/requests/a1";
 
     private MockMvc mockMvc;

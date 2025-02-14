@@ -3,12 +3,14 @@ package uk.gov.companieshouse.extensions.api.config;
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
 import groovy.util.logging.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.apache.tika.Tika;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
-import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
+import uk.gov.companieshouse.api.InternalApiClient;
+import uk.gov.companieshouse.api.http.ApiKeyHttpClient;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -18,8 +20,6 @@ import java.util.function.Supplier;
 @Configuration
 @Slf4j
 public class ApplicationConfiguration {
-    @Autowired
-    private ApiLogger logger;
 
     /**
      * Set Mongo client settings
@@ -50,6 +50,23 @@ public class ApplicationConfiguration {
     @Bean
     public RestTemplate restTemplate(RestTemplateBuilder builder) {
         return builder.build();
+    }
+
+    @Bean
+    public Supplier<InternalApiClient> internalApiClientSupplier(
+        @Value("${internal.api.key}") String internalApiKey,
+        @Value("${file.transfer.api.url}") String fileTransferApiUrl) {
+        return () -> {
+            var httpClient = new ApiKeyHttpClient(internalApiKey);
+            var internalApiClient = new InternalApiClient(httpClient);
+            internalApiClient.setBasePath(fileTransferApiUrl);
+            return internalApiClient;
+        };
+    }
+
+    @Bean
+    public Tika tika() {
+        return new Tika();
     }
 
 }

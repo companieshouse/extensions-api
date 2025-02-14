@@ -9,7 +9,7 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItem;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.awaitility.Duration;
+import org.awaitility.Durations;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -50,7 +50,7 @@ import static org.mockito.Mockito.when;
 public class FileTransferGatewayIntegrationTest {
 
     @Autowired
-    private FileTransferApiClient gateway;
+    private FileTransferServiceClient gateway;
 
     @Mock
     private HttpServletResponse mockHttpServletResponse;
@@ -118,9 +118,9 @@ public class FileTransferGatewayIntegrationTest {
 
         try {
             System.out.print("Awaiting download...");
-            await().atMost(Duration.FIVE_MINUTES)
+            await().atMost(Durations.FIVE_MINUTES)
                 .with()
-                .pollInterval(Duration.FIVE_SECONDS)
+                .pollInterval(Durations.FIVE_SECONDS)
                 .until(downloadFile(fileID, mockHttpServletResponse), equalTo(HttpStatus.OK));
 
         } catch (Exception e) {
@@ -142,9 +142,9 @@ public class FileTransferGatewayIntegrationTest {
         // Try to download after delete - should get 404
         try {
             System.out.println("Calling download...");
-            HttpStatus downloadStatus = await().atMost(Duration.ONE_MINUTE)
+            HttpStatus downloadStatus = await().atMost(Durations.ONE_MINUTE)
                 .with()
-                .pollInterval(Duration.FIVE_SECONDS)
+                .pollInterval(Durations.FIVE_SECONDS)
                 .until(downloadFile(fileID, mockHttpServletResponse), Objects::nonNull);
 
             assertEquals(HttpStatus.NOT_FOUND, downloadStatus);

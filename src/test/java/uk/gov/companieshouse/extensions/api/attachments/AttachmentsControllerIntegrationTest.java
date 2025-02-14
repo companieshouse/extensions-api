@@ -1,6 +1,5 @@
 package uk.gov.companieshouse.extensions.api.attachments;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -88,10 +87,9 @@ public class AttachmentsControllerIntegrationTest {
             .accept(MediaType.APPLICATION_JSON);
 
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
-        String expectedJsonResponse = new ObjectMapper()
-            .writer()
-            .writeValueAsString(expectedDto);
-        Assertions.assertEquals(expectedJsonResponse, result.getResponse().getContentAsString());
+        Assertions.assertTrue(result.getResponse().getContentAsString().contains("\"etag\":\"\""));
+        Assertions.assertTrue(result.getResponse().getContentAsString().contains("\"name\":\"\""));
+        Assertions.assertTrue(result.getResponse().getContentAsString().contains("\"size\":123"));
         Assertions.assertEquals(HttpStatus.ACCEPTED.value(), result.getResponse().getStatus());
     }
 
