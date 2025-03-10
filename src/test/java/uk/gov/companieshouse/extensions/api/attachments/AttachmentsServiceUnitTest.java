@@ -13,8 +13,8 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.multipart.MultipartFile;
 import uk.gov.companieshouse.extensions.api.Utils.Utils;
-import uk.gov.companieshouse.extensions.api.attachments.file.FileTransferApiClient;
 import uk.gov.companieshouse.extensions.api.attachments.file.FileTransferApiClientResponse;
+import uk.gov.companieshouse.extensions.api.attachments.file.FileTransferServiceClient;
 import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
 import uk.gov.companieshouse.extensions.api.reasons.ExtensionReasonEntity;
 import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestFullEntity;
@@ -57,7 +57,7 @@ public class AttachmentsServiceUnitTest {
     private ExtensionRequestsRepository repo;
 
     @Mock
-    private FileTransferApiClient fileTransferApiClient;
+    private FileTransferServiceClient fileTransferServiceClient;
 
     @Mock
     private ApiLogger apiLogger;
@@ -75,7 +75,7 @@ public class AttachmentsServiceUnitTest {
         entity.setReasons(Arrays.asList(reasonEntity));
         when(repo.findById(anyString())).thenReturn(Optional.of(entity));
 
-        when(fileTransferApiClient.upload(any(MultipartFile.class))).thenReturn(getSuccessfulUploadResponse());
+        when(fileTransferServiceClient.upload(any(MultipartFile.class))).thenReturn(getSuccessfulUploadResponse());
 
         ServiceResult<AttachmentDTO> result =
             service.addAttachment(Utils.mockMultipartFile(),
@@ -120,7 +120,7 @@ public class AttachmentsServiceUnitTest {
         entity.setReasons(Arrays.asList(reasonEntity));
         when(repo.findById(anyString())).thenReturn(Optional.of(entity));
 
-        when(fileTransferApiClient.upload(any(MultipartFile.class))).thenReturn(getSuccessfulUploadResponse());
+        when(fileTransferServiceClient.upload(any(MultipartFile.class))).thenReturn(getSuccessfulUploadResponse());
 
         service.addAttachment(Utils.mockMultipartFile(),
             ACCESS_URL, REQUEST_ID, REASON_ID);
@@ -140,7 +140,7 @@ public class AttachmentsServiceUnitTest {
         ExtensionRequestFullEntity entity = new ExtensionRequestFullEntity();
         entity.setId(REQUEST_ID);
         when(repo.findById(anyString())).thenReturn(Optional.of(entity));
-        when(fileTransferApiClient.upload(any(MultipartFile.class))).thenReturn(getSuccessfulUploadResponse());
+        when(fileTransferServiceClient.upload(any(MultipartFile.class))).thenReturn(getSuccessfulUploadResponse());
 
         try {
             service.addAttachment(Utils.mockMultipartFile(),
@@ -155,7 +155,7 @@ public class AttachmentsServiceUnitTest {
     @Test
     public void willThrowServiceExceptionIfNoReason() throws Exception {
         when(repo.findById(anyString())).thenReturn(Optional.empty());
-        when(fileTransferApiClient.upload(any(MultipartFile.class))).thenReturn(getSuccessfulUploadResponse());
+        when(fileTransferServiceClient.upload(any(MultipartFile.class))).thenReturn(getSuccessfulUploadResponse());
 
         try {
             service.addAttachment(Utils.mockMultipartFile(),
@@ -168,7 +168,7 @@ public class AttachmentsServiceUnitTest {
 
     @Test
     public void willThrowServiceExceptionIfUploadErrors() throws Exception {
-        when(fileTransferApiClient.upload(any(MultipartFile.class))).thenReturn(getUnsuccessfulUploadResponse());
+        when(fileTransferServiceClient.upload(any(MultipartFile.class))).thenReturn(getUnsuccessfulUploadResponse());
 
         try {
             service.addAttachment(Utils.mockMultipartFile(),
@@ -181,7 +181,7 @@ public class AttachmentsServiceUnitTest {
 
     @Test
     public void willPropagateServerRuntimeExceptions() throws Exception {
-        when(fileTransferApiClient.upload(any(MultipartFile.class)))
+        when(fileTransferServiceClient.upload(any(MultipartFile.class)))
             .thenThrow(new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR));
         try {
             service.addAttachment(Utils.mockMultipartFile(),
@@ -194,7 +194,7 @@ public class AttachmentsServiceUnitTest {
 
     @Test
     public void willPropagateClientRuntimeExceptions() throws Exception {
-        when(fileTransferApiClient.upload(any(MultipartFile.class)))
+        when(fileTransferServiceClient.upload(any(MultipartFile.class)))
             .thenThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST));
         try {
             service.addAttachment(Utils.mockMultipartFile(),
@@ -209,7 +209,7 @@ public class AttachmentsServiceUnitTest {
     public void willThrowServiceExceptionIfNoFileIdReturned() throws Exception {
         FileTransferApiClientResponse response = getSuccessfulUploadResponse();
         response.setFileId(null);
-        when(fileTransferApiClient.upload(any(MultipartFile.class))).thenReturn(response);
+        when(fileTransferServiceClient.upload(any(MultipartFile.class))).thenReturn(response);
 
         try {
             service.addAttachment(Utils.mockMultipartFile(),
@@ -240,7 +240,7 @@ public class AttachmentsServiceUnitTest {
 
         FileTransferApiClientResponse apiClientResponse = new FileTransferApiClientResponse();
         apiClientResponse.setHttpStatus(HttpStatus.NO_CONTENT);
-        when(fileTransferApiClient.delete("12345")).thenReturn(apiClientResponse);
+        when(fileTransferServiceClient.delete("12345")).thenReturn(apiClientResponse);
 
         service.removeAttachment(entity.getId(),
             entity.getReasons().stream().findAny().get().getId(), "12345");
@@ -254,8 +254,8 @@ public class AttachmentsServiceUnitTest {
             });
 
         verify(repo).save(entity);
-        verify(fileTransferApiClient, times(1)).delete("12345");
-        verify(fileTransferApiClient, never()).delete("123456");
+        verify(fileTransferServiceClient, times(1)).delete("12345");
+        verify(fileTransferServiceClient, never()).delete("123456");
         verify(apiLogger, never()).error(anyString(), any(Exception.class));
         verify(apiLogger, never()).error(anyString());
     }
@@ -299,7 +299,7 @@ public class AttachmentsServiceUnitTest {
         assertFalse(entity.getReasons().get(0).getAttachments().isEmpty());
 
         HttpClientErrorException exception = new HttpClientErrorException(HttpStatus.NOT_FOUND);
-        when(fileTransferApiClient.delete("12345ab")).thenThrow(exception);
+        when(fileTransferServiceClient.delete("12345ab")).thenThrow(exception);
 
         when(repo.findById(entity.getId()))
             .thenReturn(Optional.of(entity));
@@ -314,7 +314,7 @@ public class AttachmentsServiceUnitTest {
         }
 
         verify(repo, never()).save(entity);
-        verify(fileTransferApiClient, times(1)).delete("12345ab");
+        verify(fileTransferServiceClient, times(1)).delete("12345ab");
         verify(apiLogger).error("Unable to delete attachment 12345ab, status code 404 NOT_FOUND", exception);
     }
 
@@ -334,7 +334,7 @@ public class AttachmentsServiceUnitTest {
         assertFalse(entity.getReasons().get(0).getAttachments().isEmpty());
 
         HttpClientErrorException exception = new HttpClientErrorException(HttpStatus.NOT_FOUND);
-        when(fileTransferApiClient.delete("12345")).thenThrow(exception);
+        when(fileTransferServiceClient.delete("12345")).thenThrow(exception);
 
         when(repo.findById(entity.getId()))
             .thenReturn(Optional.of(entity));
@@ -343,7 +343,7 @@ public class AttachmentsServiceUnitTest {
             entity.getReasons().stream().findAny().get().getId(), "12345");
 
         verify(repo).save(entity);
-        verify(fileTransferApiClient, times(1)).delete("12345");
+        verify(fileTransferServiceClient, times(1)).delete("12345");
         verify(apiLogger).error("Unable to delete attachment 12345, status code 404 NOT_FOUND", exception);
     }
 
@@ -363,7 +363,7 @@ public class AttachmentsServiceUnitTest {
         assertFalse(entity.getReasons().get(0).getAttachments().isEmpty());
 
         HttpServerErrorException exception = new HttpServerErrorException(HttpStatus.BAD_GATEWAY);
-        when(fileTransferApiClient.delete("12345")).thenThrow(exception);
+        when(fileTransferServiceClient.delete("12345")).thenThrow(exception);
 
         when(repo.findById(entity.getId()))
             .thenReturn(Optional.of(entity));
@@ -372,7 +372,7 @@ public class AttachmentsServiceUnitTest {
             entity.getReasons().stream().findAny().get().getId(), "12345");
 
         verify(repo).save(entity);
-        verify(fileTransferApiClient, times(1)).delete("12345");
+        verify(fileTransferServiceClient, times(1)).delete("12345");
         verify(apiLogger).error("Unable to delete attachment 12345, status code 502 BAD_GATEWAY", exception);
     }
 
@@ -391,7 +391,7 @@ public class AttachmentsServiceUnitTest {
 
         assertFalse(entity.getReasons().get(0).getAttachments().isEmpty());
 
-        when(fileTransferApiClient.delete("12345")).thenReturn(null);
+        when(fileTransferServiceClient.delete("12345")).thenReturn(null);
 
         when(repo.findById(entity.getId()))
             .thenReturn(Optional.of(entity));
@@ -400,7 +400,7 @@ public class AttachmentsServiceUnitTest {
             entity.getReasons().stream().findAny().get().getId(), "12345");
 
         verify(repo).save(entity);
-        verify(fileTransferApiClient, times(1)).delete("12345");
+        verify(fileTransferServiceClient, times(1)).delete("12345");
         verify(apiLogger).error("Unable to delete attachment 12345");
     }
 
@@ -421,7 +421,7 @@ public class AttachmentsServiceUnitTest {
 
         FileTransferApiClientResponse response = new FileTransferApiClientResponse();
         response.setHttpStatus(null);
-        when(fileTransferApiClient.delete("12345")).thenReturn(response);
+        when(fileTransferServiceClient.delete("12345")).thenReturn(response);
 
         when(repo.findById(entity.getId()))
             .thenReturn(Optional.of(entity));
@@ -430,7 +430,7 @@ public class AttachmentsServiceUnitTest {
             entity.getReasons().stream().findAny().get().getId(), "12345");
 
         verify(repo).save(entity);
-        verify(fileTransferApiClient, times(1)).delete("12345");
+        verify(fileTransferServiceClient, times(1)).delete("12345");
         verify(apiLogger).error("Unable to delete attachment 12345");
     }
 
@@ -440,12 +440,12 @@ public class AttachmentsServiceUnitTest {
         HttpServletResponse httpServletResponse = new MockHttpServletResponse();
         FileTransferApiClientResponse dummyDownloadResponse = Utils.dummyDownloadResponse();
 
-        when(fileTransferApiClient.download(attachmentId, httpServletResponse)).thenReturn(dummyDownloadResponse);
+        when(fileTransferServiceClient.download(attachmentId, httpServletResponse)).thenReturn(dummyDownloadResponse);
 
         FileTransferApiClientResponse downloadServiceResult = service.downloadAttachment(attachmentId, httpServletResponse);
 
-        verify(fileTransferApiClient, only()).download(attachmentId, httpServletResponse);
-        verify(fileTransferApiClient, times(1)).download(attachmentId, httpServletResponse);
+        verify(fileTransferServiceClient, only()).download(attachmentId, httpServletResponse);
+        verify(fileTransferServiceClient, times(1)).download(attachmentId, httpServletResponse);
 
         assertNotNull(downloadServiceResult);
     }

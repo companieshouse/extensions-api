@@ -6,8 +6,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import uk.gov.companieshouse.extensions.api.attachments.Attachment;
-import uk.gov.companieshouse.extensions.api.attachments.file.FileTransferApiClient;
 import uk.gov.companieshouse.extensions.api.attachments.file.FileTransferApiClientResponse;
+import uk.gov.companieshouse.extensions.api.attachments.file.FileTransferServiceClient;
 import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
 import uk.gov.companieshouse.extensions.api.logger.LogMethodCall;
 import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestFullEntity;
@@ -31,7 +31,7 @@ public class ReasonsService {
     private ExtensionRequestsRepository extensionRequestsRepository;
     private ExtensionReasonMapper reasonMapper;
     private Supplier<String> randomUUid;
-    private FileTransferApiClient fileTransferApiClient;
+    private FileTransferServiceClient fileTransferServiceClient;
     private ApiLogger apiLogger;
 
     @Autowired
@@ -39,13 +39,13 @@ public class ReasonsService {
                           ExtensionRequestsRepository extensionRequestsRepository,
                           ExtensionReasonMapper reasonMapper,
                           Supplier<String> randomUUid,
-                          FileTransferApiClient fileTransferApiClient,
+                          FileTransferServiceClient fileTransferServiceClient,
                           ApiLogger apiLogger) {
         this.requestsService = requestsService;
         this.extensionRequestsRepository = extensionRequestsRepository;
         this.reasonMapper = reasonMapper;
         this.randomUUid = randomUUid;
-        this.fileTransferApiClient = fileTransferApiClient;
+        this.fileTransferServiceClient = fileTransferServiceClient;
         this.apiLogger = apiLogger;
     }
 
@@ -146,7 +146,7 @@ public class ReasonsService {
             List<Attachment> attachmentsToBeDeleted = reasonToBeDeleted.get().getAttachments();
             for (Attachment attachment : attachmentsToBeDeleted) {
                 try {
-                    FileTransferApiClientResponse response = fileTransferApiClient.delete(attachment.getId());
+                    FileTransferApiClientResponse response = fileTransferServiceClient.delete(attachment.getId());
 
                     if (response == null || response.getHttpStatus() == null) {
                         apiLogger.error(String.format(errorMessageShort,

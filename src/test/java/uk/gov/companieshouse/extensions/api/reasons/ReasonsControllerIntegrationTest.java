@@ -35,7 +35,7 @@ import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyRequestEntit
 @ExtendWith(SpringExtension.class)
 public class ReasonsControllerIntegrationTest {
 
-    private static final String ROOT_URL = "/company/00006400/extensions/requests/a1/reasons/";
+    private static final String ROOT_URL = "/company/00006400/extensions/requests/a1/reasons";
     private static final String SPECIFIC_URL = "/company/00006400/extensions/requests/a1/reasons" +
         "/b2";
 
@@ -128,7 +128,7 @@ public class ReasonsControllerIntegrationTest {
 
     @Test
     public void canReachGetReasonsEndPoint() throws Exception {
-        RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/company/00006400/extensions/requests/a1/reasons/")
+        RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/company/00006400/extensions/requests/a1/reasons")
             .accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON);
 
 
@@ -169,22 +169,6 @@ public class ReasonsControllerIntegrationTest {
     }
 
     private String mockGetResponse() {
-        return "{" +
-            "\"etag\":null," +
-            "\"items\":[" +
-            "{\"etag\":null," +
-            "\"id\":null," +
-            "\"reason\":null," +
-            "\"start_on\":null," +
-            "\"end_on\":null," +
-            "\"affected_person\":null," +
-            "\"reason_information\":null," +
-            "\"continued_illness\":null," +
-            "\"reason_status\":null" +
-            "}]," +
-            "\"items_per_page\":0," +
-            "\"start_index\":0," +
-            "\"total_results\":1" +
-            "}";
+        return "{\"etag\":null,\"items_per_page\":0,\"start_index\":0,\"total_results\":1,\"items\":[{\"etag\":null,\"id\":null,\"reason\":null,\"start_on\":null,\"end_on\":null,\"affected_person\":null,\"reason_information\":null,\"continued_illness\":null,\"reason_status\":null}]}";
     }
 }

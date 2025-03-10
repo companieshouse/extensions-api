@@ -1,5 +1,6 @@
 package uk.gov.companieshouse.extensions.api.attachments.file;
 
+import org.apache.tika.Tika;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -18,6 +19,8 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 
 import static org.mockserver.model.HttpRequest.request;
@@ -30,8 +33,8 @@ import static org.mockserver.model.HttpResponse.response;
 @TestPropertySource(properties = {"EXTENSIONS_API_MONGODB_URL=mongodb://mongo-db1-toro1.development.aws.internal:27017", "server.port=8093",
     "api.endpoint.extensions=/company/{companyNumber}/extensions/requests",
     "spring.data.mongodb.uri=mongodb://mongo-db1-toro1.development.aws.internal:27017/extension_requests",
-    "FILE_TRANSFER_API_URL=http://localhost:8081/",
-    "FILE_TRANSFER_API_KEY=12345",
+    "file.transfer.api.url=http://localhost:8081/",
+    "internal.api.key=12345",
     "MONGO_CONNECTION_POOL_MIN_SIZE=0",
     "MONGO_CONNECTION_MAX_IDLE_TIME=0",
     "MONGO_CONNECTION_MAX_LIFE_TIME=0",
@@ -42,9 +45,12 @@ import static org.mockserver.model.HttpResponse.response;
 public class FileTransferGatewayMockIntegrationTest {
 
     @Autowired
-    private FileTransferApiClient gateway;
+    private FileTransferServiceClient gateway;
 
     private static ClientAndServer mockServer;
+
+    @Autowired
+    private Tika tika;
 
     @BeforeAll
     public static void startMockApiServer() {
@@ -72,8 +78,12 @@ public class FileTransferGatewayMockIntegrationTest {
 
     @Test
     public void willThrowHttpServerExceptionIf500Returned() throws IOException {
-        MultipartFile mockFile = new MockMultipartFile("file", "file.txt", "text/plain", "test".getBytes());
-
+        File file = new File("src/test/resources/input/test.png");
+        byte[] byteArray = new byte[(int) file.length()];
+        try (FileInputStream inputStream = new FileInputStream(file)) {
+            inputStream.read(byteArray);
+        }
+        MultipartFile mockFile = new MockMultipartFile("test", "test.png", "image/png", byteArray);
         mockServerExpectation("/", "POST")
             .respond(response()
                 .withStatusCode(500));
