@@ -1,12 +1,12 @@
 package uk.gov.companieshouse.extensions.api.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.error.ErrorAttributeOptions;
 import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
@@ -23,9 +23,6 @@ public class InterceptorConfig implements WebMvcConfigurer {
     @Autowired
     private ApiLogger logger;
 
-    @Value("${management.endpoints.web.path-mapping.health}")
-    private String healthCheckPath;
-
     @Bean
     public RequestLoggerInterceptor requestLoggerInterceptor() {
         return new RequestLoggerInterceptor();
@@ -36,12 +33,11 @@ public class InterceptorConfig implements WebMvcConfigurer {
         return new CompanyAuthorizationInterceptor(logger);
     }
 
-
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(requestLoggerInterceptor()).excludePathPatterns(healthCheckPath);
+        registry.addInterceptor(requestLoggerInterceptor());
         registry.addInterceptor(companyInterceptor(logger))
-            .addPathPatterns("/**/attachments/**").excludePathPatterns(healthCheckPath);
+            .addPathPatterns("/**/attachments/**");
     }
 
     // This bean override allows us to control what fields are returned in a Spring error response
@@ -59,5 +55,10 @@ public class InterceptorConfig implements WebMvcConfigurer {
     @Override
     public void configurePathMatch(PathMatchConfigurer configurer) {
         configurer.setUseTrailingSlashMatch(true);
+    }
+
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return web -> web.ignoring().requestMatchers("/healthcheck");
     }
 }
