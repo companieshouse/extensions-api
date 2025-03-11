@@ -1,8 +1,7 @@
 package uk.gov.companieshouse.extensions.api.config;
 
-import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.error.ErrorAttributeOptions;
 import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
@@ -12,16 +11,20 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-
 import uk.gov.companieshouse.extensions.api.authorization.CompanyAuthorizationInterceptor;
 import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
 import uk.gov.companieshouse.extensions.api.logger.RequestLoggerInterceptor;
+
+import java.util.Map;
 
 @Configuration
 public class InterceptorConfig implements WebMvcConfigurer {
 
     @Autowired
     private ApiLogger logger;
+
+    @Value("${management.endpoints.web.path-mapping.health}")
+    private String healthCheckPath;
 
     @Bean
     public RequestLoggerInterceptor requestLoggerInterceptor() {
@@ -33,11 +36,12 @@ public class InterceptorConfig implements WebMvcConfigurer {
         return new CompanyAuthorizationInterceptor(logger);
     }
 
+
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(requestLoggerInterceptor());
+        registry.addInterceptor(requestLoggerInterceptor()).excludePathPatterns(healthCheckPath);
         registry.addInterceptor(companyInterceptor(logger))
-            .addPathPatterns("/**/attachments/**");
+            .addPathPatterns("/**/attachments/**").excludePathPatterns(healthCheckPath);
     }
 
     // This bean override allows us to control what fields are returned in a Spring error response
