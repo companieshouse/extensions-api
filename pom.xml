@@ -24,7 +24,7 @@
         <jib-maven-plugin.version>3.4.0</jib-maven-plugin.version>
         <java.version>21</java.version>
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
-        <private-api-sdk-java.version>4.0.277</private-api-sdk-java.version>
+        <private-api-sdk-java.version>4.0.285</private-api-sdk-java.version>
 
         <tika-core.version>3.1.0</tika-core.version>
         <commons-io.version>2.18.0</commons-io.version>

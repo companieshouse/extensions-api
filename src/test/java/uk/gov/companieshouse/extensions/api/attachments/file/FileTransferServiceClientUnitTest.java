@@ -1,8 +1,19 @@
 package uk.gov.companieshouse.extensions.api.attachments.file;
 
-import com.google.api.client.http.HttpHeaders;
-import com.google.api.client.http.HttpResponseException;
-import jakarta.servlet.http.HttpServletResponse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Supplier;
+
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.tika.Tika;
@@ -22,32 +33,21 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.multipart.MultipartFile;
+
+import com.google.api.client.http.HttpHeaders;
+import com.google.api.client.http.HttpResponseException;
+
+import jakarta.servlet.http.HttpServletResponse;
 import uk.gov.companieshouse.api.InternalApiClient;
 import uk.gov.companieshouse.api.error.ApiErrorResponseException;
 import uk.gov.companieshouse.api.handler.exception.URIValidationException;
 import uk.gov.companieshouse.api.handler.filetransfer.PrivateFileTransferResourceHandler;
 import uk.gov.companieshouse.api.handler.filetransfer.request.PrivateModelFileTransferDelete;
-import uk.gov.companieshouse.api.handler.filetransfer.request.PrivateModelFileTransferDownload;
+import uk.gov.companieshouse.api.handler.filetransfer.request.PrivateModelFileTransferDownloadBinary;
 import uk.gov.companieshouse.api.handler.filetransfer.request.PrivateModelFileTransferUpload;
 import uk.gov.companieshouse.api.model.ApiResponse;
-import uk.gov.companieshouse.api.model.filetransfer.FileApi;
 import uk.gov.companieshouse.api.model.filetransfer.IdApi;
 import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Supplier;
-
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 @Tag("UnitTest")
 @ExtendWith(MockitoExtension.class)
@@ -159,20 +159,19 @@ class FileTransferServiceClientUnitTest {
         byte[] fileContent = new byte[(int) inputFile.length()];
         fileInputStream.read(fileContent);
         fileInputStream.close();
-        PrivateModelFileTransferDownload privateModelFileTransferDownload = mock(PrivateModelFileTransferDownload.class);
+        PrivateModelFileTransferDownloadBinary privateModelFileTransferDownloadBinary = mock(PrivateModelFileTransferDownloadBinary.class);
 
         //create dummy headers that would be returned from calling the file-transfer-api
         ContentDisposition contentDisposition = ContentDisposition.builder(contentDispositionType)
             .filename(fileName).build();
-        FileApi fileApi = new FileApi(fileName, fileContent, "text", contentLength, "txt");
         Map<String, Object> httpResponseHeaders = new HashMap<>();
         httpResponseHeaders.put("Content-Length", contentLength);
         httpResponseHeaders.put("Content-Type", contentType);
         httpResponseHeaders.put("Content-Disposition", contentDisposition);
-        ApiResponse<FileApi> downloadResponseFileTransfer = new ApiResponse<>(HttpStatus.OK.value(), httpResponseHeaders, fileApi);
+        ApiResponse<byte[]> downloadResponseFileTransfer = new ApiResponse<>(HttpStatus.OK.value(), httpResponseHeaders, new byte[]{});
 
-        when(mockHandler.download(any())).thenReturn(privateModelFileTransferDownload);
-        when(privateModelFileTransferDownload.execute()).thenReturn(downloadResponseFileTransfer);
+        when(mockHandler.downloadBinary(any())).thenReturn(privateModelFileTransferDownloadBinary);
+        when(privateModelFileTransferDownloadBinary.execute()).thenReturn(downloadResponseFileTransfer);
         when(servletResponse.getOutputStream()).thenThrow(IOException.class);
         //do the download
         FileTransferApiClientResponse fileTransferApiClientResponse = fileTransferServiceClient.download(FILE_ID, servletResponse);
@@ -191,7 +190,7 @@ class FileTransferServiceClientUnitTest {
         byte[] fileContent = new byte[(int) inputFile.length()];
         fileInputStream.read(fileContent);
         fileInputStream.close();
-        PrivateModelFileTransferDownload privateModelFileTransferDownload = mock(PrivateModelFileTransferDownload.class);
+        PrivateModelFileTransferDownloadBinary privateModelFileTransferDownloadBinary = mock(PrivateModelFileTransferDownloadBinary.class);
 
         MockHttpServletResponse mockHttpServletResponse = new MockHttpServletResponse();
 
@@ -199,16 +198,15 @@ class FileTransferServiceClientUnitTest {
         //create dummy headers that would be returned from calling the file-transfer-api
         ContentDisposition contentDisposition = ContentDisposition.builder(contentDispositionType)
             .filename(fileName).build();
-        FileApi fileApi = new FileApi(fileName, fileContent, "text", contentLength, "txt");
+        byte[] fileBinary = new byte[]{1,1,1,1,1,1,1};
         Map<String, Object> httpResponseHeaders = new HashMap<>();
         httpResponseHeaders.put("Content-Length", contentLength);
         httpResponseHeaders.put("Content-Type", contentType);
         httpResponseHeaders.put("Content-Disposition", contentDisposition);
-        ApiResponse<FileApi> downloadResponseFileTransfer = new ApiResponse<>(HttpStatus.OK.value(), httpResponseHeaders, fileApi);
+        ApiResponse<byte[]> downloadResponseFileTransfer = new ApiResponse<>(HttpStatus.OK.value(), httpResponseHeaders, fileBinary);
 
-        when(mockHandler.download(any())).thenReturn(privateModelFileTransferDownload);
-        when(privateModelFileTransferDownload.execute()).thenReturn(downloadResponseFileTransfer);
-
+        when(mockHandler.downloadBinary(any())).thenReturn(privateModelFileTransferDownloadBinary);
+        when(privateModelFileTransferDownloadBinary.execute()).thenReturn(downloadResponseFileTransfer);
 
         //do the download
         FileTransferApiClientResponse downloadResponse = fileTransferServiceClient.download(FILE_ID, mockHttpServletResponse);
@@ -217,7 +215,7 @@ class FileTransferServiceClientUnitTest {
         Assertions.assertEquals(HttpStatus.OK, downloadResponse.getHttpStatus());
 
         //check input stream was copied to output stream when executing the lambda
-        assertTrue(ArrayUtils.isEquals(Files.readAllBytes(inputFile.toPath()), mockHttpServletResponse.getContentAsByteArray()));
+        assertTrue(ArrayUtils.isEquals(fileBinary, mockHttpServletResponse.getContentAsByteArray()));
 
         //check headers are correct
         Assertions.assertEquals(contentType.toString(), mockHttpServletResponse.getHeader("Content-Type"));
@@ -227,39 +225,39 @@ class FileTransferServiceClientUnitTest {
 
     @Test
     void testDownload_GenericException() throws ApiErrorResponseException, URIValidationException {
-        PrivateModelFileTransferDownload privateModelFileTransferDownload = mock(PrivateModelFileTransferDownload.class);
+        PrivateModelFileTransferDownloadBinary privateModelFileTransferDownloadBinary = mock(PrivateModelFileTransferDownloadBinary.class);
         final MockHttpServletResponse servletResponse = new MockHttpServletResponse();
-        when(mockHandler.download(any())).thenReturn(privateModelFileTransferDownload);
-        when(privateModelFileTransferDownload.execute()).thenThrow(mock(URIValidationException.class));
+        when(mockHandler.downloadBinary(any())).thenReturn(privateModelFileTransferDownloadBinary);
+        when(privateModelFileTransferDownloadBinary.execute()).thenThrow(mock(URIValidationException.class));
         var fileTransferApiClientResponse = fileTransferServiceClient.download(FILE_ID, servletResponse);
         Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, fileTransferApiClientResponse.getHttpStatus());
     }
 
     @Test
     void testDownload_URIValidationException() throws ApiErrorResponseException, URIValidationException {
-        PrivateModelFileTransferDownload privateModelFileTransferDownload = mock(PrivateModelFileTransferDownload.class);
+        PrivateModelFileTransferDownloadBinary privateModelFileTransferDownloadBinary = mock(PrivateModelFileTransferDownloadBinary.class);
         final MockHttpServletResponse servletResponse = new MockHttpServletResponse();
-        when(mockHandler.download(any())).thenReturn(privateModelFileTransferDownload);
-        when(privateModelFileTransferDownload.execute()).thenThrow(mock(URIValidationException.class));
+        when(mockHandler.downloadBinary(any())).thenReturn(privateModelFileTransferDownloadBinary);
+        when(privateModelFileTransferDownloadBinary.execute()).thenThrow(mock(URIValidationException.class));
         FileTransferApiClientResponse fileTransferApiClientResponse = fileTransferServiceClient.download(FILE_ID, servletResponse);
         Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, fileTransferApiClientResponse.getHttpStatus());
 
     }
     @Test
     void testDownload_ApiErrorResponseException() throws ApiErrorResponseException, URIValidationException {
-        PrivateModelFileTransferDownload privateModelFileTransferDownload = mock(PrivateModelFileTransferDownload.class);
+        PrivateModelFileTransferDownloadBinary privateModelFileTransferDownloadBinary = mock(PrivateModelFileTransferDownloadBinary.class);
         final MockHttpServletResponse servletResponse = new MockHttpServletResponse();
-        when(mockHandler.download(any())).thenReturn(privateModelFileTransferDownload);
-        when(privateModelFileTransferDownload.execute()).thenThrow(createInternalServerError());
+        when(mockHandler.downloadBinary(any())).thenReturn(privateModelFileTransferDownloadBinary);
+        when(privateModelFileTransferDownloadBinary.execute()).thenThrow(createInternalServerError());
         assertThrows(HttpServerErrorException.class, () -> fileTransferServiceClient.download(FILE_ID, servletResponse));
     }
 
     @Test
     void testDownload_NullResponse() throws ApiErrorResponseException, URIValidationException {
-        PrivateModelFileTransferDownload privateModelFileTransferDownload = mock(PrivateModelFileTransferDownload.class);
+        PrivateModelFileTransferDownloadBinary privateModelFileTransferDownloadBinary = mock(PrivateModelFileTransferDownloadBinary.class);
         final MockHttpServletResponse servletResponse = new MockHttpServletResponse();
-        when(mockHandler.download(any())).thenReturn(privateModelFileTransferDownload);
-        when(privateModelFileTransferDownload.execute()).thenReturn(null);
+        when(mockHandler.downloadBinary(any())).thenReturn(privateModelFileTransferDownloadBinary);
+        when(privateModelFileTransferDownloadBinary.execute()).thenReturn(null);
         FileTransferApiClientResponse fileTransferApiClientResponse = fileTransferServiceClient.download(FILE_ID, servletResponse);
         Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, fileTransferApiClientResponse.getHttpStatus());
     }

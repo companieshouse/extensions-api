@@ -60,10 +60,10 @@ public class FileTransferServiceClient {
      */
     @LogMethodCall
     public FileTransferApiClientResponse download(String fileId, HttpServletResponse httpServletResponse) {
-        ApiResponse<FileApi> downloadResponse;
+        ApiResponse<byte[]> downloadResponse;
         var fileTransferApiClientResponse = new FileTransferApiClientResponse();
         try {
-            downloadResponse = downloadFile(fileId);
+            downloadResponse = downloadFileAsBinary(fileId);
         } catch (URIValidationException e) {
             logger.error(URI_VALIDATION_FAILED_MESSAGE + " " + DOWNLOAD);
             return getFileTransferApiClientResponse(fileTransferApiClientResponse);
@@ -79,14 +79,12 @@ public class FileTransferServiceClient {
             OutputStream os;
             try {
                 os = httpServletResponse.getOutputStream();
-                os.write(downloadResponse.getData().getBody(), 0, downloadResponse.getData().getBody().length);
+                os.write(downloadResponse.getData(), 0, downloadResponse.getData().length);
 
             } catch (IOException e) {
                 logger.error(IO_EXCEPTION_MESSAGE + " " + DOWNLOAD);
                 fileTransferApiClientResponse.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
             }
-
-
         } else {
             logger.error(NULL_RESPONSE_MESSAGE + " " + DOWNLOAD);
             fileTransferApiClientResponse.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -186,7 +184,7 @@ public class FileTransferServiceClient {
     }
 
 
-    private void setResponseHeaders(HttpServletResponse httpServletResponse, ApiResponse<FileApi> clientHttpResponse) {
+    private void setResponseHeaders(HttpServletResponse httpServletResponse, ApiResponse<byte[]> clientHttpResponse) {
         Map<String, Object> incomingHeaders = clientHttpResponse.getHeaders();
         MediaType contentType = (MediaType) incomingHeaders.get(CONTENT_TYPE);
         if (contentType != null) {
@@ -208,17 +206,17 @@ public class FileTransferServiceClient {
     }
 
 
-    public ApiResponse<IdApi> uploadFile(final FileApi fileApi) throws ApiErrorResponseException, URIValidationException {
+    private ApiResponse<IdApi> uploadFile(final FileApi fileApi) throws ApiErrorResponseException, URIValidationException {
         return internalApiClientSupplier.get().privateFileTransferResourceHandler().upload(fileApi).execute();
     }
 
-    public ApiResponse<FileApi> downloadFile(final String fileId) throws ApiErrorResponseException, URIValidationException {
+    private ApiResponse<byte[]> downloadFileAsBinary(final String fileId) throws ApiErrorResponseException, URIValidationException {
         return internalApiClientSupplier.get().privateFileTransferResourceHandler()
-            .download(fileId)
+            .downloadBinary(fileId)
             .execute();
     }
 
-    public ApiResponse<Void> deleteFile(final String fileId) throws ApiErrorResponseException, URIValidationException {
+    private ApiResponse<Void> deleteFile(final String fileId) throws ApiErrorResponseException, URIValidationException {
         return internalApiClientSupplier.get().privateFileTransferResourceHandler()
             .delete(fileId)
             .execute();
