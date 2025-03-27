@@ -167,7 +167,7 @@ public class AttachmentsService {
             "Request %s", reasonId, requestId));
     }
 
-    public FileTransferApiClientResponse downloadAttachment(String attachmentId, HttpServletResponse httpServletResponse) {
-        return fileTransferServiceClient.download(attachmentId, httpServletResponse);
+    public void downloadAttachment(String attachmentId, HttpServletResponse httpServletResponse) {
+        fileTransferServiceClient.download(attachmentId, httpServletResponse);
     }
 }
