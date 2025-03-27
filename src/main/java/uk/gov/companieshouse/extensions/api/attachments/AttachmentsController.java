@@ -53,7 +53,7 @@ public class AttachmentsController {
             logger.error(e);
             return responseEntityFactory.createResponse(ServiceResult.notFound());
         } catch(HttpClientErrorException | HttpServerErrorException e) {
-            logger.error(String.format("The file-transfer-api has returned an error for file: %s", 
+            logger.error(String.format("The file-transfer-api has returned an error for file: %s",
                 file.getOriginalFilename()), e);
             return ResponseEntity.status(e.getStatusCode()).build();
         }
@@ -75,14 +75,7 @@ public class AttachmentsController {
 
     @LogMethodCall
     @GetMapping("/{requestId}/reasons/{reasonId}/attachments/{attachmentId}/download")
-    public ResponseEntity<Void> downloadAttachmentFromRequest(@PathVariable String attachmentId, HttpServletResponse response) {
-        try {
-            FileTransferApiClientResponse downloadServiceResult = attachmentsService.downloadAttachment(attachmentId, response);
-            return ResponseEntity.status(downloadServiceResult.getHttpStatus()).build();
-        } catch(HttpClientErrorException | HttpServerErrorException e) {
-            logger.error(String.format("The file-transfer-api has returned an error: %s for attachmentId %s",
-                e.getMessage(), attachmentId));
-            return ResponseEntity.status(e.getStatusCode()).build();
-        }
-    }	
+    public void downloadAttachmentFromRequest(@PathVariable String attachmentId, HttpServletResponse response) {
+        attachmentsService.downloadAttachment(attachmentId, response);
+    }
 }

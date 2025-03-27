@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.File;
@@ -22,6 +23,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -69,8 +71,7 @@ class FileTransferServiceClientUnitTest {
     @Mock
     private PrivateFileTransferResourceHandler mockHandler;
 
-    @Mock
-    HttpServletResponse servletResponse;
+    HttpServletResponse servletResponse = new MockHttpServletResponse();
 
     @InjectMocks
     private FileTransferServiceClient fileTransferServiceClient;
@@ -172,10 +173,15 @@ class FileTransferServiceClientUnitTest {
 
         when(mockHandler.downloadBinary(any())).thenReturn(privateModelFileTransferDownloadBinary);
         when(privateModelFileTransferDownloadBinary.execute()).thenReturn(downloadResponseFileTransfer);
-        when(servletResponse.getOutputStream()).thenThrow(IOException.class);
+        HttpServletResponse mockHttpServletResponse = mock(HttpServletResponse.class);
+
+        ArgumentCaptor<Integer> statusCaptor = ArgumentCaptor.forClass(Integer.class);
+        when(mockHttpServletResponse.getOutputStream()).thenThrow(IOException.class);
         //do the download
-        FileTransferApiClientResponse fileTransferApiClientResponse = fileTransferServiceClient.download(FILE_ID, servletResponse);
-        Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, fileTransferApiClientResponse.getHttpStatus());
+        fileTransferServiceClient.download(FILE_ID, mockHttpServletResponse);
+        verify(mockHttpServletResponse).setStatus(statusCaptor.capture());
+
+        Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), statusCaptor.getValue());
 
     }
 
@@ -208,11 +214,10 @@ class FileTransferServiceClientUnitTest {
         when(mockHandler.downloadBinary(any())).thenReturn(privateModelFileTransferDownloadBinary);
         when(privateModelFileTransferDownloadBinary.execute()).thenReturn(downloadResponseFileTransfer);
 
-        //do the download
-        FileTransferApiClientResponse downloadResponse = fileTransferServiceClient.download(FILE_ID, mockHttpServletResponse);
+        fileTransferServiceClient.download(FILE_ID, mockHttpServletResponse);
 
         //check status is ok
-        Assertions.assertEquals(HttpStatus.OK, downloadResponse.getHttpStatus());
+        Assertions.assertEquals(HttpStatus.OK.value(), mockHttpServletResponse.getStatus());
 
         //check input stream was copied to output stream when executing the lambda
         assertTrue(ArrayUtils.isEquals(fileBinary, mockHttpServletResponse.getContentAsByteArray()));
@@ -229,8 +234,8 @@ class FileTransferServiceClientUnitTest {
         final MockHttpServletResponse servletResponse = new MockHttpServletResponse();
         when(mockHandler.downloadBinary(any())).thenReturn(privateModelFileTransferDownloadBinary);
         when(privateModelFileTransferDownloadBinary.execute()).thenThrow(mock(URIValidationException.class));
-        var fileTransferApiClientResponse = fileTransferServiceClient.download(FILE_ID, servletResponse);
-        Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, fileTransferApiClientResponse.getHttpStatus());
+        fileTransferServiceClient.download(FILE_ID, servletResponse);
+        Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), servletResponse.getStatus());
     }
 
     @Test
@@ -239,8 +244,8 @@ class FileTransferServiceClientUnitTest {
         final MockHttpServletResponse servletResponse = new MockHttpServletResponse();
         when(mockHandler.downloadBinary(any())).thenReturn(privateModelFileTransferDownloadBinary);
         when(privateModelFileTransferDownloadBinary.execute()).thenThrow(mock(URIValidationException.class));
-        FileTransferApiClientResponse fileTransferApiClientResponse = fileTransferServiceClient.download(FILE_ID, servletResponse);
-        Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, fileTransferApiClientResponse.getHttpStatus());
+        fileTransferServiceClient.download(FILE_ID, servletResponse);
+        Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), servletResponse.getStatus());
 
     }
     @Test
@@ -258,8 +263,8 @@ class FileTransferServiceClientUnitTest {
         final MockHttpServletResponse servletResponse = new MockHttpServletResponse();
         when(mockHandler.downloadBinary(any())).thenReturn(privateModelFileTransferDownloadBinary);
         when(privateModelFileTransferDownloadBinary.execute()).thenReturn(null);
-        FileTransferApiClientResponse fileTransferApiClientResponse = fileTransferServiceClient.download(FILE_ID, servletResponse);
-        Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, fileTransferApiClientResponse.getHttpStatus());
+        fileTransferServiceClient.download(FILE_ID, servletResponse);
+        Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), servletResponse.getStatus());
     }
 
     @Test

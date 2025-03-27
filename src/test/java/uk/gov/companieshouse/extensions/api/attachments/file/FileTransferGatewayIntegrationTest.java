@@ -142,12 +142,12 @@ public class FileTransferGatewayIntegrationTest {
         // Try to download after delete - should get 404
         try {
             System.out.println("Calling download...");
-            HttpStatus downloadStatus = await().atMost(Durations.ONE_MINUTE)
+            Integer downloadStatus = await().atMost(Durations.ONE_MINUTE)
                 .with()
                 .pollInterval(Durations.FIVE_SECONDS)
                 .until(downloadFile(fileID, mockHttpServletResponse), Objects::nonNull);
 
-            assertEquals(HttpStatus.NOT_FOUND, downloadStatus);
+            assertEquals(HttpStatus.NOT_FOUND.value(), downloadStatus);
         } catch (Exception e) {
             fail(e.getMessage());
         } finally {
@@ -188,15 +188,15 @@ public class FileTransferGatewayIntegrationTest {
         return gateway.upload(multipartFile);
     }
 
-    private Callable<HttpStatus> downloadFile(String fileID, HttpServletResponse httpServletResponse) {
+    private Callable<Integer> downloadFile(String fileID, HttpServletResponse httpServletResponse) {
         return () -> {
-            HttpStatus downloadStatus;
+            int downloadStatus;
             try {
                 System.out.print(".");
-                FileTransferApiClientResponse downloadResponse = gateway.download(fileID, httpServletResponse);
-                downloadStatus = downloadResponse.getHttpStatus();
+                gateway.download(fileID, httpServletResponse);
+                downloadStatus = httpServletResponse.getStatus();
             } catch (HttpClientErrorException | HttpServerErrorException e) {
-                downloadStatus = HttpStatus.valueOf(e.getStatusCode().value());
+                downloadStatus = e.getStatusCode().value();
             }
             return downloadStatus;
         };

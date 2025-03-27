@@ -1,6 +1,5 @@
 package uk.gov.companieshouse.extensions.api.authorization;
 
-import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
@@ -11,10 +10,12 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+
 import uk.gov.companieshouse.extensions.api.attachments.AttachmentsController;
 import uk.gov.companieshouse.extensions.api.attachments.AttachmentsService;
 import uk.gov.companieshouse.extensions.api.attachments.file.FileTransferApiClientResponse;
@@ -22,10 +23,6 @@ import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
 import uk.gov.companieshouse.extensions.api.requests.ERICHeaderParser;
 import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestMapper;
 import uk.gov.companieshouse.service.rest.response.PluggableResponseEntityFactory;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
 
 @Tag("IntegrationTest")
 @WebMvcTest(value = {AttachmentsController.class})
@@ -35,19 +32,19 @@ public class AuthorizationIntegrationTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
+    @MockitoBean
     private AttachmentsService attachmentsService;
 
-    @MockBean
+    @MockitoBean
     private ERICHeaderParser headerParser;
 
-    @MockBean
+    @MockitoBean
     private ExtensionRequestMapper mapper;
 
-    @MockBean
+    @MockitoBean
     private ApiLogger logger;
 
-    @MockBean
+    @MockitoBean
     private PluggableResponseEntityFactory responseEntityFactory;
 
     @BeforeEach
@@ -55,8 +52,6 @@ public class AuthorizationIntegrationTest {
         FileTransferApiClientResponse transferResponse = new FileTransferApiClientResponse();
         transferResponse.setFileId("123");
         transferResponse.setHttpStatus(HttpStatus.OK);
-        when(attachmentsService.downloadAttachment(anyString(), any(HttpServletResponse.class)))
-            .thenReturn(transferResponse);
     }
 
     @Test
