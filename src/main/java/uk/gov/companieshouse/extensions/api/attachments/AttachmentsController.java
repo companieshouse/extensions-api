@@ -1,8 +1,5 @@
 package uk.gov.companieshouse.extensions.api.attachments;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -16,7 +13,8 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.multipart.MultipartFile;
 
-import uk.gov.companieshouse.extensions.api.attachments.file.FileTransferApiClientResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
 import uk.gov.companieshouse.extensions.api.logger.LogMethodCall;
 import uk.gov.companieshouse.service.ServiceException;
@@ -53,7 +51,7 @@ public class AttachmentsController {
             logger.error(e);
             return responseEntityFactory.createResponse(ServiceResult.notFound());
         } catch(HttpClientErrorException | HttpServerErrorException e) {
-            logger.error(String.format("The file-transfer-api has returned an error for file: %s", 
+            logger.error(String.format("The file-transfer-api has returned an error for file: %s",
                 file.getOriginalFilename()), e);
             return ResponseEntity.status(e.getStatusCode()).build();
         }
@@ -75,14 +73,7 @@ public class AttachmentsController {
 
     @LogMethodCall
     @GetMapping("/{requestId}/reasons/{reasonId}/attachments/{attachmentId}/download")
-    public ResponseEntity<Void> downloadAttachmentFromRequest(@PathVariable String attachmentId, HttpServletResponse response) {
-        try {
-            FileTransferApiClientResponse downloadServiceResult = attachmentsService.downloadAttachment(attachmentId, response);
-            return ResponseEntity.status(downloadServiceResult.getHttpStatus()).build();
-        } catch(HttpClientErrorException | HttpServerErrorException e) {
-            logger.error(String.format("The file-transfer-api has returned an error: %s for attachmentId %s",
-                e.getMessage(), attachmentId));
-            return ResponseEntity.status(e.getStatusCode()).build();
-        }
-    }	
+    public void downloadAttachmentFromRequest(@PathVariable String attachmentId, HttpServletResponse response) {
+        attachmentsService.downloadAttachment(attachmentId, response);
+    }
 }

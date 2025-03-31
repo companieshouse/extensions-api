@@ -438,16 +438,13 @@ public class AttachmentsServiceUnitTest {
     public void willCallFileTransferGatewayForDownload() {
         String attachmentId = "1234";
         HttpServletResponse httpServletResponse = new MockHttpServletResponse();
-        FileTransferApiClientResponse dummyDownloadResponse = Utils.dummyDownloadResponse();
 
-        when(fileTransferServiceClient.download(attachmentId, httpServletResponse)).thenReturn(dummyDownloadResponse);
-
-        FileTransferApiClientResponse downloadServiceResult = service.downloadAttachment(attachmentId, httpServletResponse);
+        service.downloadAttachment(attachmentId, httpServletResponse);
 
         verify(fileTransferServiceClient, only()).download(attachmentId, httpServletResponse);
         verify(fileTransferServiceClient, times(1)).download(attachmentId, httpServletResponse);
 
-        assertNotNull(downloadServiceResult);
+        assertEquals(200, httpServletResponse.getStatus());
     }
 
     private void addAttachmentToReason(ExtensionReasonEntity reason, String attachmentId) {

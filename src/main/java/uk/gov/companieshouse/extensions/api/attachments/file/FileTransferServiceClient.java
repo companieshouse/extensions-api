@@ -1,6 +1,10 @@
 package uk.gov.companieshouse.extensions.api.attachments.file;
 
-import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.Map;
+import java.util.function.Supplier;
+
 import org.apache.tika.Tika;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -9,6 +13,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.multipart.MultipartFile;
+
+import jakarta.servlet.http.HttpServletResponse;
 import uk.gov.companieshouse.api.InternalApiClient;
 import uk.gov.companieshouse.api.error.ApiErrorResponseException;
 import uk.gov.companieshouse.api.handler.exception.URIValidationException;
@@ -17,11 +23,6 @@ import uk.gov.companieshouse.api.model.filetransfer.FileApi;
 import uk.gov.companieshouse.api.model.filetransfer.IdApi;
 import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
 import uk.gov.companieshouse.extensions.api.logger.LogMethodCall;
-
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.Map;
-import java.util.function.Supplier;
 
 /**
  * Client for using the file-transfer-service for upload / download / delete of files
@@ -59,37 +60,37 @@ public class FileTransferServiceClient {
      * @return FileTransferApiClientResponse containing the http status
      */
     @LogMethodCall
-    public FileTransferApiClientResponse download(String fileId, HttpServletResponse httpServletResponse) {
-        ApiResponse<byte[]> downloadResponse;
+    public void download(String fileId, HttpServletResponse httpServletResponse) {
+
+        ApiResponse<byte[]> downloadResponse = null;
+
         var fileTransferApiClientResponse = new FileTransferApiClientResponse();
         try {
             downloadResponse = downloadFileAsBinary(fileId);
         } catch (URIValidationException e) {
             logger.error(URI_VALIDATION_FAILED_MESSAGE + " " + DOWNLOAD);
-            return getFileTransferApiClientResponse(fileTransferApiClientResponse);
+            fileTransferApiClientResponse.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (ApiErrorResponseException e) {
             logger.error(API_ERROR_RESPONSE_MESSAGE + " " + DOWNLOAD);
             throw new HttpServerErrorException(HttpStatus.valueOf(e.getStatusCode()));
         }
 
         if (downloadResponse != null) {
-
-            fileTransferApiClientResponse.setHttpStatus(HttpStatus.valueOf(downloadResponse.getStatusCode()));
             setResponseHeaders(httpServletResponse, downloadResponse);
-            OutputStream os;
-            try {
-                os = httpServletResponse.getOutputStream();
-                os.write(downloadResponse.getData(), 0, downloadResponse.getData().length);
 
+            try (OutputStream os = httpServletResponse.getOutputStream()) {
+                os.write(downloadResponse.getData(), 0, downloadResponse.getData().length);
+                os.flush();
+                logger.debug("fileId " + fileId + " downloaded successfully");
+                logger.debug("file size is " + downloadResponse.getData().length);
             } catch (IOException e) {
                 logger.error(IO_EXCEPTION_MESSAGE + " " + DOWNLOAD);
-                fileTransferApiClientResponse.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+                httpServletResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
             }
         } else {
             logger.error(NULL_RESPONSE_MESSAGE + " " + DOWNLOAD);
-            fileTransferApiClientResponse.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+            httpServletResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
-        return fileTransferApiClientResponse;
     }
 
     /**
@@ -110,7 +111,8 @@ public class FileTransferServiceClient {
             fileType = tika.detect(fileToUpload.getInputStream(), originalFilename);
         } catch (IOException e) {
             logger.error(IO_EXCEPTION_MESSAGE + " " + UPLOAD);
-            return getFileTransferApiClientResponse(fileTransferApiClientResponse);
+            fileTransferApiClientResponse.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+            return fileTransferApiClientResponse;
         }
         String extension = getFileExtension(originalFilename);
         if (!MimeTypeValidator.isValidMimeType(fileType)) {
@@ -122,7 +124,8 @@ public class FileTransferServiceClient {
             logger.info("file details for upload" + fileApi.getMimeType() + " " + originalFilename);
         } catch (IOException e) {
             logger.error(IO_EXCEPTION_MESSAGE + " " + UPLOAD);
-            return getFileTransferApiClientResponse(fileTransferApiClientResponse);
+            fileTransferApiClientResponse.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+            return fileTransferApiClientResponse;
         }
 
         ApiResponse<IdApi> uploadResponse;
@@ -130,7 +133,8 @@ public class FileTransferServiceClient {
             uploadResponse = uploadFile(fileApi);
         } catch (URIValidationException e) {
             logger.error(URI_VALIDATION_FAILED_MESSAGE + " " + UPLOAD);
-            return getFileTransferApiClientResponse(fileTransferApiClientResponse);
+            fileTransferApiClientResponse.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+            return fileTransferApiClientResponse;
         } catch (ApiErrorResponseException e) {
             logger.error(API_ERROR_RESPONSE_MESSAGE + " " + UPLOAD + " " + e.getStatusCode());
             throw new HttpServerErrorException(HttpStatus.valueOf(e.getStatusCode()));
@@ -163,8 +167,8 @@ public class FileTransferServiceClient {
             deleteResponse = deleteFile(fileId);
         } catch (URIValidationException e) {
             logger.error(URI_VALIDATION_FAILED_MESSAGE + " " + DELETE);
-            return getFileTransferApiClientResponse(fileTransferApiClientResponse);
-
+            fileTransferApiClientResponse.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+            return fileTransferApiClientResponse;
         } catch (ApiErrorResponseException e) {
             logger.error(API_ERROR_RESPONSE_MESSAGE + " " + DELETE);
             throw new HttpServerErrorException(HttpStatus.valueOf(e.getStatusCode()));
@@ -177,12 +181,6 @@ public class FileTransferServiceClient {
         }
         return fileTransferApiClientResponse;
     }
-
-    private static FileTransferApiClientResponse getFileTransferApiClientResponse(FileTransferApiClientResponse fileTransferApiClientResponse) {
-        fileTransferApiClientResponse.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-        return fileTransferApiClientResponse;
-    }
-
 
     private void setResponseHeaders(HttpServletResponse httpServletResponse, ApiResponse<byte[]> clientHttpResponse) {
         Map<String, Object> incomingHeaders = clientHttpResponse.getHeaders();
