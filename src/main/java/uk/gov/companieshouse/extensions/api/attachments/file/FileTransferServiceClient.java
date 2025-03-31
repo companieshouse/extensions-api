@@ -1,6 +1,10 @@
 package uk.gov.companieshouse.extensions.api.attachments.file;
 
-import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.Map;
+import java.util.function.Supplier;
+
 import org.apache.tika.Tika;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -9,6 +13,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.multipart.MultipartFile;
+
+import jakarta.servlet.http.HttpServletResponse;
 import uk.gov.companieshouse.api.InternalApiClient;
 import uk.gov.companieshouse.api.error.ApiErrorResponseException;
 import uk.gov.companieshouse.api.handler.exception.URIValidationException;
@@ -17,11 +23,6 @@ import uk.gov.companieshouse.api.model.filetransfer.FileApi;
 import uk.gov.companieshouse.api.model.filetransfer.IdApi;
 import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
 import uk.gov.companieshouse.extensions.api.logger.LogMethodCall;
-
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.Map;
-import java.util.function.Supplier;
 
 /**
  * Client for using the file-transfer-service for upload / download / delete of files
@@ -76,9 +77,8 @@ public class FileTransferServiceClient {
 
         if (downloadResponse != null) {
             setResponseHeaders(httpServletResponse, downloadResponse);
-            OutputStream os;
-            try {
-                os = httpServletResponse.getOutputStream();
+
+            try (OutputStream os = httpServletResponse.getOutputStream()) {
                 os.write(downloadResponse.getData(), 0, downloadResponse.getData().length);
                 os.flush();
                 logger.debug("fileId " + fileId + " downloaded successfully");
