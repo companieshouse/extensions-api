@@ -2,6 +2,7 @@ package uk.gov.companieshouse.extensions.api.attachments.file;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.function.Supplier;
 
@@ -71,7 +72,7 @@ public class FileTransferServiceClient {
             logger.error(URI_VALIDATION_FAILED_MESSAGE + " " + DOWNLOAD);
             fileTransferApiClientResponse.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (ApiErrorResponseException e) {
-            logger.error(API_ERROR_RESPONSE_MESSAGE + " " + DOWNLOAD);
+            logger.error(API_ERROR_RESPONSE_MESSAGE + " " + DOWNLOAD + ": %s".formatted(Arrays.toString(e.getStackTrace())));
             throw new HttpServerErrorException(HttpStatus.valueOf(e.getStatusCode()));
         }
 
