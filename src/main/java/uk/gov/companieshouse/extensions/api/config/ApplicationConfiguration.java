@@ -13,12 +13,10 @@ import org.springframework.context.annotation.Configuration;
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
 
-import groovy.util.logging.Slf4j;
 import uk.gov.companieshouse.api.InternalApiClient;
 import uk.gov.companieshouse.api.http.ApiKeyHttpClient;
 
 @Configuration
-@Slf4j
 public class ApplicationConfiguration {
 
     /**
