@@ -46,5 +46,6 @@ public class LogMethodCallAspectTest {
         });
 
         Assertions.assertEquals("Test exception", thrown.getMessage());
+        Mockito.verify(apiLogger).error(Mockito.anyString());
     }
 }
