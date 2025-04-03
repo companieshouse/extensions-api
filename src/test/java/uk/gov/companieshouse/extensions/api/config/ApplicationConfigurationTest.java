@@ -13,11 +13,11 @@ import org.springframework.http.converter.ByteArrayHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 @Tag("UnitTest")
-public class ApplicationConfigurationTest {
+class ApplicationConfigurationTest {
 
 
     @Test
-    public void restTemplateByteArrayConverter(){
+    void restTemplateByteArrayConverter(){
 
         AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(RestTemplateConfig.class);
         RestTemplate restTemplate = context.getBean(RestTemplate.class);

@@ -11,7 +11,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 
 @Tag("UnitTest")
-public class LogMethodCallAspectTest {
+class LogMethodCallAspectTest {
 
     @Mock
     private ApiLogger apiLogger = mock(ApiLogger.class);
@@ -19,7 +19,7 @@ public class LogMethodCallAspectTest {
     private LogMethodCallAspect logMethodCallAspect = new LogMethodCallAspect(apiLogger);
 
     @Test
-    public void testLogMethodCall() throws Throwable {
+    void testLogMethodCall() throws Throwable {
         ProceedingJoinPoint joinPoint = Mockito.mock(ProceedingJoinPoint.class);
         MethodSignature methodSignature = Mockito.mock(MethodSignature.class);
 
@@ -33,7 +33,7 @@ public class LogMethodCallAspectTest {
     }
 
     @Test
-    public void testLogMethodCallException() throws Throwable {
+    void testLogMethodCallException() throws Throwable {
         ProceedingJoinPoint joinPoint = Mockito.mock(ProceedingJoinPoint.class);
         MethodSignature methodSignature = Mockito.mock(MethodSignature.class);
 
