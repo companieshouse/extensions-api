@@ -40,6 +40,7 @@ public class FileTransferServiceClient {
     private static final String UPLOAD = "UPLOAD";
     private static final String DELETE = "DELETE";
     private static final String IO_EXCEPTION_MESSAGE = "IO exception occurred from file transfer service url";
+    public static final String ATTACHMENT_FILENAME = "attachment; filename=";
 
     @Autowired
     private ApiLogger logger;
@@ -189,7 +190,7 @@ public class FileTransferServiceClient {
             httpServletResponse.setHeader(CONTENT_TYPE, contentType.toString());
         }
         httpServletResponse.setHeader(CONTENT_LENGTH, String.valueOf(clientHttpResponse.getData().getSize()));
-//        httpServletResponse.setHeader(CONTENT_DISPOSITION, incomingHeaders.get(CONTENT_DISPOSITION).toString());
+        httpServletResponse.setHeader(CONTENT_DISPOSITION, ATTACHMENT_FILENAME + clientHttpResponse.getData().getFileName());
     }
 
     private String getFileExtension(String filename) {
