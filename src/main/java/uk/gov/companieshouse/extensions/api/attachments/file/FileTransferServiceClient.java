@@ -1,11 +1,6 @@
 package uk.gov.companieshouse.extensions.api.attachments.file;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.function.Supplier;
-
+import jakarta.servlet.http.HttpServletResponse;
 import org.apache.tika.Tika;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,8 +9,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.multipart.MultipartFile;
-
-import jakarta.servlet.http.HttpServletResponse;
 import uk.gov.companieshouse.api.InternalApiClient;
 import uk.gov.companieshouse.api.error.ApiErrorResponseException;
 import uk.gov.companieshouse.api.handler.exception.URIValidationException;
@@ -24,6 +17,12 @@ import uk.gov.companieshouse.api.model.filetransfer.FileApi;
 import uk.gov.companieshouse.api.model.filetransfer.IdApi;
 import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
 import uk.gov.companieshouse.extensions.api.logger.LogMethodCall;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.function.Supplier;
 
 /**
  * Client for using the file-transfer-service for upload / download / delete of files
@@ -63,11 +62,11 @@ public class FileTransferServiceClient {
     @LogMethodCall
     public void download(String fileId, HttpServletResponse httpServletResponse) {
 
-        ApiResponse<byte[]> downloadResponse = null;
+        ApiResponse<FileApi> downloadResponse = null;
 
         var fileTransferApiClientResponse = new FileTransferApiClientResponse();
         try {
-            downloadResponse = downloadFileAsBinary(fileId);
+            downloadResponse = downloadFile(fileId);
         } catch (URIValidationException e) {
             logger.error(URI_VALIDATION_FAILED_MESSAGE + " " + DOWNLOAD);
             fileTransferApiClientResponse.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -80,10 +79,10 @@ public class FileTransferServiceClient {
             setResponseHeaders(httpServletResponse, downloadResponse);
 
             try (OutputStream os = httpServletResponse.getOutputStream()) {
-                os.write(downloadResponse.getData(), 0, downloadResponse.getData().length);
+                os.write(downloadResponse.getData().getBody(), 0, downloadResponse.getData().getBody().length);
                 os.flush();
                 logger.debug("fileId " + fileId + " downloaded successfully");
-                logger.debug("file size is " + downloadResponse.getData().length);
+                logger.debug("file size is " + downloadResponse.getData().getBody().length);
             } catch (IOException e) {
                 logger.error(IO_EXCEPTION_MESSAGE + " " + DOWNLOAD);
                 httpServletResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
@@ -183,14 +182,14 @@ public class FileTransferServiceClient {
         return fileTransferApiClientResponse;
     }
 
-    private void setResponseHeaders(HttpServletResponse httpServletResponse, ApiResponse<byte[]> clientHttpResponse) {
+    private void setResponseHeaders(HttpServletResponse httpServletResponse, ApiResponse<FileApi> clientHttpResponse) {
         Map<String, Object> incomingHeaders = clientHttpResponse.getHeaders();
         MediaType contentType = (MediaType) incomingHeaders.get(CONTENT_TYPE);
         if (contentType != null) {
             httpServletResponse.setHeader(CONTENT_TYPE, contentType.toString());
         }
-        httpServletResponse.setHeader(CONTENT_LENGTH, String.valueOf(incomingHeaders.get(CONTENT_LENGTH)));
-        httpServletResponse.setHeader(CONTENT_DISPOSITION, incomingHeaders.get(CONTENT_DISPOSITION).toString());
+        httpServletResponse.setHeader(CONTENT_LENGTH, String.valueOf(clientHttpResponse.getData().getSize()));
+//        httpServletResponse.setHeader(CONTENT_DISPOSITION, incomingHeaders.get(CONTENT_DISPOSITION).toString());
     }
 
     private String getFileExtension(String filename) {
@@ -212,6 +211,12 @@ public class FileTransferServiceClient {
     private ApiResponse<byte[]> downloadFileAsBinary(final String fileId) throws ApiErrorResponseException, URIValidationException {
         return internalApiClientSupplier.get().privateFileTransferResourceHandler()
             .downloadBinary(fileId)
+            .execute();
+    }
+
+    private ApiResponse<FileApi> downloadFile(final String fileId) throws ApiErrorResponseException, URIValidationException {
+        return internalApiClientSupplier.get().privateFileTransferResourceHandler()
+            .download(fileId)
             .execute();
     }
 
