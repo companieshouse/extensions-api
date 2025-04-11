@@ -1,19 +1,26 @@
 package uk.gov.companieshouse.extensions.api.attachments.file;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.function.Supplier;
 
 import org.apache.tika.Tika;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
+
+import com.google.common.io.CountingInputStream;
+import com.google.common.io.CountingOutputStream;
 
 import jakarta.servlet.http.HttpServletResponse;
 import uk.gov.companieshouse.api.InternalApiClient;
@@ -42,59 +49,71 @@ public class FileTransferServiceClient {
     private static final String DELETE = "DELETE";
     private static final String IO_EXCEPTION_MESSAGE = "IO exception occurred from file transfer service url";
 
-    @Autowired
-    private ApiLogger logger;
-    @Autowired
-    private Supplier<InternalApiClient> internalApiClientSupplier;
+    private final ApiLogger logger;
+    private final Supplier<InternalApiClient> internalApiClientSupplier;
+    private final Tika tika;
+    private final RestTemplate restTemplate;
+    private final String authorizationToken;
 
-    @Autowired
-    private Tika tika;
+    public FileTransferServiceClient(ApiLogger logger, Supplier<InternalApiClient> internalApiClientSupplier,
+			Tika tika, RestTemplate restTemplate, String authorizationToken) {
+		this.logger = logger;
+		this.internalApiClientSupplier = internalApiClientSupplier;
+		this.tika = tika;
+		this.restTemplate = restTemplate;
+        this.authorizationToken = authorizationToken;
+	}
 
-
-    /**
+	/**
      * Downloads a file from the file-transfer-service
      * The private-api-sdk callback handle the response
      * from the file-transfer-service. it's in here that we copy the data coming in from
      * the file-transfer-service into the provided outputStream.
      * @param fileId The id used by the file-transfer-service to identify the file
-     * @param httpServletResponse The HttpServletResponse to stream the file to
+     * @param response The HttpServletResponse to stream the file to
      * @return FileTransferApiClientResponse containing the http status
      */
     @LogMethodCall
-    public void download(String fileId, HttpServletResponse httpServletResponse) {
+    public void download(String fileId, HttpServletResponse response) {
 
-        ApiResponse<byte[]> downloadResponse = null;
+        ResponseEntity<InputStreamResource> downloadResponse = null;
 
-        var fileTransferApiClientResponse = new FileTransferApiClientResponse();
         try {
-            downloadResponse = downloadFileAsBinary(fileId);
-        } catch (URIValidationException e) {
-            logger.error(URI_VALIDATION_FAILED_MESSAGE + " " + DOWNLOAD);
-            fileTransferApiClientResponse.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-        } catch (ApiErrorResponseException e) {
+            downloadResponse = getFileFromFileTransfer(fileId);
+            forwardStream(downloadResponse, response);
+        } catch (RestClientException e) {
             logger.error(API_ERROR_RESPONSE_MESSAGE + " " + DOWNLOAD + ": %s".formatted(Arrays.toString(e.getStackTrace())));
-            throw new HttpServerErrorException(HttpStatus.valueOf(e.getStatusCode()));
-        }
-
-        if (downloadResponse != null) {
-            setResponseHeaders(httpServletResponse, downloadResponse);
-
-            try (OutputStream os = httpServletResponse.getOutputStream()) {
-                os.write(downloadResponse.getData(), 0, downloadResponse.getData().length);
-                os.flush();
-                logger.debug("fileId " + fileId + " downloaded successfully");
-                logger.debug("file size is " + downloadResponse.getData().length);
-            } catch (IOException e) {
-                logger.error(IO_EXCEPTION_MESSAGE + " " + DOWNLOAD);
-                httpServletResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            }
-        } else {
-            logger.error(NULL_RESPONSE_MESSAGE + " " + DOWNLOAD);
-            httpServletResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
     }
 
-    /**
+    private void forwardStream(ResponseEntity<InputStreamResource> downloadResponse, HttpServletResponse response) {
+        if (downloadResponse != null) {
+            try ( CountingInputStream in = new CountingInputStream(downloadResponse.getBody().getInputStream());
+                  CountingOutputStream out = new CountingOutputStream(response.getOutputStream() )) {
+                in.transferTo(out);
+                out.flush();
+                response.setStatus(HttpStatus.OK.value());
+            } catch (IOException e) {
+                logger.error(IO_EXCEPTION_MESSAGE + " " + DOWNLOAD);
+                response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            }
+
+            Map<String, String> incomingHeaders = downloadResponse.getHeaders().asSingleValueMap();
+            String contentType = incomingHeaders.get(CONTENT_TYPE);
+            if (contentType != null) {
+                response.setHeader(CONTENT_TYPE, contentType);
+            }
+            response.setHeader(CONTENT_LENGTH, String.valueOf(incomingHeaders.get(CONTENT_LENGTH)));
+            response.setHeader(CONTENT_DISPOSITION, incomingHeaders.get(CONTENT_DISPOSITION));
+
+        } else {
+            logger.error(NULL_RESPONSE_MESSAGE + " " + DOWNLOAD);
+            response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        }
+    }
+
+	/**
      * Uploads a file to the file-transfer-service
      * Creates a multipart form request containing the file and sends to
      * the file-transfer-service. The response from the file-transfer-service contains
@@ -183,16 +202,6 @@ public class FileTransferServiceClient {
         return fileTransferApiClientResponse;
     }
 
-    private void setResponseHeaders(HttpServletResponse httpServletResponse, ApiResponse<byte[]> clientHttpResponse) {
-        Map<String, Object> incomingHeaders = clientHttpResponse.getHeaders();
-        MediaType contentType = (MediaType) incomingHeaders.get(CONTENT_TYPE);
-        if (contentType != null) {
-            httpServletResponse.setHeader(CONTENT_TYPE, contentType.toString());
-        }
-        httpServletResponse.setHeader(CONTENT_LENGTH, String.valueOf(incomingHeaders.get(CONTENT_LENGTH)));
-        httpServletResponse.setHeader(CONTENT_DISPOSITION, incomingHeaders.get(CONTENT_DISPOSITION).toString());
-    }
-
     private String getFileExtension(String filename) {
         if (filename == null) {
             return null;
@@ -209,10 +218,15 @@ public class FileTransferServiceClient {
         return internalApiClientSupplier.get().privateFileTransferResourceHandler().upload(fileApi).execute();
     }
 
-    private ApiResponse<byte[]> downloadFileAsBinary(final String fileId) throws ApiErrorResponseException, URIValidationException {
-        return internalApiClientSupplier.get().privateFileTransferResourceHandler()
-            .downloadBinary(fileId)
-            .execute();
+    private ResponseEntity<InputStreamResource> getFileFromFileTransfer(final String fileId) throws RestClientException{
+
+        HttpHeaders headers = new HttpHeaders();
+        HttpEntity<Void> entity = new HttpEntity<>(headers);
+        headers.set("AUTHORIZATION", authorizationToken);
+
+        String url = "/file-transfer-service/" + fileId + "/downloadbinary";
+
+        return restTemplate.exchange(url,HttpMethod.GET,entity, InputStreamResource.class);
     }
 
     private ApiResponse<Void> deleteFile(final String fileId) throws ApiErrorResponseException, URIValidationException {
@@ -220,5 +234,4 @@ public class FileTransferServiceClient {
             .delete(fileId)
             .execute();
     }
-
 }

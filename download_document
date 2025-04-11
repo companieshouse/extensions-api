@@ -1,0 +1,17 @@
+@startuml download_document
+
+    skinparam style strictuml
+    title "Download Document"
+
+    !$COLOR_KAFKA = "#green"
+    !$COLOR_HTTP = "#red"
+
+    Actor user
+    participant "Extensions Web \n<font color=purple> (Lang: GO)" as extensions_web
+    participant "Extensions API \n<font color=purple> (Lang: GO)" as extensions_api
+    participant "File Transfer Service \n<font color=purple> (Lang: GO)" as file_transfer_service
+
+    user --> extensions_web
+    extensions_web --> extensions_api
+    extensions_api --> file_transfer_service
+@enduml
