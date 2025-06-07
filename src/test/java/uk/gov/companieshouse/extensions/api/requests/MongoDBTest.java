@@ -37,7 +37,9 @@ import static com.mongodb.client.model.Filters.eq;
  * so that testing does not fail on concourse just because this connection is absent.
  */
 
-
+// TODO Make this a TestContainers/MongoDBContainer test instead of a connection to a live MongoDB instance.
+// TODO - See RepositoryIT in filing-history-api for an example of how to do this.
+@Disabled
 @Tag("IntegrationTest")
 @ExtendWith(SpringExtension.class)
 @SpringBootTest

@@ -11,6 +11,8 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.awaitility.Durations;
 import org.jetbrains.annotations.NotNull;
+import org.junit.Ignore;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -44,9 +46,12 @@ import static org.mockito.Mockito.when;
 /**
  * FileTransferGatewayIntegrationTest
  */
+// TODO Delete as it require file-transfer-api AND LocalStack to be running
 @Tag("CIIntegrationTest")
 @RunWith(SpringRunner.class)
 @SpringBootTest
+@Disabled // Disabled as this test requires a running file-transfer-api instance
+@Ignore
 public class FileTransferGatewayIntegrationTest {
 
     @Autowired

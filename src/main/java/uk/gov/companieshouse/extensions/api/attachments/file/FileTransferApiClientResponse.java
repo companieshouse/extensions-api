@@ -11,15 +11,17 @@ public class FileTransferApiClientResponse {
         return fileId;
     }
 
-    public void setFileId(String fileId) {
+    public FileTransferApiClientResponse fileId(String fileId) {
         this.fileId = fileId;
+        return this;
     }
 
     public HttpStatus getHttpStatus() {
         return httpStatus;
     }
 
-    public void setHttpStatus(HttpStatus httpStatus) {
+    public FileTransferApiClientResponse httpStatus(HttpStatus httpStatus) {
         this.httpStatus = httpStatus;
+        return this;
     }
 }

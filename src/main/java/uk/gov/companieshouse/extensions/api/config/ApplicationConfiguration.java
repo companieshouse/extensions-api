@@ -1,20 +1,20 @@
 package uk.gov.companieshouse.extensions.api.config;
 
+import com.mongodb.ConnectionString;
+import com.mongodb.MongoClientSettings;
+import org.apache.tika.Tika;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.client.RestTemplate;
+import uk.gov.companieshouse.api.handler.filetransfer.FileTransferHttpClient;
+import uk.gov.companieshouse.api.handler.filetransfer.InternalFileTransferClient;
+
 import java.time.LocalDateTime;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
-
-import org.apache.tika.Tika;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-
-import com.mongodb.ConnectionString;
-import com.mongodb.MongoClientSettings;
-
-import uk.gov.companieshouse.api.InternalApiClient;
-import uk.gov.companieshouse.api.http.ApiKeyHttpClient;
 
 @Configuration
 public class ApplicationConfiguration {
@@ -46,12 +46,17 @@ public class ApplicationConfiguration {
     }
 
     @Bean
-    public Supplier<InternalApiClient> internalApiClientSupplier(
+    public RestTemplate restTemplate(RestTemplateBuilder builder) {
+        return builder.build();
+    }
+
+    @Bean
+    public Supplier<InternalFileTransferClient> internalFileTransferClient(
         @Value("${internal.api.key}") String internalApiKey,
         @Value("${file.transfer.api.url}") String fileTransferApiUrl) {
         return () -> {
-            var httpClient = new ApiKeyHttpClient(internalApiKey);
-            var internalApiClient = new InternalApiClient(httpClient);
+            var httpClient = new FileTransferHttpClient(internalApiKey);
+            var internalApiClient = new InternalFileTransferClient(httpClient);
             internalApiClient.setBasePath(fileTransferApiUrl);
             return internalApiClient;
         };
@@ -61,5 +66,4 @@ public class ApplicationConfiguration {
     public Tika tika() {
         return new Tika();
     }
-
 }

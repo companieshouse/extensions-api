@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
@@ -50,8 +49,8 @@ public class AuthorizationIntegrationTest {
     @BeforeEach
     public void setup() {
         FileTransferApiClientResponse transferResponse = new FileTransferApiClientResponse();
-        transferResponse.setFileId("123");
-        transferResponse.setHttpStatus(HttpStatus.OK);
+        transferResponse.fileId("123");
+        transferResponse.httpStatus(HttpStatus.OK);
     }
 
     @Test

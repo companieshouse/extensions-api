@@ -1,6 +1,7 @@
 package uk.gov.companieshouse.extensions.api.requests;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,6 +26,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+// TODO Make this a TestContainers/MongoDBContainer test instead of a connection to a live MongoDB instance.
+// TODO - See RepositoryIT in filing-history-api for an example of how to do this.
+@Disabled
 
 @Tag("IntegrationTest")
 @ExtendWith(SpringExtension.class)

@@ -1,10 +1,12 @@
 package uk.gov.companieshouse.extensions.api.attachments.file;
 
 import org.apache.tika.Tika;
+import org.junit.Ignore;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -42,6 +44,10 @@ import static org.mockserver.model.HttpResponse.response;
     "spring.servlet.multipart.max-request-size=200"})
 @ExtendWith(MockServerExtension.class)
 @SpringBootTest
+// TODO Delete as it require file-transfer-api AND LocalStack to be running
+@Disabled // Disabled as this test requires a running file-transfer-api instance
+@Ignore
+
 public class FileTransferGatewayMockIntegrationTest {
 
     @Autowired

@@ -13,8 +13,8 @@ import org.junit.experimental.categories.Category;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.companieshouse.extensions.api.attachments.file.FileTransferApiClientResponse;
 import uk.gov.companieshouse.extensions.api.attachments.file.FileTransferServiceClient;
 import uk.gov.companieshouse.extensions.api.authorization.CompanyAuthorizationInterceptor;
@@ -52,10 +52,10 @@ import static org.mockito.Mockito.when;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class ContractProviderIntegrationTest {
 
-    @MockBean
+    @MockitoBean
     private FileTransferServiceClient fileTransferServiceClient;
 
-    @MockBean
+    @MockitoBean
     private CompanyAuthorizationInterceptor mockAuthInterceptor;
 
     @TestTarget
@@ -64,7 +64,7 @@ public class ContractProviderIntegrationTest {
     @BeforeEach
     public void setup() {
         FileTransferApiClientResponse fileTransferApiClientResponse = new FileTransferApiClientResponse();
-        fileTransferApiClientResponse.setHttpStatus(HttpStatus.NO_CONTENT);
+        fileTransferApiClientResponse.httpStatus(HttpStatus.NO_CONTENT);
         when(fileTransferServiceClient.delete(anyString())).thenReturn(fileTransferApiClientResponse);
         when(mockAuthInterceptor.preHandle(any(HttpServletRequest.class),
             any(HttpServletResponse.class), any(Object.class)))

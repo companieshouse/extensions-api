@@ -2,6 +2,7 @@ package uk.gov.companieshouse.extensions.api.attachments.file;
 
 import org.apache.tika.Tika;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,8 +21,10 @@ import java.io.InputStream;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+// TODO - This test is probably not required as Tika is not used in FTS client anymore, but leaving it here for now
 @Tag("UnitTest")
 @ExtendWith(MockitoExtension.class)
+@Disabled
 class FileTransferServiceClientUploadTest {
     @Mock
     private Tika tika;

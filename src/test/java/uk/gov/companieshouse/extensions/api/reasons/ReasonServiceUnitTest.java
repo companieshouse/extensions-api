@@ -185,7 +185,7 @@ public class ReasonServiceUnitTest {
         Assertions.assertEquals(1, extensionRequestFullEntity.getReasons().size());
 
         FileTransferApiClientResponse response = new FileTransferApiClientResponse();
-        response.setHttpStatus(HttpStatus.NO_CONTENT);
+        response.httpStatus(HttpStatus.NO_CONTENT);
         when(fileTransferServiceClient.delete("1234")).thenReturn(response);
         when(fileTransferServiceClient.delete("5678")).thenReturn(response);
 
@@ -355,7 +355,7 @@ public class ReasonServiceUnitTest {
             (extensionRequestFullEntity);
 
         FileTransferApiClientResponse response = new FileTransferApiClientResponse();
-        response.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+        response.httpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
         when(fileTransferServiceClient.delete("1234")).thenReturn(response);
 
         reasonsService.removeExtensionsReasonFromRequest(extensionRequestFullEntity.getId(),
