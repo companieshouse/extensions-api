@@ -2,12 +2,11 @@ package uk.gov.companieshouse.extensions.api.attachments;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.io.Serializable;
+import java.util.Objects;
 import org.springframework.web.multipart.MultipartFile;
 import uk.gov.companieshouse.service.links.Links;
 import uk.gov.companieshouse.service.rest.ApiObjectImpl;
-
-import java.io.Serializable;
-import java.util.Objects;
 
 public class AttachmentDTO extends ApiObjectImpl implements Serializable {
 
@@ -16,8 +15,7 @@ public class AttachmentDTO extends ApiObjectImpl implements Serializable {
     private final String contentType;
     private final String id;
 
-    public AttachmentDTO(String id, Links links, String etag, String name, long size,
-                         String contentType) {
+    public AttachmentDTO(String id, Links links, String etag, String name, long size, String contentType) {
         this.id = id;
         setLinks(links);
         setEtag(etag);

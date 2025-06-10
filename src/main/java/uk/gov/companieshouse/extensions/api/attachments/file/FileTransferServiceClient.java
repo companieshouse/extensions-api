@@ -51,9 +51,9 @@ public class FileTransferServiceClient {
 
     @LogMethodCall
     public void download(String fileId, HttpServletResponse httpServletResponse) {
-
         try {
             InternalFileTransferClient internalFileTransferClient = fileTransferClientSupplier.get();
+
             ApiResponse<FileApi> response = internalFileTransferClient.privateFileTransferHandler()
                 .download(fileId)
                 .execute();
@@ -70,16 +70,20 @@ public class FileTransferServiceClient {
                     logger.error(IO_EXCEPTION_MESSAGE + " " + DOWNLOAD);
                     httpServletResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
                 }
+
             } else {
                 logger.error(NULL_RESPONSE_MESSAGE + " " + DOWNLOAD);
                 httpServletResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
             }
+
         } catch (URIValidationException e) {
             logger.error(URI_VALIDATION_FAILED_MESSAGE + " " + DOWNLOAD);
             throw new FileTransferURIValidationException(URI_VALIDATION_FAILED_MESSAGE, e);
+
         } catch (ApiErrorResponseException e) {
             logger.error(API_ERROR_RESPONSE_MESSAGE + " " + DOWNLOAD + ": %s".formatted(Arrays.toString(e.getStackTrace())));
             throw new HttpServerErrorException(HttpStatus.valueOf(e.getStatusCode()));
+
         } catch (Exception e) {
             logger.error(API_ERROR_RESPONSE_MESSAGE + " " + DOWNLOAD, e);
             httpServletResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
@@ -89,31 +93,38 @@ public class FileTransferServiceClient {
     @LogMethodCall
     public FileTransferApiClientResponse upload(MultipartFile fileToUpload) {
         try {
-            InternalFileTransferClient internalFileTransferClient = fileTransferClientSupplier.get();
             InputStream fileStream = fileToUpload.getInputStream();
             String contentType = fileToUpload.getContentType();
             String filename = fileToUpload.getOriginalFilename();
 
+            InternalFileTransferClient internalFileTransferClient = fileTransferClientSupplier.get();
+
             ApiResponse<IdApi> uploadResponse =  internalFileTransferClient.privateFileTransferHandler()
                 .upload(fileStream, contentType, filename)
                 .execute();
-            FileTransferApiClientResponse response =new FileTransferApiClientResponse();
+
+            FileTransferApiClientResponse response = new FileTransferApiClientResponse();
             if (uploadResponse != null) {
                 response.httpStatus(HttpStatus.valueOf(uploadResponse.getStatusCode()));
                 if (uploadResponse.getData() != null) {
                     response.fileId(uploadResponse.getData().getId());
                 }
+
             } else {
                 logger.error(NULL_RESPONSE_MESSAGE + " " + UPLOAD);
                 response.httpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
             }
+
             return response;
+
         } catch (URIValidationException e) {
             logger.error(URI_VALIDATION_FAILED_MESSAGE + " " + UPLOAD);
             throw new FileTransferURIValidationException(URI_VALIDATION_FAILED_MESSAGE, e);
+
         } catch (ApiErrorResponseException e) {
             logger.error(API_ERROR_RESPONSE_MESSAGE + " " + UPLOAD + " " + e.getStatusCode());
             throw new HttpServerErrorException(HttpStatus.valueOf(e.getStatusCode()));
+
         } catch (IOException e) {
             throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
@@ -124,8 +135,8 @@ public class FileTransferServiceClient {
      * @param fileId of the file to delete
      * @return FileTransferApiClientResponse containing the http status
      */
+    @LogMethodCall
     public FileTransferApiClientResponse delete(String fileId) {
-
         try {
             InternalFileTransferClient ftsClient = fileTransferClientSupplier.get();
 
@@ -137,17 +148,20 @@ public class FileTransferServiceClient {
                 .fileId(fileId)
                 .httpStatus(apiResponse != null? HttpStatus.valueOf(apiResponse.getStatusCode()) :
                     HttpStatus.INTERNAL_SERVER_ERROR);
+
         } catch (URIValidationException e) {
             logger.error(URI_VALIDATION_FAILED_MESSAGE + " " + DELETE);
             return new FileTransferApiClientResponse()
                 .fileId(fileId)
                 .httpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+
         } catch (ApiErrorResponseException e) {
             logger.error(API_ERROR_RESPONSE_MESSAGE + " " + DELETE);
             throw new HttpServerErrorException(HttpStatus.valueOf(e.getStatusCode()));
         }
     }
 
+    @LogMethodCall
     private void setResponseHeaders(HttpServletResponse httpServletResponse, ApiResponse<?> clientHttpResponse) {
         Map<String, Object> incomingHeaders = clientHttpResponse.getHeaders();
         MediaType contentType = (MediaType) incomingHeaders.get(CONTENT_TYPE);
