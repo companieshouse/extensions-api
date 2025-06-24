@@ -1,20 +1,19 @@
 package uk.gov.companieshouse.extensions.api.attachments.file;
 
+import static java.lang.String.format;
+
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.function.Supplier;
-
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.multipart.MultipartFile;
-
-import jakarta.servlet.http.HttpServletResponse;
 import uk.gov.companieshouse.api.error.ApiErrorResponseException;
 import uk.gov.companieshouse.api.filetransfer.FileApi;
 import uk.gov.companieshouse.api.filetransfer.IdApi;
@@ -50,7 +49,8 @@ public class FileTransferServiceClient {
     }
 
     @LogMethodCall
-    public void download(String fileId, HttpServletResponse httpServletResponse) {
+    public void download(final String fileId, final HttpServletResponse httpServletResponse) {
+        logger.info(format("Attempting to download file: %s", fileId));
         try {
             InternalFileTransferClient internalFileTransferClient = fileTransferClientSupplier.get();
 
@@ -58,21 +58,22 @@ public class FileTransferServiceClient {
                 .download(fileId)
                 .execute();
 
-            if (response != null) {
-                setResponseHeaders(httpServletResponse, response);
+            logger.info(format("Download Complete[%d]: Headers Available=%s", response.getStatusCode(), response.getHeaders()));
 
-                try (OutputStream os = httpServletResponse.getOutputStream()) {
-                    os.write(response.getData().getBody(), 0, response.getData().getSize());
-                    os.flush();
-                    logger.debug("fileId " + fileId + " downloaded successfully");
-                    logger.debug("file size is " + response.getData().getSize());
-                } catch (IOException e) {
-                    logger.error(IO_EXCEPTION_MESSAGE + " " + DOWNLOAD);
-                    httpServletResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-                }
+            setDownloadResponseHeaders(httpServletResponse, response);
 
-            } else {
-                logger.error(NULL_RESPONSE_MESSAGE + " " + DOWNLOAD);
+            try (OutputStream os = httpServletResponse.getOutputStream()) {
+                logger.debug(format("Attempting to write data to output stream: %s byte(s) available...", response.getData().getBody().length));
+                logger.debug(format("Data integrity check > (File Size: %d, Content Length: %d)",
+                    response.getData().getSize(), response.getData().getBody().length));
+
+                httpServletResponse.setStatus(HttpStatus.OK.value());
+
+                os.write(response.getData().getBody(), 0, response.getData().getSize());
+                os.flush();
+
+            } catch (IOException e) {
+                logger.error(IO_EXCEPTION_MESSAGE + " " + DOWNLOAD);
                 httpServletResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
             }
 
@@ -162,13 +163,39 @@ public class FileTransferServiceClient {
     }
 
     @LogMethodCall
-    private void setResponseHeaders(HttpServletResponse httpServletResponse, ApiResponse<?> clientHttpResponse) {
+    private void setDownloadResponseHeaders(HttpServletResponse httpServletResponse, ApiResponse<FileApi> clientHttpResponse) {
+        logger.info(format("setResponseHeaders(headers=%d) method called.", clientHttpResponse.getHeaders().size()));
+
+        // Define the headers we want to copy from the response.
         Map<String, Object> incomingHeaders = clientHttpResponse.getHeaders();
-        MediaType contentType = (MediaType) incomingHeaders.get(CONTENT_TYPE);
-        if (contentType != null) {
+
+        // Check the content-type is available and set it in the response.
+        Object contentType = incomingHeaders.get(CONTENT_TYPE);
+        if(contentType != null) {
+            logger.debug(format("Content-Type is available: %s", contentType));
             httpServletResponse.setHeader(CONTENT_TYPE, contentType.toString());
+        } else {
+            logger.debug(format("Content-Type is NOT available in the response headers, using body data: %s", clientHttpResponse.getData().getMimeType()));
+            httpServletResponse.setHeader(CONTENT_TYPE, clientHttpResponse.getData().getMimeType());
         }
-        httpServletResponse.setHeader(CONTENT_LENGTH, String.valueOf(incomingHeaders.get(CONTENT_LENGTH)));
-        httpServletResponse.setHeader(CONTENT_DISPOSITION, incomingHeaders.get(CONTENT_DISPOSITION).toString());
+
+        Object contentLength = incomingHeaders.get(CONTENT_LENGTH);
+        if(contentLength != null) {
+            logger.debug(format("Content-Length is available: %s", contentLength));
+            httpServletResponse.setHeader(CONTENT_LENGTH, String.valueOf(contentLength));
+        } else {
+            logger.debug(format("Content-Length is NOT available in the response headers, using body data: %d byte(s)", clientHttpResponse.getData().getBody().length));
+            httpServletResponse.setHeader(CONTENT_LENGTH, String.valueOf(clientHttpResponse.getData().getBody().length));
+        }
+
+        // Set the content-disposition header if it exists in the incoming headers.
+        Object contentDisposition = incomingHeaders.get(CONTENT_DISPOSITION);
+        if(contentDisposition != null) {
+            logger.debug(format("Content-Disposition is available: %s", contentDisposition));
+            httpServletResponse.setHeader(CONTENT_DISPOSITION, contentDisposition.toString());
+        } else {
+            logger.debug(format("Content-Disposition is NOT available in the response headers, using body data: %s", clientHttpResponse.getData().getFileName()));
+            httpServletResponse.setHeader(CONTENT_DISPOSITION, format("attachment; filename=\"%s\"", clientHttpResponse.getData().getFileName()));
+        }
     }
 }
