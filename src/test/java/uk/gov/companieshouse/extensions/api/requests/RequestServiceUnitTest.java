@@ -17,12 +17,10 @@ import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyRequestEntit
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.function.Supplier;
-import org.junit.Rule;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.rules.ExpectedException;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
@@ -45,9 +43,6 @@ class RequestServiceUnitTest {
 
     @Captor
     private ArgumentCaptor<ExtensionRequestFullEntity> captor;
-
-    @Rule
-    private final ExpectedException expectedException = ExpectedException.none();
 
     @Test
     void testGetSingleRequest() {
