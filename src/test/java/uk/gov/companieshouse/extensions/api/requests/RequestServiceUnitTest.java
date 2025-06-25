@@ -1,22 +1,5 @@
 package uk.gov.companieshouse.extensions.api.requests;
 
-import org.junit.Rule;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.rules.ExpectedException;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.companieshouse.service.ServiceException;
-
-import java.time.LocalDateTime;
-import java.util.Optional;
-import java.util.function.Supplier;
-
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -30,6 +13,22 @@ import static uk.gov.companieshouse.extensions.api.Utils.Utils.TESTURI;
 import static uk.gov.companieshouse.extensions.api.Utils.Utils.createdBy;
 import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyCreateRequestEntity;
 import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyRequestEntity;
+
+import java.time.LocalDateTime;
+import java.util.Optional;
+import java.util.function.Supplier;
+import org.junit.Rule;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.rules.ExpectedException;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.companieshouse.service.ServiceException;
 
 @Tag("UnitTest")
 @ExtendWith(MockitoExtension.class)
@@ -128,7 +127,7 @@ public class RequestServiceUnitTest {
     }
 
     @Test
-    public void willThrowServiceExceptionIfNoRequest() throws ServiceException {
+    public void willThrowServiceExceptionIfNoRequest() {
         ExtensionRequestFullEntity extensionRequestFullEntity = new ExtensionRequestFullEntity();
         extensionRequestFullEntity.setStatus(Status.OPEN);
         when(extensionRequestsRepository.findById(anyString()))

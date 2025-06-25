@@ -27,10 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-// TODO Make this a TestContainers/MongoDBContainer test instead of a connection to a live MongoDB instance.
-// TODO - See RepositoryIT in filing-history-api for an example of how to do this.
 @Disabled
-
 @Tag("IntegrationTest")
 @ExtendWith(SpringExtension.class)
 @TestPropertySource(properties = {"EXTENSIONS_API_MONGODB_URL=mongodb://mongo-db1-toro1.development.aws.internal:27017", "server.port=8093",

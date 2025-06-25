@@ -113,17 +113,6 @@ class AttachmentsControllerIntegrationTest {
         Assertions.assertEquals(HttpStatus.OK.value(), result.getResponse().getStatus());
     }
 
-    // TODO: Fix the test. It is identical to the Success one above
-    @Test
-    @Disabled
-    void testDownloadAttachmentFromRequest_error() throws Exception {
-        RequestBuilder requestBuilder = MockMvcRequestBuilders.get(DOWNLOAD_URL);
-
-        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
-
-        Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), result.getResponse().getStatus());
-    }
-
     <T> ResponseEntity<ChResponseBody<Object>> createResponseEntityForFile(
         ServiceResult<T> serviceResult) {
         ChResponseBody<T> body = ChResponseBody.createNormalBody(serviceResult.getData());
