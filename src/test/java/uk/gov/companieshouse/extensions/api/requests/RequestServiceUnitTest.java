@@ -32,7 +32,7 @@ import uk.gov.companieshouse.service.ServiceException;
 
 @Tag("UnitTest")
 @ExtendWith(MockitoExtension.class)
-public class RequestServiceUnitTest {
+class RequestServiceUnitTest {
 
     @InjectMocks
     private RequestsService requestsService;
@@ -47,10 +47,10 @@ public class RequestServiceUnitTest {
     private ArgumentCaptor<ExtensionRequestFullEntity> captor;
 
     @Rule
-    public final ExpectedException expectedException = ExpectedException.none();
+    private final ExpectedException expectedException = ExpectedException.none();
 
     @Test
-    public void testGetSingleRequest() {
+    void testGetSingleRequest() {
         ExtensionRequestFullEntity entity = dummyRequestEntity();
 
         when(extensionRequestsRepository.findById(REQUEST_ID)).thenReturn(Optional.of(entity));
@@ -60,8 +60,7 @@ public class RequestServiceUnitTest {
     }
 
     @Test
-    public void testCorrectDataIsPassedToInsertExtensionRequest() {
-
+    void testCorrectDataIsPassedToInsertExtensionRequest() {
         ExtensionCreateRequest extensionCreateRequest = dummyCreateRequestEntity();
         CreatedBy createdBy = createdBy();
 
@@ -89,7 +88,7 @@ public class RequestServiceUnitTest {
     }
 
     @Test
-    public void willPatchFullRequestEntity() throws ServiceException {
+    void willPatchFullRequestEntity() throws ServiceException {
         ExtensionRequestFullEntity extensionRequestFullEntity = new ExtensionRequestFullEntity();
         extensionRequestFullEntity.setStatus(Status.OPEN);
         when(extensionRequestsRepository.findById(anyString()))
@@ -108,7 +107,7 @@ public class RequestServiceUnitTest {
     }
 
     @Test
-    public void willCorrectlyPatchFullRequestEntityWhenExtensionRequestIsRejected() throws ServiceException {
+    void willCorrectlyPatchFullRequestEntityWhenExtensionRequestIsRejected() throws ServiceException {
         ExtensionRequestFullEntity extensionRequestFullEntity = new ExtensionRequestFullEntity();
         extensionRequestFullEntity.setStatus(Status.OPEN);
         when(extensionRequestsRepository.findById(anyString()))
@@ -127,7 +126,7 @@ public class RequestServiceUnitTest {
     }
 
     @Test
-    public void willThrowServiceExceptionIfNoRequest() {
+    void willThrowServiceExceptionIfNoRequest() {
         ExtensionRequestFullEntity extensionRequestFullEntity = new ExtensionRequestFullEntity();
         extensionRequestFullEntity.setStatus(Status.OPEN);
         when(extensionRequestsRepository.findById(anyString()))
