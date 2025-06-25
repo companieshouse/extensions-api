@@ -2,6 +2,10 @@ package uk.gov.companieshouse.extensions.api.config;
 
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
+import java.time.LocalDateTime;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 import org.apache.tika.Tika;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -10,11 +14,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.companieshouse.api.handler.filetransfer.FileTransferHttpClient;
 import uk.gov.companieshouse.api.handler.filetransfer.InternalFileTransferClient;
-
-import java.time.LocalDateTime;
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Supplier;
+import uk.gov.companieshouse.extensions.api.Application;
+import uk.gov.companieshouse.logging.Logger;
+import uk.gov.companieshouse.logging.LoggerFactory;
 
 @Configuration
 public class ApplicationConfiguration {
@@ -65,5 +67,10 @@ public class ApplicationConfiguration {
     @Bean
     public Tika tika() {
         return new Tika();
+    }
+
+    @Bean
+    public Logger getLogger() {
+        return LoggerFactory.getLogger(Application.APP_NAMESPACE);
     }
 }

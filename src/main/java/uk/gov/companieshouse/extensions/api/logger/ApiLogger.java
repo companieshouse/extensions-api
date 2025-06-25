@@ -1,24 +1,26 @@
 package uk.gov.companieshouse.extensions.api.logger;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import uk.gov.companieshouse.extensions.api.Application;
-import uk.gov.companieshouse.extensions.api.requests.ERICHeaderParser;
-import uk.gov.companieshouse.logging.Logger;
-import uk.gov.companieshouse.logging.LoggerFactory;
-
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
-
-import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import uk.gov.companieshouse.extensions.api.requests.ERICHeaderParser;
+import uk.gov.companieshouse.logging.Logger;
 
 @Component
 public class ApiLogger {
-    private static final Logger LOG = LoggerFactory.getLogger(Application.APP_NAMESPACE);
+
     private static final ThreadLocal<String> COMPANY_NUMBER = new ThreadLocal<>();
 
+    private final Logger logger;
+    private final ERICHeaderParser ericHeaderParser;
+
     @Autowired
-    private ERICHeaderParser ericHeaderParser;
+    public ApiLogger(Logger logger, ERICHeaderParser ericHeaderParser) {
+        this.logger = logger;
+        this.ericHeaderParser = ericHeaderParser;
+    }
 
     public void setCompanyNumber(String companyNumber) {
         COMPANY_NUMBER.set(companyNumber);
@@ -34,7 +36,7 @@ public class ApiLogger {
     private Map<String, Object> getDefaultDataMap() {
         Map<String, Object> logData = new HashMap<>();
         logData.put("company_number", COMPANY_NUMBER.get());
-        logData.put("thread_id", Thread.currentThread().getId());
+        logData.put("thread_id", Thread.currentThread().threadId());
         return logData;
     }
 
@@ -45,7 +47,7 @@ public class ApiLogger {
     }
 
     public void debug(String message) {
-        LOG.debug(message, getDefaultDataMap());
+        logger.debug(message, getDefaultDataMap());
     }
 
     /**
@@ -60,30 +62,30 @@ public class ApiLogger {
     }
 
     public void debug(String message, Map<String, Object> values) {
-        LOG.debug(message, getDataMap(values));
+        logger.debug(message, getDataMap(values));
     }
 
     public void info(String message) {
-        LOG.info(message, getDefaultDataMap());
+        logger.info(message, getDefaultDataMap());
     }
 
     public void info(String message, Map<String, Object> values) {
-        LOG.info(message, getDataMap(values));
+        logger.info(message, getDataMap(values));
     }
 
     public void error(Exception e) {
-        LOG.error(e.getMessage(), e, getDefaultDataMap());
+        logger.error(e.getMessage(), e, getDefaultDataMap());
     }
 
     public void error(String message) {
-        LOG.error(message, getDefaultDataMap());
+        logger.error(message, getDefaultDataMap());
     }
 
     public void error(String message, Exception e) {
-        LOG.error(message, e, getDefaultDataMap());
+        logger.error(message, e, getDefaultDataMap());
     }
 
     public void error(String message, Map<String, Object> values) {
-        LOG.error(message, getDataMap(values));
+        logger.error(message, getDataMap(values));
     }
 }
