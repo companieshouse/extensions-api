@@ -53,15 +53,24 @@ public class ApiLoggerTest {
     }
 
     @Test
-    void testInternalDataMap() {
+    void testConstructor() {
+        ApiLogger apiLogger = new ApiLogger(logger, ericHeaderParser);
+        assertNotNull(apiLogger);
+    }
+
+    @Test
+    void testSetCompanyNumber() {
+        underTest.removeCompanyNumber();
+
         Map<String, Object> internalMap = underTest.getInternalDataMap();
-        assertNotNull(internalMap);
-
         assertTrue(internalMap.containsKey(COMPANY_NUMBER_KEY));
-        assertTrue(internalMap.containsKey(THREAD_ID_KEY));
+        assertNull(internalMap.get(COMPANY_NUMBER_KEY));
 
-        assertEquals(COMPANY_NUMBER, internalMap.get(COMPANY_NUMBER_KEY));
-        assertNotNull(internalMap.get(THREAD_ID_KEY));
+        underTest.setCompanyNumber(COMPANY_NUMBER);
+
+        Map<String, Object> updatedMap = underTest.getInternalDataMap();
+        assertTrue(updatedMap.containsKey(COMPANY_NUMBER_KEY));
+        assertEquals(COMPANY_NUMBER, updatedMap.get(COMPANY_NUMBER_KEY));
     }
 
     @Test
@@ -75,6 +84,18 @@ public class ApiLoggerTest {
         Map<String, Object> updatedMap = underTest.getInternalDataMap();
         assertTrue(updatedMap.containsKey(COMPANY_NUMBER_KEY));
         assertNull(updatedMap.get(COMPANY_NUMBER_KEY));
+    }
+
+    @Test
+    void testInternalDataMap() {
+        Map<String, Object> internalMap = underTest.getInternalDataMap();
+        assertNotNull(internalMap);
+
+        assertTrue(internalMap.containsKey(COMPANY_NUMBER_KEY));
+        assertTrue(internalMap.containsKey(THREAD_ID_KEY));
+
+        assertEquals(COMPANY_NUMBER, internalMap.get(COMPANY_NUMBER_KEY));
+        assertEquals(1L, internalMap.get(THREAD_ID_KEY));
     }
 
     @Test
@@ -105,7 +126,7 @@ public class ApiLoggerTest {
         verify(ericHeaderParser, times(1)).getUserId(request);
         verify(logger, times(1)).debug(eq(TEST_MESSAGE), mapArgumentCaptor.capture());
 
-        assertInternalMapIsValid();;
+        assertInternalMapIsValid();
     }
 
     @Test
