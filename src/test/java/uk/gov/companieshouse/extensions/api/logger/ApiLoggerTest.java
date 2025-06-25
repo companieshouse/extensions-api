@@ -53,14 +53,26 @@ public class ApiLoggerTest {
     }
 
     @Test
+    void testInternalDataMap() {
+        Map<String, Object> internalMap = underTest.getInternalDataMap();
+        assertNotNull(internalMap);
+
+        assertTrue(internalMap.containsKey(COMPANY_NUMBER_KEY));
+        assertTrue(internalMap.containsKey(THREAD_ID_KEY));
+
+        assertEquals(COMPANY_NUMBER, internalMap.get(COMPANY_NUMBER_KEY));
+        assertNotNull(internalMap.get(THREAD_ID_KEY));
+    }
+
+    @Test
     void testRemoveCompanyNumber() {
-        Map<String, Object> internalMap = underTest.getInternalDefaultDataMap();
+        Map<String, Object> internalMap = underTest.getInternalDataMap();
         assertTrue(internalMap.containsKey(COMPANY_NUMBER_KEY));
         assertEquals(COMPANY_NUMBER, internalMap.get(COMPANY_NUMBER_KEY));
 
         underTest.removeCompanyNumber();
 
-        Map<String, Object> updatedMap = underTest.getInternalDefaultDataMap();
+        Map<String, Object> updatedMap = underTest.getInternalDataMap();
         assertTrue(updatedMap.containsKey(COMPANY_NUMBER_KEY));
         assertNull(updatedMap.get(COMPANY_NUMBER_KEY));
     }
@@ -71,7 +83,7 @@ public class ApiLoggerTest {
 
         verify(logger, times(1)).debug(eq(TEST_MESSAGE), mapArgumentCaptor.capture());
 
-        assertDefaultMapIsValid(mapArgumentCaptor);
+        assertInternalMapIsValid();
     }
 
     @Test
@@ -80,7 +92,7 @@ public class ApiLoggerTest {
 
         verify(logger, times(1)).debug(eq(TEST_MESSAGE), mapArgumentCaptor.capture());
 
-        assertDefaultMapIsValid(mapArgumentCaptor, EXTRA_VALUES_MAP);
+        assertExtraValuesMapIsValid();
     }
 
     @Test
@@ -93,7 +105,7 @@ public class ApiLoggerTest {
         verify(ericHeaderParser, times(1)).getUserId(request);
         verify(logger, times(1)).debug(eq(TEST_MESSAGE), mapArgumentCaptor.capture());
 
-        assertDefaultMapIsValid(mapArgumentCaptor);
+        assertInternalMapIsValid();;
     }
 
     @Test
@@ -102,7 +114,7 @@ public class ApiLoggerTest {
 
         verify(logger, times(1)).info(eq(TEST_MESSAGE), mapArgumentCaptor.capture());
 
-        assertDefaultMapIsValid(mapArgumentCaptor);
+        assertInternalMapIsValid();
     }
 
     @Test
@@ -111,7 +123,7 @@ public class ApiLoggerTest {
 
         verify(logger, times(1)).info(eq(TEST_MESSAGE), mapArgumentCaptor.capture());
 
-        assertDefaultMapIsValid(mapArgumentCaptor, EXTRA_VALUES_MAP);
+        assertExtraValuesMapIsValid();
     }
 
     @Test
@@ -120,7 +132,7 @@ public class ApiLoggerTest {
 
         verify(logger, times(1)).error(eq(TEST_MESSAGE), mapArgumentCaptor.capture());
 
-        assertDefaultMapIsValid(mapArgumentCaptor);
+        assertInternalMapIsValid();
     }
 
     @Test
@@ -130,7 +142,7 @@ public class ApiLoggerTest {
 
         verify(logger, times(1)).error(eq(TEST_MESSAGE), eq(e), mapArgumentCaptor.capture());
 
-        assertDefaultMapIsValid(mapArgumentCaptor);
+        assertInternalMapIsValid();
     }
 
     @Test
@@ -140,7 +152,7 @@ public class ApiLoggerTest {
 
         verify(logger, times(1)).error(eq("another message"), eq(e), mapArgumentCaptor.capture());
 
-        assertDefaultMapIsValid(mapArgumentCaptor);
+        assertInternalMapIsValid();
     }
 
     @Test
@@ -149,13 +161,13 @@ public class ApiLoggerTest {
 
         verify(logger, times(1)).error(eq(TEST_MESSAGE), mapArgumentCaptor.capture());
 
-        assertDefaultMapIsValid(mapArgumentCaptor, EXTRA_VALUES_MAP);
+        assertExtraValuesMapIsValid();
     }
 
     /**
      * Check map contains default values
      */
-    private void assertDefaultMapIsValid(ArgumentCaptor<Map<String, Object>> mapArgumentCaptor) {
+    private void assertInternalMapIsValid() {
         Map<String, Object> mapLogged = mapArgumentCaptor.getValue();
         assertNotNull(mapLogged);
 
@@ -168,14 +180,14 @@ public class ApiLoggerTest {
     /**
      * Check map contains default + extra values
      */
-    private void assertDefaultMapIsValid(ArgumentCaptor<Map<String, Object>> mapArgumentCaptor, Map<String, Object> extraValues) {
-        assertDefaultMapIsValid(mapArgumentCaptor);
+    private void assertExtraValuesMapIsValid() {
+        assertInternalMapIsValid();
 
         //check extra values beyond the defaults
         Map<String, Object> mapLogged = mapArgumentCaptor.getValue();
         assertNotNull(mapLogged);
 
-        extraValues.forEach((extraKey, extraValue) -> {
+        EXTRA_VALUES_MAP.forEach((extraKey, extraValue) -> {
             assertTrue(mapLogged.containsKey(extraKey));
             assertEquals(extraValue, mapLogged.get(extraKey));
         });
