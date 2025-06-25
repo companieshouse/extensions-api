@@ -58,24 +58,10 @@ public class FileTransferServiceClient {
                 .download(fileId)
                 .execute();
 
-            logger.info(format("Download Complete[%d]: Headers Available=%s", response.getStatusCode(), response.getHeaders()));
+            logger.info(format("Download Complete[%d]: (Headers Available=%s)", response.getStatusCode(), response.getHeaders()));
 
             setDownloadResponseHeaders(httpServletResponse, response);
-
-            try (OutputStream os = httpServletResponse.getOutputStream()) {
-                logger.debug(format("Attempting to write data to output stream: %s byte(s) available...", response.getData().getBody().length));
-                logger.debug(format("Data integrity check > (File Size: %d, Content Length: %d)",
-                    response.getData().getSize(), response.getData().getBody().length));
-
-                httpServletResponse.setStatus(HttpStatus.OK.value());
-
-                os.write(response.getData().getBody(), 0, response.getData().getSize());
-                os.flush();
-
-            } catch (IOException e) {
-                logger.error(IO_EXCEPTION_MESSAGE + " " + DOWNLOAD);
-                httpServletResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            }
+            buildDownloadResponse(httpServletResponse, response.getData());
 
         } catch (URIValidationException e) {
             logger.error(URI_VALIDATION_FAILED_MESSAGE + " " + DOWNLOAD);
@@ -198,4 +184,22 @@ public class FileTransferServiceClient {
             httpServletResponse.setHeader(CONTENT_DISPOSITION, format("attachment; filename=\"%s\"", clientHttpResponse.getData().getFileName()));
         }
     }
+
+    private void buildDownloadResponse(HttpServletResponse httpServletResponse, FileApi fileApi) {
+        try (OutputStream os = httpServletResponse.getOutputStream()) {
+            logger.debug(format("Attempting to write data to output stream: %s byte(s) available...", fileApi.getBody().length));
+            logger.debug(format("Data integrity check > (File Size: %d, Content Length: %d)",
+                fileApi.getSize(), fileApi.getBody().length));
+
+            httpServletResponse.setStatus(HttpStatus.OK.value());
+
+            os.write(fileApi.getBody(), 0, fileApi.getSize());
+            os.flush();
+
+        } catch (IOException e) {
+            logger.error(IO_EXCEPTION_MESSAGE + " " + DOWNLOAD);
+            httpServletResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        }
+    }
+
 }

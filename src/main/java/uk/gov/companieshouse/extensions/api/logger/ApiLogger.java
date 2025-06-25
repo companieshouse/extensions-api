@@ -33,7 +33,7 @@ public class ApiLogger {
     /**
      * Populates the default data that needs to be logged
      */
-    private Map<String, Object> getDefaultDataMap() {
+    public Map<String, Object> getInternalDefaultDataMap() {
         Map<String, Object> logData = new HashMap<>();
         logData.put("company_number", COMPANY_NUMBER.get());
         logData.put("thread_id", Thread.currentThread().threadId());
@@ -41,13 +41,13 @@ public class ApiLogger {
     }
 
     private Map<String, Object> createDataMap(Map<String, Object> values) {
-        Map<String, Object> defaultValues = getDefaultDataMap();
+        Map<String, Object> defaultValues = getInternalDefaultDataMap();
         defaultValues.putAll(values);
         return defaultValues;
     }
 
     public void debug(String message) {
-        Map<String, Object> defaultDataMap = getDefaultDataMap();
+        Map<String, Object> defaultDataMap = getInternalDefaultDataMap();
         logger.debug(message, defaultDataMap);
     }
 
@@ -66,7 +66,7 @@ public class ApiLogger {
     }
 
     public void info(String message) {
-        logger.info(message, getDefaultDataMap());
+        logger.info(message, getInternalDefaultDataMap());
     }
 
     public void info(String message, Map<String, Object> values) {
@@ -74,15 +74,15 @@ public class ApiLogger {
     }
 
     public void error(Exception e) {
-        logger.error(e.getMessage(), e, getDefaultDataMap());
+        logger.error(e.getMessage(), e, getInternalDefaultDataMap());
     }
 
     public void error(String message) {
-        logger.error(message, getDefaultDataMap());
+        logger.error(message, getInternalDefaultDataMap());
     }
 
     public void error(String message, Exception e) {
-        logger.error(message, e, getDefaultDataMap());
+        logger.error(message, e, getInternalDefaultDataMap());
     }
 
     public void error(String message, Map<String, Object> values) {

@@ -1,12 +1,16 @@
 package uk.gov.companieshouse.extensions.api.logger;
 
+import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
@@ -49,6 +53,19 @@ public class ApiLoggerTest {
     }
 
     @Test
+    public void testRemoveCompanyNumber() {
+        Map<String, Object> internalMap = underTest.getInternalDefaultDataMap();
+        assertTrue(internalMap.containsKey(COMPANY_NUMBER_KEY));
+        assertEquals(COMPANY_NUMBER, internalMap.get(COMPANY_NUMBER_KEY));
+
+        underTest.removeCompanyNumber();
+
+        Map<String, Object> updatedMap = underTest.getInternalDefaultDataMap();
+        assertTrue(updatedMap.containsKey(COMPANY_NUMBER_KEY));
+        assertNull(updatedMap.get(COMPANY_NUMBER_KEY));
+    }
+
+    @Test
     public void testDebug() {
         underTest.debug(TEST_MESSAGE);
 
@@ -64,6 +81,19 @@ public class ApiLoggerTest {
         verify(logger, times(1)).debug(eq(TEST_MESSAGE), mapArgumentCaptor.capture());
 
         assertDefaultMapIsValid(mapArgumentCaptor, EXTRA_VALUES_MAP);
+    }
+
+    @Test
+    public void testDebugWithRequest() {
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        when(ericHeaderParser.getUserId(request)).thenReturn("user123");
+
+        underTest.debug(TEST_MESSAGE, request);
+
+        verify(ericHeaderParser, times(1)).getUserId(request);
+        verify(logger, times(1)).debug(eq(TEST_MESSAGE), mapArgumentCaptor.capture());
+
+        assertDefaultMapIsValid(mapArgumentCaptor);
     }
 
     @Test
