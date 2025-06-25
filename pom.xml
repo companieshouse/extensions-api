@@ -40,8 +40,6 @@
         <sonar.projectName>extensions-api</sonar.projectName>
         <sonar.projectKey>uk.gov.companieshouse:extensions-api</sonar.projectKey>
         <sonar.token>${CODE_ANALYSIS_TOKEN}</sonar.token>
-        <sonar.login></sonar.login>
-        <sonar.password></sonar.password>
     </properties>
 
     <parent>
