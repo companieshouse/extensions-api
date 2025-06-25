@@ -1,5 +1,6 @@
 package uk.gov.companieshouse.extensions.api.attachments;
 
+import static java.util.Objects.requireNonNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -10,6 +11,7 @@ import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 
+import java.util.Objects;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,6 +29,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import uk.gov.companieshouse.extensions.api.Utils.Utils;
 import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
 import uk.gov.companieshouse.service.ServiceException;
+import uk.gov.companieshouse.service.rest.response.ChResponseBody;
 import uk.gov.companieshouse.service.rest.response.PluggableResponseEntityFactory;
 
 @Tag("UnitTest")
@@ -57,10 +60,11 @@ public class AttachmentsControllerUnitTest {
         AttachmentsController controller = new AttachmentsController(
             PluggableResponseEntityFactory.buildWithStandardFactories(), attachmentsService, logger);
 
-        ResponseEntity entity = controller.uploadAttachmentToRequest(Utils.mockMultipartFile(), "123", "1234",
-            servletRequest);
+        ResponseEntity<ChResponseBody<AttachmentDTO>> entity = controller.uploadAttachmentToRequest(
+            Utils.mockMultipartFile(), "123", "1234", servletRequest);
 
         verify(logger).error(serviceException);
+
         assertEquals(HttpStatus.NOT_FOUND, entity.getStatusCode());
     }
 

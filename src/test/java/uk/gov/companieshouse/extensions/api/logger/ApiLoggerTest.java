@@ -1,8 +1,8 @@
 package uk.gov.companieshouse.extensions.api.logger;
 
-import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -47,13 +47,13 @@ public class ApiLoggerTest {
     private static ApiLogger underTest;
 
     @BeforeEach
-    public void setup() throws Exception {
+    void setup() {
         underTest = new ApiLogger(logger, ericHeaderParser);
         underTest.setCompanyNumber(COMPANY_NUMBER);
     }
 
     @Test
-    public void testRemoveCompanyNumber() {
+    void testRemoveCompanyNumber() {
         Map<String, Object> internalMap = underTest.getInternalDefaultDataMap();
         assertTrue(internalMap.containsKey(COMPANY_NUMBER_KEY));
         assertEquals(COMPANY_NUMBER, internalMap.get(COMPANY_NUMBER_KEY));
@@ -66,7 +66,7 @@ public class ApiLoggerTest {
     }
 
     @Test
-    public void testDebug() {
+    void testDebug() {
         underTest.debug(TEST_MESSAGE);
 
         verify(logger, times(1)).debug(eq(TEST_MESSAGE), mapArgumentCaptor.capture());
@@ -75,7 +75,7 @@ public class ApiLoggerTest {
     }
 
     @Test
-    public void testDebugWithValues() {
+    void testDebugWithValues() {
         underTest.debug(TEST_MESSAGE, EXTRA_VALUES_MAP);
 
         verify(logger, times(1)).debug(eq(TEST_MESSAGE), mapArgumentCaptor.capture());
@@ -84,7 +84,7 @@ public class ApiLoggerTest {
     }
 
     @Test
-    public void testDebugWithRequest() {
+    void testDebugWithRequest() {
         HttpServletRequest request = mock(HttpServletRequest.class);
         when(ericHeaderParser.getUserId(request)).thenReturn("user123");
 
@@ -97,7 +97,7 @@ public class ApiLoggerTest {
     }
 
     @Test
-    public void testInfo() {
+    void testInfo() {
         underTest.info(TEST_MESSAGE);
 
         verify(logger, times(1)).info(eq(TEST_MESSAGE), mapArgumentCaptor.capture());
@@ -106,7 +106,7 @@ public class ApiLoggerTest {
     }
 
     @Test
-    public void testInfoWithValues() {
+    void testInfoWithValues() {
         underTest.info(TEST_MESSAGE, EXTRA_VALUES_MAP);
 
         verify(logger, times(1)).info(eq(TEST_MESSAGE), mapArgumentCaptor.capture());
@@ -115,7 +115,7 @@ public class ApiLoggerTest {
     }
 
     @Test
-    public void testError() {
+    void testError() {
         underTest.error(TEST_MESSAGE);
 
         verify(logger, times(1)).error(eq(TEST_MESSAGE), mapArgumentCaptor.capture());
@@ -124,7 +124,7 @@ public class ApiLoggerTest {
     }
 
     @Test
-    public void testErrorWithException() {
+    void testErrorWithException() {
         Exception e = new Exception(TEST_MESSAGE);
         underTest.error(e);
 
@@ -134,7 +134,7 @@ public class ApiLoggerTest {
     }
 
     @Test
-    public void testErrorWithExceptionAndMessage() {
+    void testErrorWithExceptionAndMessage() {
         Exception e = new Exception("exception message");
         underTest.error("another message", e);
 
@@ -144,7 +144,7 @@ public class ApiLoggerTest {
     }
 
     @Test
-    public void testErrorWithValues() {
+    void testErrorWithValues() {
         underTest.error(TEST_MESSAGE, EXTRA_VALUES_MAP);
 
         verify(logger, times(1)).error(eq(TEST_MESSAGE), mapArgumentCaptor.capture());
