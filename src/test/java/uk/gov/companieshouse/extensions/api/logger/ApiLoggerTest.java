@@ -9,14 +9,11 @@ import static org.mockito.Mockito.verify;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.companieshouse.extensions.api.requests.ERICHeaderParser;
@@ -30,10 +27,12 @@ public class ApiLoggerTest {
     private static final String TEST_MESSAGE = "hello";
     private static final String COMPANY_NUMBER = "12345678";
 
-    private static final Map<String, Object> EXTRA_VALUES_MAP = new HashMap<>();
+    private static final Map<String, Object> EXTRA_VALUES_MAP = new HashMap<>() {{
+        put("my_key", "my_data");
+    }};
 
     @Mock
-    private static Logger mockLogger;
+    private static Logger logger;
 
     @Mock
     private static ERICHeaderParser ericHeaderParser;
@@ -41,34 +40,19 @@ public class ApiLoggerTest {
     @Captor
     private ArgumentCaptor<Map<String, Object>> mapArgumentCaptor;
 
-    @InjectMocks
     private static ApiLogger underTest;
 
     @BeforeEach
     public void setup() throws Exception {
-        EXTRA_VALUES_MAP.put("my_key", "my_data");
-
+        underTest = new ApiLogger(logger, ericHeaderParser);
         underTest.setCompanyNumber(COMPANY_NUMBER);
-    }
-
-    @AfterEach
-    public void tearDown() {
-        EXTRA_VALUES_MAP.clear();
-
-        underTest.removeCompanyNumber();
-    }
-
-    @Test
-    @Disabled
-    public void testCompanyNumberSet() {
-
     }
 
     @Test
     public void testDebug() {
         underTest.debug(TEST_MESSAGE);
 
-        verify(mockLogger, times(1)).debug(eq(TEST_MESSAGE), mapArgumentCaptor.capture());
+        verify(logger, times(1)).debug(eq(TEST_MESSAGE), mapArgumentCaptor.capture());
 
         assertDefaultMapIsValid(mapArgumentCaptor);
     }
@@ -77,7 +61,7 @@ public class ApiLoggerTest {
     public void testDebugWithValues() {
         underTest.debug(TEST_MESSAGE, EXTRA_VALUES_MAP);
 
-        verify(mockLogger, times(1)).debug(eq(TEST_MESSAGE), mapArgumentCaptor.capture());
+        verify(logger, times(1)).debug(eq(TEST_MESSAGE), mapArgumentCaptor.capture());
 
         assertDefaultMapIsValid(mapArgumentCaptor, EXTRA_VALUES_MAP);
     }
@@ -86,7 +70,7 @@ public class ApiLoggerTest {
     public void testInfo() {
         underTest.info(TEST_MESSAGE);
 
-        verify(mockLogger, times(1)).info(eq(TEST_MESSAGE), mapArgumentCaptor.capture());
+        verify(logger, times(1)).info(eq(TEST_MESSAGE), mapArgumentCaptor.capture());
 
         assertDefaultMapIsValid(mapArgumentCaptor);
     }
@@ -95,7 +79,7 @@ public class ApiLoggerTest {
     public void testInfoWithValues() {
         underTest.info(TEST_MESSAGE, EXTRA_VALUES_MAP);
 
-        verify(mockLogger, times(1)).info(eq(TEST_MESSAGE), mapArgumentCaptor.capture());
+        verify(logger, times(1)).info(eq(TEST_MESSAGE), mapArgumentCaptor.capture());
 
         assertDefaultMapIsValid(mapArgumentCaptor, EXTRA_VALUES_MAP);
     }
@@ -104,7 +88,7 @@ public class ApiLoggerTest {
     public void testError() {
         underTest.error(TEST_MESSAGE);
 
-        verify(mockLogger, times(1)).error(eq(TEST_MESSAGE), mapArgumentCaptor.capture());
+        verify(logger, times(1)).error(eq(TEST_MESSAGE), mapArgumentCaptor.capture());
 
         assertDefaultMapIsValid(mapArgumentCaptor);
     }
@@ -114,7 +98,7 @@ public class ApiLoggerTest {
         Exception e = new Exception(TEST_MESSAGE);
         underTest.error(e);
 
-        verify(mockLogger, times(1)).error(eq(TEST_MESSAGE), eq(e), mapArgumentCaptor.capture());
+        verify(logger, times(1)).error(eq(TEST_MESSAGE), eq(e), mapArgumentCaptor.capture());
 
         assertDefaultMapIsValid(mapArgumentCaptor);
     }
@@ -124,7 +108,7 @@ public class ApiLoggerTest {
         Exception e = new Exception("exception message");
         underTest.error("another message", e);
 
-        verify(mockLogger, times(1)).error(eq("another message"), eq(e), mapArgumentCaptor.capture());
+        verify(logger, times(1)).error(eq("another message"), eq(e), mapArgumentCaptor.capture());
 
         assertDefaultMapIsValid(mapArgumentCaptor);
     }
@@ -133,7 +117,7 @@ public class ApiLoggerTest {
     public void testErrorWithValues() {
         underTest.error(TEST_MESSAGE, EXTRA_VALUES_MAP);
 
-        verify(mockLogger, times(1)).error(eq(TEST_MESSAGE), mapArgumentCaptor.capture());
+        verify(logger, times(1)).error(eq(TEST_MESSAGE), mapArgumentCaptor.capture());
 
         assertDefaultMapIsValid(mapArgumentCaptor, EXTRA_VALUES_MAP);
     }
