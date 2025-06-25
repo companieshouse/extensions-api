@@ -40,20 +40,19 @@ public class ApiLogger {
         return logData;
     }
 
-    private Map<String, Object> getDataMap(Map<String, Object> values) {
+    private Map<String, Object> createDataMap(Map<String, Object> values) {
         Map<String, Object> defaultValues = getDefaultDataMap();
         defaultValues.putAll(values);
         return defaultValues;
     }
 
     public void debug(String message) {
-        logger.debug(message, getDefaultDataMap());
+        Map<String, Object> defaultDataMap = getDefaultDataMap();
+        logger.debug(message, defaultDataMap);
     }
 
     /**
      * Will extract a userid from the eric header attached to a request.
-     * @param message
-     * @param request
      */
     public void debug(String message, HttpServletRequest request) {
         Map<String, Object> logData = new HashMap<>();
@@ -62,7 +61,8 @@ public class ApiLogger {
     }
 
     public void debug(String message, Map<String, Object> values) {
-        logger.debug(message, getDataMap(values));
+        Map<String, Object> dataMap = createDataMap(values);
+        logger.debug(message, dataMap);
     }
 
     public void info(String message) {
@@ -70,7 +70,7 @@ public class ApiLogger {
     }
 
     public void info(String message, Map<String, Object> values) {
-        logger.info(message, getDataMap(values));
+        logger.info(message, createDataMap(values));
     }
 
     public void error(Exception e) {
@@ -86,6 +86,6 @@ public class ApiLogger {
     }
 
     public void error(String message, Map<String, Object> values) {
-        logger.error(message, getDataMap(values));
+        logger.error(message, createDataMap(values));
     }
 }
