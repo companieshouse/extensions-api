@@ -1,5 +1,11 @@
 package uk.gov.companieshouse.extensions.api.attachments.file;
 
+import static org.mockserver.model.HttpRequest.request;
+import static org.mockserver.model.HttpResponse.response;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import org.apache.tika.Tika;
 import org.junit.Ignore;
 import org.junit.jupiter.api.AfterAll;
@@ -21,13 +27,6 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-
-import static org.mockserver.model.HttpRequest.request;
-import static org.mockserver.model.HttpResponse.response;
-
 /**
  * FileTransferGatewayIntegrationTest with mock server for file-transfer-api
  */
@@ -44,7 +43,6 @@ import static org.mockserver.model.HttpResponse.response;
     "spring.servlet.multipart.max-request-size=200"})
 @ExtendWith(MockServerExtension.class)
 @SpringBootTest
-// TODO Delete as it require file-transfer-api AND LocalStack to be running
 @Disabled // Disabled as this test requires a running file-transfer-api instance
 @Ignore
 

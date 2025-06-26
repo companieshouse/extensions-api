@@ -171,7 +171,7 @@ public class FileTransferServiceClient {
             httpServletResponse.setHeader(CONTENT_LENGTH, String.valueOf(contentLength));
         } else {
             logger.debug(format("Content-Length is NOT available in the response headers, using body data: %d byte(s)", clientHttpResponse.getData().getBody().length));
-            httpServletResponse.setHeader(CONTENT_LENGTH, String.valueOf(clientHttpResponse.getData().getBody().length));
+            httpServletResponse.setHeader(CONTENT_LENGTH, String.valueOf(clientHttpResponse.getData().getSize()));
         }
 
         // Set the content-disposition header if it exists in the incoming headers.
