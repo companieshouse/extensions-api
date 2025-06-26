@@ -50,7 +50,7 @@ public class FileTransferServiceClient {
 
     @LogMethodCall
     public void download(final String fileId, final HttpServletResponse httpServletResponse) {
-        logger.info(format("Attempting to download file: %s", fileId));
+        logger.info(format("download(fileId=%s) method called.", fileId));
         try {
             InternalFileTransferClient internalFileTransferClient = fileTransferClientSupplier.get();
 
@@ -78,7 +78,8 @@ public class FileTransferServiceClient {
     }
 
     @LogMethodCall
-    public FileTransferApiClientResponse upload(MultipartFile fileToUpload) {
+    public FileTransferApiClientResponse upload(final MultipartFile fileToUpload) {
+        logger.info(format("upload(file=%s) method called.", fileToUpload.getOriginalFilename()));
         try {
             InputStream fileStream = fileToUpload.getInputStream();
             String contentType = fileToUpload.getContentType();
@@ -123,7 +124,8 @@ public class FileTransferServiceClient {
      * @return FileTransferApiClientResponse containing the http status
      */
     @LogMethodCall
-    public FileTransferApiClientResponse delete(String fileId) {
+    public FileTransferApiClientResponse delete(final String fileId) {
+        logger.info(format("delete(fileId=%s) method called.", fileId));
         try {
             InternalFileTransferClient ftsClient = fileTransferClientSupplier.get();
 
@@ -149,43 +151,45 @@ public class FileTransferServiceClient {
     }
 
     @LogMethodCall
-    private void setDownloadResponseHeaders(HttpServletResponse httpServletResponse, ApiResponse<FileApi> clientHttpResponse) {
-        logger.info(format("setResponseHeaders(headers=%d) method called.", clientHttpResponse.getHeaders().size()));
+    private void setDownloadResponseHeaders(final HttpServletResponse servletResponse, final ApiResponse<FileApi> apiResponse) {
+        logger.info(format("setDownloadResponseHeaders(headers=%d) method called.", apiResponse.getHeaders().size()));
 
         // Define the headers we want to copy from the response.
-        Map<String, Object> incomingHeaders = clientHttpResponse.getHeaders();
+        Map<String, Object> incomingHeaders = apiResponse.getHeaders();
 
         // Check the content-type is available and set it in the response.
         Object contentType = incomingHeaders.get(CONTENT_TYPE);
         if(contentType != null) {
             logger.debug(format("Content-Type is available: %s", contentType));
-            httpServletResponse.setHeader(CONTENT_TYPE, contentType.toString());
+            servletResponse.setHeader(CONTENT_TYPE, contentType.toString());
         } else {
-            logger.debug(format("Content-Type is NOT available in the response headers, using body data: %s", clientHttpResponse.getData().getMimeType()));
-            httpServletResponse.setHeader(CONTENT_TYPE, clientHttpResponse.getData().getMimeType());
+            logger.debug(format("Content-Type is NOT available in the response headers, using body data: %s", apiResponse.getData().getMimeType()));
+            servletResponse.setHeader(CONTENT_TYPE, apiResponse.getData().getMimeType());
         }
 
         Object contentLength = incomingHeaders.get(CONTENT_LENGTH);
         if(contentLength != null) {
             logger.debug(format("Content-Length is available: %s", contentLength));
-            httpServletResponse.setHeader(CONTENT_LENGTH, String.valueOf(contentLength));
+            servletResponse.setHeader(CONTENT_LENGTH, String.valueOf(contentLength));
         } else {
-            logger.debug(format("Content-Length is NOT available in the response headers, using body data: %d byte(s)", clientHttpResponse.getData().getBody().length));
-            httpServletResponse.setHeader(CONTENT_LENGTH, String.valueOf(clientHttpResponse.getData().getSize()));
+            logger.debug(format("Content-Length is NOT available in the response headers, using body data: %d byte(s)", apiResponse.getData().getBody().length));
+            servletResponse.setHeader(CONTENT_LENGTH, String.valueOf(apiResponse.getData().getSize()));
         }
 
         // Set the content-disposition header if it exists in the incoming headers.
         Object contentDisposition = incomingHeaders.get(CONTENT_DISPOSITION);
         if(contentDisposition != null) {
             logger.debug(format("Content-Disposition is available: %s", contentDisposition));
-            httpServletResponse.setHeader(CONTENT_DISPOSITION, contentDisposition.toString());
+            servletResponse.setHeader(CONTENT_DISPOSITION, contentDisposition.toString());
         } else {
-            logger.debug(format("Content-Disposition is NOT available in the response headers, using body data: %s", clientHttpResponse.getData().getFileName()));
-            httpServletResponse.setHeader(CONTENT_DISPOSITION, format("attachment; filename=\"%s\"", clientHttpResponse.getData().getFileName()));
+            logger.debug(format("Content-Disposition is NOT available in the response headers, using body data: %s", apiResponse.getData().getFileName()));
+            servletResponse.setHeader(CONTENT_DISPOSITION, format("attachment; filename=\"%s\"", apiResponse.getData().getFileName()));
         }
     }
 
-    private void buildDownloadResponse(HttpServletResponse httpServletResponse, FileApi fileApi) {
+    private void buildDownloadResponse(final HttpServletResponse httpServletResponse, final FileApi fileApi) {
+        logger.info(format("buildDownloadResponse(filename=%s) method called.", fileApi.getFileName()));
+
         try (OutputStream os = httpServletResponse.getOutputStream()) {
             logger.debug(format("Attempting to write data to output stream: %s byte(s) available...", fileApi.getBody().length));
             logger.debug(format("Data integrity check > (File Size: %d, Content Length: %d)",
