@@ -9,6 +9,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import org.junit.jupiter.api.Tag;
 
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.HashMap;
@@ -23,6 +24,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.companieshouse.extensions.api.requests.ERICHeaderParser;
 import uk.gov.companieshouse.logging.Logger;
 
+@Tag("UnitTest")
 @ExtendWith(MockitoExtension.class)
 class ApiLoggerTest {
 
