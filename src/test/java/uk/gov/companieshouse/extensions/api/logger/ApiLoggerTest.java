@@ -24,7 +24,7 @@ import uk.gov.companieshouse.extensions.api.requests.ERICHeaderParser;
 import uk.gov.companieshouse.logging.Logger;
 
 @ExtendWith(MockitoExtension.class)
-class ApiLoggerTest {
+public class ApiLoggerTest {
 
     private static final String COMPANY_NUMBER_KEY = "company_number";
     private static final String THREAD_ID_KEY = "thread_id";
