@@ -48,11 +48,6 @@ public class ApplicationConfiguration {
     }
 
     @Bean
-    public RestTemplate restTemplate(RestTemplateBuilder builder) {
-        return builder.build();
-    }
-
-    @Bean
     public Supplier<InternalFileTransferClient> internalFileTransferClient(
         @Value("${internal.api.key}") String internalApiKey,
         @Value("${file.transfer.api.url}") String fileTransferApiUrl) {
