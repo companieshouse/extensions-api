@@ -8,10 +8,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 import org.apache.tika.Tika;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.client.RestTemplate;
 import uk.gov.companieshouse.api.handler.filetransfer.FileTransferHttpClient;
 import uk.gov.companieshouse.api.handler.filetransfer.InternalFileTransferClient;
 import uk.gov.companieshouse.extensions.api.Application;
@@ -38,19 +36,14 @@ public class ApplicationConfiguration {
     }
 
     @Bean
-    public LocalDateTime dateTimeNow() {
-        return LocalDateTime.now();
+    public Supplier<LocalDateTime> dateTimeNow() {
+        return LocalDateTime::now;
     }
 
     @Bean
-    public Supplier<UUID> randomUUID() {
-        return UUID::randomUUID;
+    public Supplier<String> randomUUID() {
+        return () -> UUID.randomUUID().toString();
     }
-
-    // @Bean
-    // public RestTemplate restTemplate(RestTemplateBuilder builder) {
-    //     return builder.build();
-    // }
 
     @Bean
     public Supplier<InternalFileTransferClient> internalFileTransferClient(
