@@ -25,10 +25,8 @@ import uk.gov.companieshouse.service.ServiceResult;
 import uk.gov.companieshouse.service.ServiceResultStatus;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -45,7 +43,7 @@ import static org.mockito.Mockito.when;
 
 @Tag("UnitTest")
 @ExtendWith(MockitoExtension.class)
-public class AttachmentsServiceUnitTest {
+class AttachmentsServiceUnitTest {
 
     private static final String REQUEST_ID = "123";
     private static final String REASON_ID = "1234";
@@ -66,13 +64,13 @@ public class AttachmentsServiceUnitTest {
     private AttachmentsService service;
 
     @Test
-    public void canAddAnAttachment() throws Exception {
+    void canAddAnAttachment() throws Exception {
         ExtensionRequestFullEntity entity = new ExtensionRequestFullEntity();
         entity.setId(REQUEST_ID);
         ExtensionReasonEntity reasonEntity = new ExtensionReasonEntity();
         reasonEntity.setId(REASON_ID);
         reasonEntity.setReason("illness");
-        entity.setReasons(Arrays.asList(reasonEntity));
+        entity.setReasons(List.of(reasonEntity));
         when(repo.findById(anyString())).thenReturn(Optional.of(entity));
 
         when(fileTransferServiceClient.upload(any(MultipartFile.class))).thenReturn(getSuccessfulUploadResponse());
@@ -103,7 +101,7 @@ public class AttachmentsServiceUnitTest {
     }
 
     @Test
-    public void willNotOverrideAlreadyExistingAttachments() throws Exception {
+    void willNotOverrideAlreadyExistingAttachments() throws Exception {
         ExtensionRequestFullEntity entity = new ExtensionRequestFullEntity();
         entity.setId(REQUEST_ID);
         ExtensionReasonEntity reasonEntity = new ExtensionReasonEntity();
@@ -117,7 +115,7 @@ public class AttachmentsServiceUnitTest {
         List<Attachment> attachmentsList = new ArrayList<>();
         attachmentsList.add(attachment);
         reasonEntity.setAttachments(attachmentsList);
-        entity.setReasons(Arrays.asList(reasonEntity));
+        entity.setReasons(List.of(reasonEntity));
         when(repo.findById(anyString())).thenReturn(Optional.of(entity));
 
         when(fileTransferServiceClient.upload(any(MultipartFile.class))).thenReturn(getSuccessfulUploadResponse());
@@ -128,15 +126,15 @@ public class AttachmentsServiceUnitTest {
         List<Attachment> entityAttachments = entity.getReasons()
             .stream()
             .flatMap(reason -> reason.getAttachments().stream())
-            .collect(Collectors.toList());
+            .toList();
 
         assertEquals(2, entityAttachments.size());
-        assertEquals("testFile", entityAttachments.get(0).getName());
+        assertEquals("testFile", entityAttachments.getFirst().getName());
         assertEquals(Utils.ORIGINAL_FILE_NAME, entityAttachments.get(1).getName());
     }
 
     @Test
-    public void willThrowServiceExceptionIfAttachmentAddedWithNoReason() throws Exception {
+    void willThrowServiceExceptionIfAttachmentAddedWithNoReason() throws Exception {
         ExtensionRequestFullEntity entity = new ExtensionRequestFullEntity();
         entity.setId(REQUEST_ID);
         when(repo.findById(anyString())).thenReturn(Optional.of(entity));
@@ -153,7 +151,7 @@ public class AttachmentsServiceUnitTest {
     }
 
     @Test
-    public void willThrowServiceExceptionIfNoReason() throws Exception {
+    void willThrowServiceExceptionIfNoReason() throws Exception {
         when(repo.findById(anyString())).thenReturn(Optional.empty());
         when(fileTransferServiceClient.upload(any(MultipartFile.class))).thenReturn(getSuccessfulUploadResponse());
 
@@ -167,7 +165,7 @@ public class AttachmentsServiceUnitTest {
     }
 
     @Test
-    public void willThrowServiceExceptionIfUploadErrors() throws Exception {
+    void willThrowServiceExceptionIfUploadErrors() throws Exception {
         when(fileTransferServiceClient.upload(any(MultipartFile.class))).thenReturn(getUnsuccessfulUploadResponse());
 
         try {
@@ -180,7 +178,7 @@ public class AttachmentsServiceUnitTest {
     }
 
     @Test
-    public void willPropagateServerRuntimeExceptions() throws Exception {
+    void willPropagateServerRuntimeExceptions() throws Exception {
         when(fileTransferServiceClient.upload(any(MultipartFile.class)))
             .thenThrow(new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR));
         try {
@@ -193,7 +191,7 @@ public class AttachmentsServiceUnitTest {
     }
 
     @Test
-    public void willPropagateClientRuntimeExceptions() throws Exception {
+    void willPropagateClientRuntimeExceptions() throws Exception {
         when(fileTransferServiceClient.upload(any(MultipartFile.class)))
             .thenThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST));
         try {
@@ -206,9 +204,9 @@ public class AttachmentsServiceUnitTest {
     }
 
     @Test
-    public void willThrowServiceExceptionIfNoFileIdReturned() throws Exception {
+    void willThrowServiceExceptionIfNoFileIdReturned() throws Exception {
         FileTransferApiClientResponse response = getSuccessfulUploadResponse();
-        response.setFileId(null);
+        response.fileId(null);
         when(fileTransferServiceClient.upload(any(MultipartFile.class))).thenReturn(response);
 
         try {
@@ -221,7 +219,7 @@ public class AttachmentsServiceUnitTest {
     }
 
     @Test
-    public void willRemoveAttachmentFromReason() throws ServiceException {
+    void willRemoveAttachmentFromReason() throws ServiceException {
         ExtensionRequestFullEntity entity = Utils.dummyRequestEntity();
         List<ExtensionReasonEntity> reasons = new ArrayList<>();
         reasons.add(Utils.dummyReasonEntity());
@@ -232,14 +230,14 @@ public class AttachmentsServiceUnitTest {
                 addAttachmentToReason(reason, "123456");
             });
 
-        assertFalse(entity.getReasons().get(0).getAttachments().isEmpty());
-        assertEquals(2, entity.getReasons().get(0).getAttachments().size());
+        assertFalse(entity.getReasons().getFirst().getAttachments().isEmpty());
+        assertEquals(2, entity.getReasons().getFirst().getAttachments().size());
 
         when(repo.findById(entity.getId()))
             .thenReturn(Optional.of(entity));
 
         FileTransferApiClientResponse apiClientResponse = new FileTransferApiClientResponse();
-        apiClientResponse.setHttpStatus(HttpStatus.NO_CONTENT);
+        apiClientResponse.httpStatus(HttpStatus.NO_CONTENT);
         when(fileTransferServiceClient.delete("12345")).thenReturn(apiClientResponse);
 
         service.removeAttachment(entity.getId(),
@@ -250,7 +248,7 @@ public class AttachmentsServiceUnitTest {
             .forEach(reason -> {
                 assertFalse(reason.getAttachments().isEmpty());
                 assertEquals(1, reason.getAttachments().size());
-                assertEquals("123456", reason.getAttachments().get(0).getId());
+                assertEquals("123456", reason.getAttachments().getFirst().getId());
             });
 
         verify(repo).save(entity);
@@ -261,13 +259,13 @@ public class AttachmentsServiceUnitTest {
     }
 
     @Test
-    public void willThrowExceptionIfNoAttachmentsToRemove() {
+    void willThrowExceptionIfNoAttachmentsToRemove() {
         ExtensionRequestFullEntity entity = Utils.dummyRequestEntity();
         List<ExtensionReasonEntity> reasons = new ArrayList<>();
         reasons.add(Utils.dummyReasonEntity());
         entity.setReasons(reasons);
 
-        assertTrue(entity.getReasons().get(0).getAttachments().isEmpty());
+        assertTrue(entity.getReasons().getFirst().getAttachments().isEmpty());
 
         when(repo.findById(entity.getId()))
             .thenReturn(Optional.of(entity));
@@ -285,7 +283,7 @@ public class AttachmentsServiceUnitTest {
     }
 
     @Test
-    public void willThrowExceptionIfAttachmentDoesNotExist() {
+    void willThrowExceptionIfAttachmentDoesNotExist() {
         ExtensionRequestFullEntity entity = Utils.dummyRequestEntity();
         List<ExtensionReasonEntity> reasons = new ArrayList<>();
         reasons.add(Utils.dummyReasonEntity());
@@ -296,7 +294,7 @@ public class AttachmentsServiceUnitTest {
                 addAttachmentToReason(reason, "123456");
             });
 
-        assertFalse(entity.getReasons().get(0).getAttachments().isEmpty());
+        assertFalse(entity.getReasons().getFirst().getAttachments().isEmpty());
 
         HttpClientErrorException exception = new HttpClientErrorException(HttpStatus.NOT_FOUND);
         when(fileTransferServiceClient.delete("12345ab")).thenThrow(exception);
@@ -319,7 +317,7 @@ public class AttachmentsServiceUnitTest {
     }
 
     @Test
-    public void willHandleClientExceptionOnDeleteAttachment() throws ServiceException {
+    void willHandleClientExceptionOnDeleteAttachment() throws ServiceException {
         ExtensionRequestFullEntity entity = Utils.dummyRequestEntity();
         List<ExtensionReasonEntity> reasons = new ArrayList<>();
         reasons.add(Utils.dummyReasonEntity());
@@ -331,7 +329,7 @@ public class AttachmentsServiceUnitTest {
                 addAttachmentToReason(reason, "123456");
             });
 
-        assertFalse(entity.getReasons().get(0).getAttachments().isEmpty());
+        assertFalse(entity.getReasons().getFirst().getAttachments().isEmpty());
 
         HttpClientErrorException exception = new HttpClientErrorException(HttpStatus.NOT_FOUND);
         when(fileTransferServiceClient.delete("12345")).thenThrow(exception);
@@ -348,7 +346,7 @@ public class AttachmentsServiceUnitTest {
     }
 
     @Test
-    public void willHandleServerExceptionOnDeleteAttachment() throws ServiceException {
+    void willHandleServerExceptionOnDeleteAttachment() throws ServiceException {
         ExtensionRequestFullEntity entity = Utils.dummyRequestEntity();
         List<ExtensionReasonEntity> reasons = new ArrayList<>();
         reasons.add(Utils.dummyReasonEntity());
@@ -360,7 +358,7 @@ public class AttachmentsServiceUnitTest {
                 addAttachmentToReason(reason, "123456");
             });
 
-        assertFalse(entity.getReasons().get(0).getAttachments().isEmpty());
+        assertFalse(entity.getReasons().getFirst().getAttachments().isEmpty());
 
         HttpServerErrorException exception = new HttpServerErrorException(HttpStatus.BAD_GATEWAY);
         when(fileTransferServiceClient.delete("12345")).thenThrow(exception);
@@ -377,7 +375,7 @@ public class AttachmentsServiceUnitTest {
     }
 
     @Test
-    public void willHandleNullApiResponseOnDeleteAttachment() throws ServiceException {
+    void willHandleNullApiResponseOnDeleteAttachment() throws ServiceException {
         ExtensionRequestFullEntity entity = Utils.dummyRequestEntity();
         List<ExtensionReasonEntity> reasons = new ArrayList<>();
         reasons.add(Utils.dummyReasonEntity());
@@ -389,7 +387,7 @@ public class AttachmentsServiceUnitTest {
                 addAttachmentToReason(reason, "123456");
             });
 
-        assertFalse(entity.getReasons().get(0).getAttachments().isEmpty());
+        assertFalse(entity.getReasons().getFirst().getAttachments().isEmpty());
 
         when(fileTransferServiceClient.delete("12345")).thenReturn(null);
 
@@ -405,7 +403,7 @@ public class AttachmentsServiceUnitTest {
     }
 
     @Test
-    public void willHandleNullHttpStatusApiResponseOnDeleteAttachment() throws ServiceException {
+    void willHandleNullHttpStatusApiResponseOnDeleteAttachment() throws ServiceException {
         ExtensionRequestFullEntity entity = Utils.dummyRequestEntity();
         List<ExtensionReasonEntity> reasons = new ArrayList<>();
         reasons.add(Utils.dummyReasonEntity());
@@ -417,10 +415,10 @@ public class AttachmentsServiceUnitTest {
                 addAttachmentToReason(reason, "123456");
             });
 
-        assertFalse(entity.getReasons().get(0).getAttachments().isEmpty());
+        assertFalse(entity.getReasons().getFirst().getAttachments().isEmpty());
 
         FileTransferApiClientResponse response = new FileTransferApiClientResponse();
-        response.setHttpStatus(null);
+        response.httpStatus(null);
         when(fileTransferServiceClient.delete("12345")).thenReturn(response);
 
         when(repo.findById(entity.getId()))
@@ -435,7 +433,7 @@ public class AttachmentsServiceUnitTest {
     }
 
     @Test
-    public void willCallFileTransferGatewayForDownload() {
+    void willCallFileTransferGatewayForDownload() {
         String attachmentId = "1234";
         HttpServletResponse httpServletResponse = new MockHttpServletResponse();
 
@@ -457,13 +455,13 @@ public class AttachmentsServiceUnitTest {
 
     private FileTransferApiClientResponse getSuccessfulUploadResponse() {
         FileTransferApiClientResponse fileTransferApiClientResponse = new FileTransferApiClientResponse();
-        fileTransferApiClientResponse.setFileId(UPLOAD_ID);
+        fileTransferApiClientResponse.fileId(UPLOAD_ID);
         return fileTransferApiClientResponse;
     }
 
     private FileTransferApiClientResponse getUnsuccessfulUploadResponse() {
         FileTransferApiClientResponse fileTransferApiClientResponse = new FileTransferApiClientResponse();
-        fileTransferApiClientResponse.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+        fileTransferApiClientResponse.httpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
         return fileTransferApiClientResponse;
     }
 }

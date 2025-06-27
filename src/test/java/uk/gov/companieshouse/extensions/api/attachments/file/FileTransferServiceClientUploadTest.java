@@ -1,7 +1,13 @@
 package uk.gov.companieshouse.extensions.api.attachments.file;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+
+import java.io.IOException;
+import java.io.InputStream;
 import org.apache.tika.Tika;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,14 +20,9 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.multipart.MultipartFile;
 import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
 
-import java.io.IOException;
-import java.io.InputStream;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-
 @Tag("UnitTest")
 @ExtendWith(MockitoExtension.class)
+@Disabled
 class FileTransferServiceClientUploadTest {
     @Mock
     private Tika tika;

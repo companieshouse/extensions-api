@@ -1,10 +1,15 @@
 package uk.gov.companieshouse.extensions.api.config;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.time.LocalDateTime;
 import java.util.List;
-
+import java.util.UUID;
+import java.util.function.Supplier;
+import org.apache.tika.Tika;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -12,13 +17,20 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.ByteArrayHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
+import uk.gov.companieshouse.logging.Logger;
+
 @Tag("UnitTest")
 class ApplicationConfigurationTest {
 
+    private ApplicationConfiguration underTest;
+
+    @BeforeEach
+    void setUp() {
+        underTest = new ApplicationConfiguration();
+    }
 
     @Test
     void restTemplateByteArrayConverter(){
-
         AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(RestTemplateConfig.class);
         RestTemplate restTemplate = context.getBean(RestTemplate.class);
         List<HttpMessageConverter<?>> converters = restTemplate.getMessageConverters();
@@ -28,11 +40,38 @@ class ApplicationConfigurationTest {
                 .orElseThrow(() -> new AssertionError("ByteArrayHttpMessageConverter not found"));
 
         int  mediaTypesSize = byteArrayHttpMessageConverter.getSupportedMediaTypes().size();
-        assertEquals("ByteArrayHttpMessageConverter supported media types size", 2, mediaTypesSize);
+        assertEquals(2, mediaTypesSize);
 
         boolean isInstance = byteArrayHttpMessageConverter.getSupportedMediaTypes().stream()
                 .anyMatch(mediaType -> mediaType.equals(MediaType.APPLICATION_OCTET_STREAM) || mediaType.equals(MediaType.APPLICATION_PDF));
-        assertTrue("ByteArrayHttpMessageConverter should support application/octet-stream and application/pdf", isInstance);
+        assertTrue(isInstance, "ByteArrayHttpMessageConverter should support application/octet-stream and application/pdf");
     }
 
+    @Test
+    void createLogger() {
+        Logger logger = underTest.getLogger();
+
+        assertNotNull(logger);
+    }
+
+    @Test
+    void createDateTime() {
+        LocalDateTime localDateTime = underTest.dateTimeNow();
+
+        assertNotNull(localDateTime);
+    }
+
+    @Test
+    void createRandomUuid() {
+        Supplier<UUID> uuidSupplier = underTest.randomUUID();
+
+        assertNotNull(uuidSupplier.get());
+    }
+
+    @Test
+    void createTika() {
+        Tika tika = underTest.tika();
+
+        assertNotNull(tika);
+    }
 }

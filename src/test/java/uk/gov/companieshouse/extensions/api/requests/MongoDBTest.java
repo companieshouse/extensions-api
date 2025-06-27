@@ -1,9 +1,17 @@
 package uk.gov.companieshouse.extensions.api.requests;
 
 
+import static com.mongodb.client.model.Filters.eq;
+
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
+import java.time.Clock;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import org.bson.Document;
 import org.bson.json.JsonWriterSettings;
 import org.json.JSONArray;
@@ -23,21 +31,12 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.companieshouse.extensions.api.reasons.ExtensionReasonEntity;
 
-import java.time.Clock;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
-
-import static com.mongodb.client.model.Filters.eq;
-
 /**
  * Tests require actual connection to mongo db in order to run so these will be ignored
  * so that testing does not fail on concourse just because this connection is absent.
  */
 
-
+@Disabled
 @Tag("IntegrationTest")
 @ExtendWith(SpringExtension.class)
 @SpringBootTest

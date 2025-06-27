@@ -1,10 +1,18 @@
 package uk.gov.companieshouse.extensions.api.attachments.file;
 
+import static org.mockserver.model.HttpRequest.request;
+import static org.mockserver.model.HttpResponse.response;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import org.apache.tika.Tika;
+import org.junit.Ignore;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,13 +26,6 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-
-import static org.mockserver.model.HttpRequest.request;
-import static org.mockserver.model.HttpResponse.response;
 
 /**
  * FileTransferGatewayIntegrationTest with mock server for file-transfer-api
@@ -42,6 +43,9 @@ import static org.mockserver.model.HttpResponse.response;
     "spring.servlet.multipart.max-request-size=200"})
 @ExtendWith(MockServerExtension.class)
 @SpringBootTest
+@Disabled // Disabled as this test requires a running file-transfer-api instance
+@Ignore
+
 public class FileTransferGatewayMockIntegrationTest {
 
     @Autowired

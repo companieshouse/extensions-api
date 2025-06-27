@@ -1,169 +1,218 @@
 package uk.gov.companieshouse.extensions.api.logger;
 
-import org.junit.BeforeClass;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.companieshouse.logging.Logger;
-
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.util.HashMap;
-import java.util.Map;
-
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import org.junit.jupiter.api.Tag;
 
-@RunWith(MockitoJUnitRunner.class)
-public class ApiLoggerTest {
+import jakarta.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.Map;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.companieshouse.extensions.api.requests.ERICHeaderParser;
+import uk.gov.companieshouse.logging.Logger;
+
+@Tag("UnitTest")
+@ExtendWith(MockitoExtension.class)
+class ApiLoggerTest {
+
     private static final String COMPANY_NUMBER_KEY = "company_number";
     private static final String THREAD_ID_KEY = "thread_id";
     private static final String TEST_MESSAGE = "hello";
     private static final String COMPANY_NUMBER = "12345678";
-    private static final Map<String, Object> EXTRA_VALUES_MAP = new HashMap<String, Object>() {{
+
+    private static final Map<String, Object> EXTRA_VALUES_MAP = new HashMap<>() {{
         put("my_key", "my_data");
     }};
 
-    private static Logger mockLogger;
-    private static ApiLogger apiLogger;
+    @Mock
+    private static Logger logger;
+
+    @Mock
+    private static ERICHeaderParser ericHeaderParser;
 
     @Captor
     private ArgumentCaptor<Map<String, Object>> mapArgumentCaptor;
 
-    @BeforeClass
-    public static void setupAllTests() throws Exception {
-        apiLogger = new ApiLogger();
-
-        mockLogger = mock(Logger.class);
-
-        //Get the field to inject the mock into
-        Field loggerField = ApiLogger.class.getDeclaredField("LOG");
-
-        //make the field public
-        loggerField.setAccessible(true);
-
-        //make the field non final
-        Field modifiersField = Field.class.getDeclaredField("modifiers");
-        modifiersField.setAccessible(true);
-        modifiersField.setInt(loggerField, loggerField.getModifiers() & ~Modifier.FINAL);
-
-        //set the new value - a mock version
-        loggerField.set(null, mockLogger);
-
-        //set the field back to private and final
-        loggerField.setAccessible(false);
-        modifiersField.setInt(loggerField, loggerField.getModifiers() & Modifier.FINAL);
-
-        apiLogger.setCompanyNumber(COMPANY_NUMBER);
-    }
+    private static ApiLogger underTest;
 
     @BeforeEach
-    public void setup() {
-        Mockito.reset(mockLogger);
+    void setup() {
+        underTest = new ApiLogger(logger, ericHeaderParser);
+        underTest.setCompanyNumber(COMPANY_NUMBER);
     }
 
     @Test
-    public void testDebug() {
-        apiLogger.debug(TEST_MESSAGE);
-        verify(mockLogger, times(1)).debug(eq(TEST_MESSAGE), mapArgumentCaptor.capture());
-
-        assertMapIsValid(mapArgumentCaptor);
+    void testConstructor() {
+        ApiLogger apiLogger = new ApiLogger(logger, ericHeaderParser);
+        assertNotNull(apiLogger);
     }
 
     @Test
-    public void testDebugWithValues() {
-        apiLogger.debug(TEST_MESSAGE, EXTRA_VALUES_MAP);
-        verify(mockLogger, times(1)).debug(eq(TEST_MESSAGE), mapArgumentCaptor.capture());
+    void testSetCompanyNumber() {
+        underTest.removeCompanyNumber();
 
-        assertMapIsValid(mapArgumentCaptor, EXTRA_VALUES_MAP);
+        Map<String, Object> internalMap = underTest.getInternalDataMap();
+        assertTrue(internalMap.containsKey(COMPANY_NUMBER_KEY));
+        assertNull(internalMap.get(COMPANY_NUMBER_KEY));
+
+        underTest.setCompanyNumber(COMPANY_NUMBER);
+
+        Map<String, Object> updatedMap = underTest.getInternalDataMap();
+        assertTrue(updatedMap.containsKey(COMPANY_NUMBER_KEY));
+        assertEquals(COMPANY_NUMBER, updatedMap.get(COMPANY_NUMBER_KEY));
     }
 
     @Test
-    public void testInfo() {
-        apiLogger.info(TEST_MESSAGE);
-        verify(mockLogger, times(1)).info(eq(TEST_MESSAGE), mapArgumentCaptor.capture());
+    void testRemoveCompanyNumber() {
+        Map<String, Object> internalMap = underTest.getInternalDataMap();
+        assertTrue(internalMap.containsKey(COMPANY_NUMBER_KEY));
+        assertEquals(COMPANY_NUMBER, internalMap.get(COMPANY_NUMBER_KEY));
 
-        assertMapIsValid(mapArgumentCaptor);
+        underTest.removeCompanyNumber();
+
+        Map<String, Object> updatedMap = underTest.getInternalDataMap();
+        assertTrue(updatedMap.containsKey(COMPANY_NUMBER_KEY));
+        assertNull(updatedMap.get(COMPANY_NUMBER_KEY));
     }
 
     @Test
-    public void testInfoWithValues() {
-        apiLogger.info(TEST_MESSAGE, EXTRA_VALUES_MAP);
-        verify(mockLogger, times(1)).info(eq(TEST_MESSAGE), mapArgumentCaptor.capture());
+    void testInternalDataMap() {
+        Map<String, Object> internalMap = underTest.getInternalDataMap();
+        assertNotNull(internalMap);
 
-        assertMapIsValid(mapArgumentCaptor, EXTRA_VALUES_MAP);
+        assertTrue(internalMap.containsKey(COMPANY_NUMBER_KEY));
+        assertTrue(internalMap.containsKey(THREAD_ID_KEY));
+
+        assertEquals(COMPANY_NUMBER, internalMap.get(COMPANY_NUMBER_KEY));
+        assertEquals(1L, internalMap.get(THREAD_ID_KEY));
     }
 
     @Test
-    public void testError() {
-        apiLogger.error(TEST_MESSAGE);
-        verify(mockLogger, times(1)).error(eq(TEST_MESSAGE), mapArgumentCaptor.capture());
+    void testDebug() {
+        underTest.debug(TEST_MESSAGE);
 
-        assertMapIsValid(mapArgumentCaptor);
+        verify(logger, times(1)).debug(eq(TEST_MESSAGE), mapArgumentCaptor.capture());
+
+        assertInternalMapIsValid();
     }
 
     @Test
-    public void testErrorWithException() {
+    void testDebugWithValues() {
+        underTest.debug(TEST_MESSAGE, EXTRA_VALUES_MAP);
+
+        verify(logger, times(1)).debug(eq(TEST_MESSAGE), mapArgumentCaptor.capture());
+
+        assertExtraValuesMapIsValid();
+    }
+
+    @Test
+    void testDebugWithRequest() {
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        when(ericHeaderParser.getUserId(request)).thenReturn("user123");
+
+        underTest.debug(TEST_MESSAGE, request);
+
+        verify(ericHeaderParser, times(1)).getUserId(request);
+        verify(logger, times(1)).debug(eq(TEST_MESSAGE), mapArgumentCaptor.capture());
+
+        assertInternalMapIsValid();
+    }
+
+    @Test
+    void testInfo() {
+        underTest.info(TEST_MESSAGE);
+
+        verify(logger, times(1)).info(eq(TEST_MESSAGE), mapArgumentCaptor.capture());
+
+        assertInternalMapIsValid();
+    }
+
+    @Test
+    void testInfoWithValues() {
+        underTest.info(TEST_MESSAGE, EXTRA_VALUES_MAP);
+
+        verify(logger, times(1)).info(eq(TEST_MESSAGE), mapArgumentCaptor.capture());
+
+        assertExtraValuesMapIsValid();
+    }
+
+    @Test
+    void testError() {
+        underTest.error(TEST_MESSAGE);
+
+        verify(logger, times(1)).error(eq(TEST_MESSAGE), mapArgumentCaptor.capture());
+
+        assertInternalMapIsValid();
+    }
+
+    @Test
+    void testErrorWithException() {
         Exception e = new Exception(TEST_MESSAGE);
-        apiLogger.error(e);
-        verify(mockLogger, times(1)).error(eq(TEST_MESSAGE), eq(e), mapArgumentCaptor.capture());
+        underTest.error(e);
 
-        assertMapIsValid(mapArgumentCaptor);
+        verify(logger, times(1)).error(eq(TEST_MESSAGE), eq(e), mapArgumentCaptor.capture());
+
+        assertInternalMapIsValid();
     }
 
     @Test
-    public void testErrorWithExceptionAndMessage() {
+    void testErrorWithExceptionAndMessage() {
         Exception e = new Exception("exception message");
-        apiLogger.error("another message", e);
-        verify(mockLogger, times(1)).error(eq("another message"), eq(e), mapArgumentCaptor.capture());
+        underTest.error("another message", e);
 
-        assertMapIsValid(mapArgumentCaptor);
+        verify(logger, times(1)).error(eq("another message"), eq(e), mapArgumentCaptor.capture());
+
+        assertInternalMapIsValid();
     }
 
     @Test
-    public void testErrorWithValues() {
-        apiLogger.error(TEST_MESSAGE, EXTRA_VALUES_MAP);
-        verify(mockLogger, times(1)).error(eq(TEST_MESSAGE), mapArgumentCaptor.capture());
+    void testErrorWithValues() {
+        underTest.error(TEST_MESSAGE, EXTRA_VALUES_MAP);
 
-        assertMapIsValid(mapArgumentCaptor, EXTRA_VALUES_MAP);
+        verify(logger, times(1)).error(eq(TEST_MESSAGE), mapArgumentCaptor.capture());
+
+        assertExtraValuesMapIsValid();
     }
 
     /**
      * Check map contains default values
-     *
-     * @param mapArgumentCaptor
      */
-    private void assertMapIsValid(ArgumentCaptor<Map<String, Object>> mapArgumentCaptor) {
+    private void assertInternalMapIsValid() {
         Map<String, Object> mapLogged = mapArgumentCaptor.getValue();
+        assertNotNull(mapLogged);
+
         assertTrue(mapLogged.containsKey(COMPANY_NUMBER_KEY));
-        Assertions.assertEquals(COMPANY_NUMBER, mapLogged.get(COMPANY_NUMBER_KEY));
+        assertEquals(COMPANY_NUMBER, mapLogged.get(COMPANY_NUMBER_KEY));
         assertTrue(mapLogged.containsKey(THREAD_ID_KEY));
         assertNotNull(mapLogged.get(THREAD_ID_KEY));
     }
 
     /**
      * Check map contains default + extra values
-     *
-     * @param mapArgumentCaptor
-     * @param extraValues
      */
-    private void assertMapIsValid(ArgumentCaptor<Map<String, Object>> mapArgumentCaptor, Map<String, Object> extraValues) {
-        assertMapIsValid(mapArgumentCaptor);
+    private void assertExtraValuesMapIsValid() {
+        assertInternalMapIsValid();
 
         //check extra values beyond the defaults
         Map<String, Object> mapLogged = mapArgumentCaptor.getValue();
-        extraValues.forEach((extraKey, extraValue) -> {
+        assertNotNull(mapLogged);
+
+        EXTRA_VALUES_MAP.forEach((extraKey, extraValue) -> {
             assertTrue(mapLogged.containsKey(extraKey));
-            Assertions.assertEquals(extraValue, mapLogged.get(extraKey));
+            assertEquals(extraValue, mapLogged.get(extraKey));
         });
     }
 }

@@ -9,11 +9,14 @@
     <version>unversioned</version>
 
     <properties>
+        <java.version>21</java.version>
+
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
+        <spring-boot-dependencies.version>3.4.7</spring-boot-dependencies.version>
+        <spring-boot-maven-plugin.version>3.4.7</spring-boot-maven-plugin.version>
+
         <log4j2.version>2.24.3</log4j2.version>
-        <maven.compiler.source>21</maven.compiler.source>
-        <maven.compiler.target>21</maven.compiler.target>
-        <spring-boot-dependencies.version>3.4.4</spring-boot-dependencies.version>
-        <spring-boot-maven-plugin.version>3.4.4</spring-boot-maven-plugin.version>
         <structured-logging.version>3.0.26</structured-logging.version>
         <pact.version>3.6.7</pact.version>
         <rest-service-common-library.version>2.0.2</rest-service-common-library.version>
@@ -22,9 +25,9 @@
         <surefire-plugin.version>3.5.2</surefire-plugin.version>
         <junit.jupiter.version>5.12.0</junit.jupiter.version>
         <jib-maven-plugin.version>3.4.0</jib-maven-plugin.version>
-        <java.version>21</java.version>
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
-        <private-api-sdk-java.version>4.0.285</private-api-sdk-java.version>
+        <private-api-sdk-java.version>4.0.315</private-api-sdk-java.version>
+        <api-sdk-java.version>6.3.1</api-sdk-java.version>
 
         <tika-core.version>3.1.0</tika-core.version>
         <commons-io.version>2.18.0</commons-io.version>
@@ -53,7 +56,7 @@
         <groupId>uk.gov.companieshouse</groupId>
         <artifactId>companies-house-parent</artifactId>
         <version>2.1.11</version>
-        <relativePath/> <!-- lookup parent from repository -->
+        <relativePath/>
     </parent>
 
     <dependencyManagement>
@@ -90,13 +93,6 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
-        <!-- vulnerability -->
-        <dependency>
-            <groupId>org.yaml</groupId>
-            <artifactId>snakeyaml</artifactId>
-            <version>${snakeyaml.version}</version>
-        </dependency>
-        <!-- vulnerability -->
         <dependency>
             <groupId>org.mongodb</groupId>
             <artifactId>mongodb-driver-sync</artifactId>
@@ -180,8 +176,6 @@
             <artifactId>mapstruct-processor</artifactId>
             <version>${mapstruct.version}</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/org.junit-pioneer/junit-pioneer -->
-
         <dependency>
             <groupId>au.com.dius</groupId>
             <artifactId>pact-jvm-provider-spring</artifactId>
@@ -215,7 +209,7 @@
         <dependency>
             <groupId>uk.gov.companieshouse</groupId>
             <artifactId>api-sdk-java</artifactId>
-            <version>6.0.38</version>
+            <version>${api-sdk-java.version}</version>
         </dependency>
         <dependency>
             <groupId>org.awaitility</groupId>
@@ -243,7 +237,6 @@
             <artifactId>tika-core</artifactId>
             <version>${tika-core.version}</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>

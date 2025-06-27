@@ -165,7 +165,7 @@ public class Utils {
 
     public static FileTransferApiClientResponse dummyDownloadResponse() {
         FileTransferApiClientResponse dummyDownloadResponse = new FileTransferApiClientResponse();
-        dummyDownloadResponse.setHttpStatus(HttpStatus.OK);
+        dummyDownloadResponse.httpStatus(HttpStatus.OK);
         return dummyDownloadResponse;
     }
 }
