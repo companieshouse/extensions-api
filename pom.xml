@@ -37,9 +37,16 @@
         <!--  Sonar -->
         <sonar.projectName>extensions-api</sonar.projectName>
         <sonar.projectKey>uk.gov.companieshouse:extensions-api</sonar.projectKey>
-        <sonar.token>${CODE_ANALYSIS_TOKEN}</sonar.token>
-        <sonar.login></sonar.login>
-        <sonar.password></sonar.password>
+		<sonar.sources>src/main</sonar.sources>
+		<sonar.tests>src/test</sonar.tests>
+		<sonar.verbose>true</sonar.verbose>
+		<sonar.coverage.jacoco.xmlReportPaths>
+			${project.basedir}/target/site/jacoco/jacoco.xml
+		</sonar.coverage.jacoco.xmlReportPaths>
+		<sonar.jacoco.reports>${project.basedir}/target/site</sonar.jacoco.reports>
+		<sonar.token>${CODE_ANALYSIS_TOKEN}</sonar.token>
+		<sonar.login></sonar.login>
+		<sonar.password></sonar.password>
     </properties>
 
     <parent>
