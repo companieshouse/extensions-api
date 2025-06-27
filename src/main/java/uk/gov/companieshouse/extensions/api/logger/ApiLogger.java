@@ -47,8 +47,7 @@ public class ApiLogger {
     }
 
     public void debug(String message) {
-        Map<String, Object> defaultDataMap = getInternalDataMap();
-        logger.debug(message, defaultDataMap);
+        logger.debug(message, getInternalDataMap());
     }
 
     /**
