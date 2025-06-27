@@ -47,10 +47,10 @@ public class ApplicationConfiguration {
         return UUID::randomUUID;
     }
 
-    @Bean
-    public RestTemplate restTemplate(RestTemplateBuilder builder) {
-        return builder.build();
-    }
+    // @Bean
+    // public RestTemplate restTemplate(RestTemplateBuilder builder) {
+    //     return builder.build();
+    // }
 
     @Bean
     public Supplier<InternalFileTransferClient> internalFileTransferClient(
