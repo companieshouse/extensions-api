@@ -56,14 +56,14 @@ class ApplicationConfigurationTest {
 
     @Test
     void createDateTime() {
-        LocalDateTime localDateTime = underTest.dateTimeNow();
+        Supplier<LocalDateTime> localDateTime = underTest.dateTimeNow();
 
-        assertNotNull(localDateTime);
+        assertNotNull(localDateTime.get());
     }
 
     @Test
     void createRandomUuid() {
-        Supplier<UUID> uuidSupplier = underTest.randomUUID();
+        Supplier<String> uuidSupplier = underTest.randomUUID();
 
         assertNotNull(uuidSupplier.get());
     }

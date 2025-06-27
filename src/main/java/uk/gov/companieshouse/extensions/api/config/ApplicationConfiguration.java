@@ -38,13 +38,13 @@ public class ApplicationConfiguration {
     }
 
     @Bean
-    public LocalDateTime dateTimeNow() {
-        return LocalDateTime.now();
+    public Supplier<LocalDateTime> dateTimeNow() {
+        return LocalDateTime::now;
     }
 
     @Bean
-    public Supplier<UUID> randomUUID() {
-        return UUID::randomUUID;
+    public Supplier<String> randomUUID() {
+        return () -> UUID.randomUUID().toString();
     }
 
     @Bean
