@@ -9,9 +9,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -56,28 +56,28 @@ public class RequestControllerIntegrationTest {
 
     private MockMvc mockMvc;
 
-    @MockBean
+    @MockitoBean
     private RequestsService requestsService;
 
-    @MockBean
+    @MockitoBean
     private ExtensionRequestsRepository extensionRequestsRepository;
 
-    @MockBean
+    @MockitoBean
     private Supplier<LocalDateTime> localDateTimeSupplier;
 
-    @MockBean
+    @MockitoBean
     private ERICHeaderParser ericHeaderParser;
 
-    @MockBean
+    @MockitoBean
     private ExtensionRequestMapper extensionRequestMapper;
 
-    @MockBean
+    @MockitoBean
     private RestTemplate restTemplate;
 
-    @MockBean
+    @MockitoBean
     private ApiLogger apiLogger;
 
-    @MockBean
+    @MockitoBean
     private CompanyAuthorizationInterceptor companyInterceptor;
 
     @InjectMocks
@@ -180,18 +180,20 @@ public class RequestControllerIntegrationTest {
     }
 
     private String buildMockRequest() {
-        return "{\n" +
-            "  \"user\": \"Micky Mock\",\n" +
-            "  \"accounting_period_start_date\": \"2019-02-15\",\n" +
-            "  \"accounting_period_end_date\": \"2019-02-15\",\n" +
-            "  \"extensionReasons\": [\n" +
-            "    {\n" +
-            "      \"reason\": \"string\",\n" +
-            "      \"reason_information\": \"string\",\n" +
-            "      \"date_start\": \"2019-02-15\",\n" +
-            "      \"date_end\": \"2019-02-15\"\n" +
-            "    }\n" +
-            "  ]\n" +
-            "}";
+        return """
+        {
+          "user": "Micky Mock",
+          "accounting_period_start_date": "2019-02-15",
+          "accounting_period_end_date": "2019-02-15",
+          "extensionReasons": [
+            {
+              "reason": "string",
+              "reason_information": "string",
+              "date_start": "2019-02-15",
+              "date_end": "2019-02-15"
+            }
+          ]
+        }
+        """;
     }
 }

@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.client.RestTemplate;
@@ -21,24 +21,24 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Tag("IntegrationTest")
 @ExtendWith(SpringExtension.class)
 @WebMvcTest()
-public class ErrorAttributesIntegrationTest {
+class ErrorAttributesIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
+    @MockitoBean
     private AttachmentsController attachmentsController;
 
-    @MockBean
+    @MockitoBean
     private ReasonsController reasonsController;
 
-    @MockBean
+    @MockitoBean
     private RequestsController requestsController;
 
-    @MockBean
+    @MockitoBean
     private RestTemplate restTemplate;
 
-    @MockBean
+    @MockitoBean
     private ApiLogger apiLogger;
 
     /**
@@ -52,7 +52,7 @@ public class ErrorAttributesIntegrationTest {
      * @throws Exception
      */
     @Test
-    public void testError() throws Exception {
+    void testError() throws Exception {
         this.mockMvc
             .perform(get("/error")
                 .requestAttr(RequestDispatcher.ERROR_STATUS_CODE, 400)

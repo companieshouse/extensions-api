@@ -13,28 +13,28 @@
 
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
-        <spring-boot-dependencies.version>3.4.7</spring-boot-dependencies.version>
-        <spring-boot-maven-plugin.version>3.4.7</spring-boot-maven-plugin.version>
+        <spring-boot-dependencies.version>3.5.5</spring-boot-dependencies.version>
+        <spring-boot-maven-plugin.version>3.5.5</spring-boot-maven-plugin.version>
 
-        <log4j2.version>2.24.3</log4j2.version>
-        <structured-logging.version>3.0.26</structured-logging.version>
+        <log4j2.version>2.25.1</log4j2.version>
+        <structured-logging.version>3.0.40</structured-logging.version>
         <pact.version>3.6.7</pact.version>
-        <rest-service-common-library.version>2.0.2</rest-service-common-library.version>
-        <environment-reader-library.version>2.0.2</environment-reader-library.version>
+        <rest-service-common-library.version>2.0.7</rest-service-common-library.version>
+        <environment-reader-library.version>3.0.3</environment-reader-library.version>
         <mapstruct.version>1.6.3</mapstruct.version>
-        <surefire-plugin.version>3.5.2</surefire-plugin.version>
-        <junit.jupiter.version>5.12.0</junit.jupiter.version>
-        <jib-maven-plugin.version>3.4.0</jib-maven-plugin.version>
-        <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
-        <private-api-sdk-java.version>4.0.315</private-api-sdk-java.version>
-        <api-sdk-java.version>6.3.1</api-sdk-java.version>
+        <surefire-plugin.version>3.5.4</surefire-plugin.version>
+        <junit.jupiter.version>5.13.4</junit.jupiter.version>
+        <jib-maven-plugin.version>3.4.6</jib-maven-plugin.version>
+        <maven-compiler-plugin.version>3.14.0</maven-compiler-plugin.version>
+        <private-api-sdk-java.version>4.0.360</private-api-sdk-java.version>
+        <api-sdk-java.version>6.4.4</api-sdk-java.version>
 
-        <tika-core.version>3.1.0</tika-core.version>
-        <commons-io.version>2.18.0</commons-io.version>
+        <tika-core.version>3.2.2</tika-core.version>
+        <commons-io.version>2.20.0</commons-io.version>
         <pact-jvm-provider-spring.version>4.0.10</pact-jvm-provider-spring.version>
         <commons-fileupload.version>1.5</commons-fileupload.version>
         <mongodb.version>5.3.1</mongodb.version>
-        <snakeyaml.version>2.4</snakeyaml.version>
+        <snakeyaml.version>2.5</snakeyaml.version>
         <awaitility.version>4.3.0</awaitility.version>
 
         <!--  Sonar -->
@@ -75,6 +75,11 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>3.18.0</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -82,12 +87,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>ch.qos.logback</groupId>
-                    <artifactId>logback-classic</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>

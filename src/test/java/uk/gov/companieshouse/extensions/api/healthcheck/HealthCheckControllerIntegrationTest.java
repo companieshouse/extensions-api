@@ -6,7 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -21,17 +21,17 @@ import static org.mockito.Mockito.when;
 
 @Tag("IntegrationTest")
 @ExtendWith(SpringExtension.class)
-public class HealthCheckControllerIntegrationTest {
+class HealthCheckControllerIntegrationTest {
 
     private static final String ROOT_URL = "/extensions-api/healthcheck";
 
 
     private MockMvc mockMvc;
-    @MockBean
+    @MockitoBean
     private CompanyAuthorizationInterceptor companyInterceptor;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
 
         mockMvc = MockMvcBuilders.standaloneSetup(new HealthCheckController()).build();
 
@@ -41,7 +41,7 @@ public class HealthCheckControllerIntegrationTest {
     }
 
     @Test
-    public void canReachHealthCheckReasonEndpoint() throws Exception {
+    void canReachHealthCheckReasonEndpoint() throws Exception {
         RequestBuilder requestBuilder = MockMvcRequestBuilders.get(
             ROOT_URL);
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();

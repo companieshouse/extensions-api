@@ -6,8 +6,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -23,7 +23,7 @@ import uk.gov.companieshouse.extensions.api.response.ListResponse;
 import uk.gov.companieshouse.service.ServiceResult;
 import uk.gov.companieshouse.service.links.Links;
 
-import java.util.Arrays;
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -33,7 +33,7 @@ import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyRequestEntit
 
 @Tag("IntegrationTest")
 @ExtendWith(SpringExtension.class)
-public class ReasonsControllerIntegrationTest {
+class ReasonsControllerIntegrationTest {
 
     private static final String ROOT_URL = "/company/00006400/extensions/requests/a1/reasons";
     private static final String SPECIFIC_URL = "/company/00006400/extensions/requests/a1/reasons" +
@@ -42,26 +42,26 @@ public class ReasonsControllerIntegrationTest {
     private MockMvc mockMvc;
 
 
-    @MockBean
+    @MockitoBean
     private ReasonsService reasonsService;
 
-    @MockBean
+    @MockitoBean
     private ExtensionReasonMapper mapper;
 
-    @MockBean
+    @MockitoBean
     private HttpServletRequest mockHttpServletRequest;
 
-    @MockBean
+    @MockitoBean
     private RestTemplate restTemplate;
 
-    @MockBean
+    @MockitoBean
     private ApiLogger apiLogger;
 
-    @MockBean
+    @MockitoBean
     private CompanyAuthorizationInterceptor companyInterceptor;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
 
         mockMvc = MockMvcBuilders.standaloneSetup(new ReasonsController(reasonsService, apiLogger)).addPlaceholderValue("api.endpoint.extensions", "/company/{companyNumber}/extensions/requests").build();
 
@@ -71,7 +71,7 @@ public class ReasonsControllerIntegrationTest {
     }
 
     @Test
-    public void canReachPostReasonEndpoint() throws Exception {
+    void canReachPostReasonEndpoint() throws Exception {
 
         ExtensionReasonDTO dto = new ExtensionReasonDTO();
         dto.setId("123");
@@ -93,7 +93,7 @@ public class ReasonsControllerIntegrationTest {
     }
 
     @Test
-    public void canReachDeleteReasonEndpoint() throws Exception {
+    void canReachDeleteReasonEndpoint() throws Exception {
 
         ExtensionRequestFullEntity dummyRequestEntity = dummyRequestEntity();
         dummyRequestEntity.addReason(dummyReasonEntity());
@@ -109,7 +109,7 @@ public class ReasonsControllerIntegrationTest {
     }
 
     @Test
-    public void canReachUpdateReasonEndpoint() throws Exception {
+    void canReachUpdateReasonEndpoint() throws Exception {
         RequestBuilder requestBuilder = MockMvcRequestBuilders.patch(
                 SPECIFIC_URL)
             .contentType(MediaType.APPLICATION_JSON)
@@ -127,14 +127,14 @@ public class ReasonsControllerIntegrationTest {
     }
 
     @Test
-    public void canReachGetReasonsEndPoint() throws Exception {
+    void canReachGetReasonsEndPoint() throws Exception {
         RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/company/00006400/extensions/requests/a1/reasons")
             .accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON);
 
 
         ServiceResult<ListResponse<ExtensionReasonDTO>> expectedResult =
             ServiceResult.found(ListResponse.<ExtensionReasonDTO>builder()
-                .withItems(Arrays.asList(new ExtensionReasonDTO()))
+                .withItems(List.of(new ExtensionReasonDTO()))
                 .build());
         when(reasonsService.getReasons(anyString()))
             .thenReturn(expectedResult);

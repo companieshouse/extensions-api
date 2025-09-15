@@ -23,7 +23,7 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItem;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.awaitility.Durations;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Ignore;
@@ -76,7 +76,7 @@ public class FileTransferGatewayIntegrationTest {
             String proxyHost;
             String proxyPort;
 
-            envProxyValue = StringUtils.remove(envProxyValue, "http://");
+            envProxyValue = envProxyValue.replace("http://", "");
 
             if (envProxyValue.contains(portSeparator)) {
                 proxyHost = StringUtils.substringBefore(envProxyValue, portSeparator);
