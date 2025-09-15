@@ -32,7 +32,7 @@
         <tika-core.version>3.2.2</tika-core.version>
         <commons-io.version>2.20.0</commons-io.version>
         <pact-jvm-provider-spring.version>4.0.10</pact-jvm-provider-spring.version>
-        <commons-fileupload.version>1.5</commons-fileupload.version>
+        <commons-fileupload.version>1.6.0</commons-fileupload.version>
         <mongodb.version>5.3.1</mongodb.version>
         <snakeyaml.version>2.5</snakeyaml.version>
         <awaitility.version>4.3.0</awaitility.version>
