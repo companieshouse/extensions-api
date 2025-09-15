@@ -251,7 +251,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>${spring-boot-maven-plugin.version}</version>
                 <configuration>
-                    <mainClass>${start-class}</mainClass>
+                    <mainClass>uk.gov.companieshouse.extensions.api.Application</mainClass>
                 </configuration>
                 <executions>
                     <execution>
