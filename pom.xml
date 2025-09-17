@@ -80,6 +80,13 @@
                 <artifactId>commons-lang3</artifactId>
                 <version>3.18.0</version>
             </dependency>
+
+            <!-- need to override spring-core to fix  CVE-2025-41249(8.699999809265137) -->
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-core</artifactId>
+                <version>6.2.11</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
