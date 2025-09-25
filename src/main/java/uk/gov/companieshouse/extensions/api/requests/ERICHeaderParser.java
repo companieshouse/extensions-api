@@ -5,7 +5,7 @@ import java.net.URLDecoder;
 
 import jakarta.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -93,7 +93,7 @@ public class ERICHeaderParser {
 
     private String decodeUTF8(String utf8String) throws UnsupportedEncodingException {
         String utf8Prefix = "UTF-8''";
-        utf8String = StringUtils.remove(utf8String, utf8Prefix);
+        utf8String = utf8String.replace(utf8Prefix, "");
         return URLDecoder.decode(utf8String, "UTF-8");
     }
 

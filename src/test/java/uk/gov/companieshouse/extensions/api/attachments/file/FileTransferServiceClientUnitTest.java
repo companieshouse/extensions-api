@@ -1,5 +1,6 @@
 package uk.gov.companieshouse.extensions.api.attachments.file;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -16,8 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -205,7 +205,7 @@ class FileTransferServiceClientUnitTest {
         assertEquals(HttpStatus.OK.value(), mockHttpServletResponse.getStatus());
 
         //check input stream was copied to output stream when executing the lambda
-        assertTrue(ArrayUtils.isEquals(fileBinary, mockHttpServletResponse.getContentAsByteArray()));
+        assertArrayEquals(fileBinary, mockHttpServletResponse.getContentAsByteArray());
 
         //check headers are correct
         assertEquals(MediaType.APPLICATION_OCTET_STREAM_VALUE, mockHttpServletResponse.getHeader("Content-Type"));

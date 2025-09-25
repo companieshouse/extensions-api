@@ -1,11 +1,9 @@
 package uk.gov.companieshouse.extensions.api.reasons;
 
-import org.junit.Rule;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.rules.ExpectedException;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
@@ -30,6 +28,7 @@ import uk.gov.companieshouse.service.links.Links;
 
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 
@@ -44,7 +43,7 @@ import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyRequestEntit
 
 @Tag("UnitTest")
 @ExtendWith(MockitoExtension.class)
-public class ReasonServiceUnitTest {
+class ReasonServiceUnitTest {
 
     @InjectMocks
     private ReasonsService reasonsService;
@@ -67,14 +66,11 @@ public class ReasonServiceUnitTest {
     @Mock
     private ApiLogger logger;
 
-    @Rule
-    public final ExpectedException exception = ExpectedException.none();
-
     @Captor
     private ArgumentCaptor<ExtensionRequestFullEntity> captor;
 
     @Test
-    public void canGetListOfReasons() throws ServiceException {
+    void canGetListOfReasons() throws ServiceException {
         ExtensionReasonMapper mapper = new ExtensionReasonMapper();
         ExtensionRequestFullEntity extensionRequestFullEntity = dummyRequestEntity();
         ExtensionReasonEntity reason1 = dummyReasonEntity();
@@ -100,14 +96,13 @@ public class ReasonServiceUnitTest {
     }
 
     @Test
-    public void willThrowIfNoRequestExists() {
+    void willThrowIfNoRequestExists() {
         ServiceException serviceException = Assertions.assertThrows(ServiceException.class, () -> reasonsService.getReasons("123"));
-        Assertions.assertEquals(serviceException.getMessage(), "Extension request 123 not found");
+        Assertions.assertEquals("Extension request 123 not found", serviceException.getMessage());
     }
 
     @Test
-    public void willReturnEmptyDataIfNoReasonsInRequest() throws ServiceException {
-        ExtensionReasonMapper mapper = new ExtensionReasonMapper();
+    void willReturnEmptyDataIfNoReasonsInRequest() throws ServiceException {
         ExtensionRequestFullEntity extensionRequestFullEntity = dummyRequestEntity();
         when(requestsService.getExtensionsRequestById(REQUEST_ID)).thenReturn(Optional.of(extensionRequestFullEntity));
 
@@ -120,7 +115,7 @@ public class ReasonServiceUnitTest {
     }
 
     @Test
-    public void testCorrectDataIsPassedToAddExtensionsReasonToRequest() throws ServiceException {
+    void testCorrectDataIsPassedToAddExtensionsReasonToRequest() throws ServiceException {
 
         ExtensionRequestFullEntity extensionRequestFullEntity = dummyRequestEntity();
         when(requestsService.getExtensionsRequestById(REQUEST_ID)).thenReturn(Optional.of(extensionRequestFullEntity));
@@ -139,7 +134,7 @@ public class ReasonServiceUnitTest {
         verify(extensionRequestsRepository).save(captor.capture());
         verify(mockRandomUUid).get();
         ExtensionRequestFullEntity extensionRequestResult = captor.getValue();
-        ExtensionReasonEntity extensionReasonResult = extensionRequestResult.getReasons().get(0);
+        ExtensionReasonEntity extensionReasonResult = extensionRequestResult.getReasons().getFirst();
 
         Assertions.assertNotNull(extensionReasonResult);
         Assertions.assertEquals("string", extensionReasonResult.getReasonInformation());
@@ -160,16 +155,16 @@ public class ReasonServiceUnitTest {
     }
 
     @Test
-    public void exceptionThrownIfNoRequestFound() {
+    void exceptionThrownIfNoRequestFound() {
         when(requestsService.getExtensionsRequestById("123"))
             .thenReturn(Optional.empty());
 
         ServiceException serviceException = Assertions.assertThrows(ServiceException.class, () -> reasonsService.addExtensionsReasonToRequest(new ExtensionCreateReason(), "123", "url"));
-        Assertions.assertEquals(serviceException.getMessage(), "Request 123 not found");
+        Assertions.assertEquals("Request 123 not found", serviceException.getMessage());
     }
 
     @Test
-    public void testReasonIsRemovedFromRequest() {
+    void testReasonIsRemovedFromRequest() {
         ExtensionRequestFullEntity extensionRequestFullEntity = dummyRequestEntity();
 
         Attachment attachment1 = new Attachment();
@@ -204,7 +199,7 @@ public class ReasonServiceUnitTest {
     }
 
     @Test
-    public void testClientErrorIsHandledOnRemoveReason() {
+    void testClientErrorIsHandledOnRemoveReason() {
         ExtensionRequestFullEntity extensionRequestFullEntity = dummyRequestEntity();
 
         Attachment attachment1 = new Attachment();
@@ -227,7 +222,7 @@ public class ReasonServiceUnitTest {
         when(fileTransferServiceClient.delete("5678")).thenThrow(clientException);
 
         reasonsService.removeExtensionsReasonFromRequest(extensionRequestFullEntity.getId(),
-            extensionRequestFullEntity.getReasons().get(0).getId());
+            extensionRequestFullEntity.getReasons().getFirst().getId());
 
         verify(fileTransferServiceClient).delete("1234");
         verify(logger).error("Unable to delete attachment 1234, status code 404 NOT_FOUND", clientException);
@@ -241,7 +236,7 @@ public class ReasonServiceUnitTest {
     }
 
     @Test
-    public void testServerErrorIsHandledOnRemoveReason() {
+    void testServerErrorIsHandledOnRemoveReason() {
         ExtensionRequestFullEntity extensionRequestFullEntity = dummyRequestEntity();
 
         Attachment attachment1 = new Attachment();
@@ -264,7 +259,7 @@ public class ReasonServiceUnitTest {
         when(fileTransferServiceClient.delete("5678")).thenThrow(serverException);
 
         reasonsService.removeExtensionsReasonFromRequest(extensionRequestFullEntity.getId(),
-            extensionRequestFullEntity.getReasons().get(0).getId());
+            extensionRequestFullEntity.getReasons().getFirst().getId());
 
         verify(fileTransferServiceClient).delete("1234");
         verify(logger).error("Unable to delete attachment 1234, status code 404 NOT_FOUND", serverException);
@@ -278,14 +273,14 @@ public class ReasonServiceUnitTest {
     }
 
     @Test
-    public void testNullDeleteResponseIsHandledOnRemoveReason() {
+    void testNullDeleteResponseIsHandledOnRemoveReason() {
         ExtensionRequestFullEntity extensionRequestFullEntity = dummyRequestEntity();
 
         Attachment attachment1 = new Attachment();
         attachment1.setId("1234");
 
         ExtensionReasonEntity reason = dummyReasonEntity();
-        reason.setAttachments(Arrays.asList(attachment1));
+        reason.setAttachments(List.of(attachment1));
         extensionRequestFullEntity.addReason(reason);
 
         when(requestsService.getExtensionsRequestById(extensionRequestFullEntity.getId())).thenReturn(Optional.of(extensionRequestFullEntity));
@@ -296,7 +291,7 @@ public class ReasonServiceUnitTest {
         when(fileTransferServiceClient.delete("1234")).thenReturn(null);
 
         reasonsService.removeExtensionsReasonFromRequest(extensionRequestFullEntity.getId(),
-            extensionRequestFullEntity.getReasons().get(0).getId());
+            extensionRequestFullEntity.getReasons().getFirst().getId());
 
         verify(fileTransferServiceClient).delete("1234");
         verify(logger).error("Unable to delete attachment 1234");
@@ -308,14 +303,14 @@ public class ReasonServiceUnitTest {
     }
 
     @Test
-    public void testDeleteResponseNullHttpStatusIsHandledOnRemoveReason() {
+    void testDeleteResponseNullHttpStatusIsHandledOnRemoveReason() {
         ExtensionRequestFullEntity extensionRequestFullEntity = dummyRequestEntity();
 
         Attachment attachment1 = new Attachment();
         attachment1.setId("1234");
 
         ExtensionReasonEntity reason = dummyReasonEntity();
-        reason.setAttachments(Arrays.asList(attachment1));
+        reason.setAttachments(List.of(attachment1));
         extensionRequestFullEntity.addReason(reason);
 
         when(requestsService.getExtensionsRequestById(extensionRequestFullEntity.getId())).thenReturn(Optional.of(extensionRequestFullEntity));
@@ -327,7 +322,7 @@ public class ReasonServiceUnitTest {
         when(fileTransferServiceClient.delete("1234")).thenReturn(response);
 
         reasonsService.removeExtensionsReasonFromRequest(extensionRequestFullEntity.getId(),
-            extensionRequestFullEntity.getReasons().get(0).getId());
+            extensionRequestFullEntity.getReasons().getFirst().getId());
 
         verify(fileTransferServiceClient).delete("1234");
         verify(logger).error("Unable to delete attachment 1234");
@@ -339,14 +334,14 @@ public class ReasonServiceUnitTest {
     }
 
     @Test
-    public void testDeleteResponseInErrorIsHandledOnRemoveReason() {
+    void testDeleteResponseInErrorIsHandledOnRemoveReason() {
         ExtensionRequestFullEntity extensionRequestFullEntity = dummyRequestEntity();
 
         Attachment attachment1 = new Attachment();
         attachment1.setId("1234");
 
         ExtensionReasonEntity reason = dummyReasonEntity();
-        reason.setAttachments(Arrays.asList(attachment1));
+        reason.setAttachments(List.of(attachment1));
         extensionRequestFullEntity.addReason(reason);
 
         when(requestsService.getExtensionsRequestById(extensionRequestFullEntity.getId())).thenReturn(Optional.of(extensionRequestFullEntity));
@@ -359,7 +354,7 @@ public class ReasonServiceUnitTest {
         when(fileTransferServiceClient.delete("1234")).thenReturn(response);
 
         reasonsService.removeExtensionsReasonFromRequest(extensionRequestFullEntity.getId(),
-            extensionRequestFullEntity.getReasons().get(0).getId());
+            extensionRequestFullEntity.getReasons().getFirst().getId());
 
         verify(fileTransferServiceClient).delete("1234");
         verify(logger).error("Unable to delete attachment 1234, status code 500 INTERNAL_SERVER_ERROR");
@@ -371,7 +366,7 @@ public class ReasonServiceUnitTest {
     }
 
     @Test
-    public void canPatchAReason() throws ServiceException {
+    void canPatchAReason() throws ServiceException {
         ExtensionCreateReason reasonCreate = new ExtensionCreateReason();
         reasonCreate.setReasonInformation("New text");
         reasonCreate.setEndOn(null);
@@ -396,14 +391,14 @@ public class ReasonServiceUnitTest {
     }
 
     @Test
-    public void willThrowIfNoReasonExists() {
+    void willThrowIfNoReasonExists() {
         ExtensionRequestFullEntity requestEntity = new ExtensionRequestFullEntity();
         requestEntity.setId("123");
 
         when(requestsService.getExtensionsRequestById("123"))
             .thenReturn(Optional.of(requestEntity));
         ServiceException serviceException = Assertions.assertThrows(ServiceException.class, () -> reasonsService.patchReason(new ExtensionCreateReason(), "123", "1234"));
-        Assertions.assertEquals(serviceException.getMessage(), "Reason id 1234 not found in Request 123");
+        Assertions.assertEquals("Reason id 1234 not found in Request 123", serviceException.getMessage());
 
     }
 }

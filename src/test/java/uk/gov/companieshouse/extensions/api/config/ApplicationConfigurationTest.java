@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 import java.util.function.Supplier;
 import org.apache.tika.Tika;
 import org.junit.jupiter.api.BeforeEach;
