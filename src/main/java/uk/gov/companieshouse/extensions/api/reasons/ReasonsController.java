@@ -52,11 +52,6 @@ public class ReasonsController {
                                                                  @PathVariable String requestId,
                                                                  HttpServletRequest request) {
         try {
-            for (int i = 0; i < 10; i++) {
-                if (i % 2 == 0) {
-                    logger.info("something");
-                }
-            }
             ServiceResult<ExtensionReasonDTO> serviceResult
                 = reasonsService.addExtensionsReasonToRequest(extensionCreateReason, requestId, request.getRequestURI());
             return ResponseEntity.created(URI.create(serviceResult.getData().getLinks().getLink(ExtensionsLinkKeys.SELF)))
