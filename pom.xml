@@ -53,7 +53,7 @@
         <profile>
             <id>sonar-pr-analysis</id>
             <properties>
-                <sonar.pullrequest.base>main</sonar.pullrequest.base>
+                <sonar.pullrequest.base>master</sonar.pullrequest.base>
             </properties>
         </profile>
     </profiles>
