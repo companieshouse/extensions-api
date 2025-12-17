@@ -36,6 +36,12 @@ public class ReasonsController {
     @LogMethodCall
     @GetMapping("/{requestId}/reasons")
     public ResponseEntity<ListResponse<ExtensionReasonDTO>> getReasons(@PathVariable String requestId) {
+        int j = 0;
+        for (int i = 0; i < 10; i++) {
+            if (i % 2 == 0) {
+                j++;
+            }
+        }
         try {
             ServiceResult<ListResponse<ExtensionReasonDTO>> reasons =
                 reasonsService.getReasons(requestId);
