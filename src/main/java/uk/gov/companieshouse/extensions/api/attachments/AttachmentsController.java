@@ -45,7 +45,6 @@ public class AttachmentsController {
         try {
             ServiceResult<AttachmentDTO> result = attachmentsService.addAttachment(file,
                 servletRequest.getRequestURI(), requestId, reasonId);
-            logger.info("test");
             return responseEntityFactory.createResponse(result);
 
         } catch(ServiceException e) {
