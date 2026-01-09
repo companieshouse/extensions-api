@@ -74,7 +74,10 @@ dist: clean build package
 marathon:
 	sed 's/{{release}}/$(VERSION)/g;s/{{environment}}/$(ENVIRONMENT)/g' marathon.json > marathon-deploy.json
 
-.PHONY: sonar sonar-pr-analysis
-sonar: sonar-pr-analysis
+.PHONY: sonar
+sonar:
+	mvn sonar:sonar
+
+.PHONY: sonar-pr-analysis
 sonar-pr-analysis:
 	mvn sonar:sonar	-P sonar-pr-analysis
