@@ -45,6 +45,7 @@ public class AttachmentsService {
     @LogMethodCall
     public ServiceResult<AttachmentDTO> addAttachment(@NotNull MultipartFile file,
         String attachmentsUri, String requestId, String reasonId) throws ServiceException {
+        apiLogger.info("test");
 
         String attachmentId = uploadFile(file);
         Attachment attachment = createAttachment(file, attachmentId);
