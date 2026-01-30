@@ -82,11 +82,12 @@
                 <scope>import</scope>
             </dependency>
 
-            <!-- need to override spring-core to fix  CVE-2025-41249(8.699999809265137) -->
+            <!-- override assertj-core to fix CVE-2026-24400 - transitive dependency from spring-boot-starter-test which depends on spring-boot-dependencies -->
             <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-core</artifactId>
-                <version>6.2.11</version>
+                <groupId>org.assertj</groupId>
+                <artifactId>assertj-core</artifactId>
+                <version>3.27.7</version>
+                <scope>test</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
