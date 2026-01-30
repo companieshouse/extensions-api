@@ -18,7 +18,6 @@
 
         <log4j2.version>2.25.3</log4j2.version>
         <structured-logging.version>3.0.40</structured-logging.version>
-        <pact.version>3.6.7</pact.version>
         <rest-service-common-library.version>2.0.7</rest-service-common-library.version>
         <environment-reader-library.version>3.0.3</environment-reader-library.version>
         <mapstruct.version>1.6.3</mapstruct.version>
@@ -31,7 +30,6 @@
 
         <tika-core.version>3.2.2</tika-core.version>
         <commons-io.version>2.20.0</commons-io.version>
-        <pact-jvm-provider-spring.version>4.0.10</pact-jvm-provider-spring.version>
         <commons-fileupload.version>1.6.0</commons-fileupload.version>
         <mongodb.version>5.3.1</mongodb.version>
         <snakeyaml.version>2.5</snakeyaml.version>
@@ -188,30 +186,6 @@
             <groupId>org.mapstruct</groupId>
             <artifactId>mapstruct-processor</artifactId>
             <version>${mapstruct.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>au.com.dius</groupId>
-            <artifactId>pact-jvm-provider-spring</artifactId>
-            <version>${pact-jvm-provider-spring.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>io.gatling</groupId>
-                    <artifactId>jsonpath_2.12</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.apache.httpcomponents</groupId>
-                    <artifactId>httpclient</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>xerces</groupId>
-                    <artifactId>xercesImpl</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>io.github.classgraph</groupId>
-                    <artifactId>classgraph</artifactId>
-                </exclusion>
-            </exclusions>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>commons-fileupload</groupId>

@@ -7,7 +7,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import org.apache.tika.Tika;
-import org.junit.Ignore;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -44,8 +43,6 @@ import org.springframework.web.multipart.MultipartFile;
 @ExtendWith(MockServerExtension.class)
 @SpringBootTest
 @Disabled // Disabled as this test requires a running file-transfer-api instance
-@Ignore
-
 public class FileTransferGatewayMockIntegrationTest {
 
     @Autowired

@@ -39,14 +39,6 @@ test-integration: clean
 test-ci-integration: clean
 	mvn verify -Dgroups="CIIntegrationTest"
 
-.PHONY: test-contract-consumer
-test-contract-consumer: clean
-	mvn verify -Dgroups="uk.gov.companieshouse.extensions.api.groups.ContractConsumer"
-
-.PHONY: test-contract-provider
-test-contract-provider: clean
-	mvn verify -Dgroups="uk.gov.companieshouse.extensions.api.groups.ContractProvider"
-
 .PHONY: dev
 dev: clean
 	mvn package -DskipTests=true

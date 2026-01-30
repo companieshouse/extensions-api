@@ -25,19 +25,15 @@ import org.apache.commons.fileupload.disk.DiskFileItem;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.awaitility.Durations;
-import org.jetbrains.annotations.NotNull;
-import org.junit.Ignore;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.multipart.MultipartFile;
@@ -46,10 +42,8 @@ import org.springframework.web.multipart.MultipartFile;
  * FileTransferGatewayIntegrationTest
  */
 @Tag("CIIntegrationTest")
-@RunWith(SpringRunner.class)
 @SpringBootTest
 @Disabled // Disabled as this test requires a running file-transfer-api instance
-@Ignore
 public class FileTransferGatewayIntegrationTest {
 
     @Autowired
@@ -158,7 +152,6 @@ public class FileTransferGatewayIntegrationTest {
         }
     }
 
-    @NotNull
     private ServletOutputStream getServletOutputStream(FileOutputStream fileOutputStream) {
         return new ServletOutputStream() {
             @Override

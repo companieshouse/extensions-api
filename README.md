@@ -13,21 +13,11 @@ This repository contains the component code used to service requests from the ex
 
 ## Getting Started
 
+1. To build the project locally, run the command `make clean build`.
 
-1. Create a `pacts` folder under `extensions-api` and download the following files from the AWS `chips-assets-dev` S3 bucket:
+2. To run all the tests, run the command `make test`.
 
-	- extensions-processor-api-chs-company-profile-api.json
-	- extensions-processor-api-extensions-api.json
-	- extensions-web-extensions-api.json
-	- extensions-web-extensions-processor-api.json
-
-	(These resources are required in order for the Pact integration tests to pass)
-
-2. To build the project locally, run the command `make clean build`.
-
-3. To run all the tests, run the command `make test`.
-
-	(Note that some of the integration tests will not pass without additional configuration when run locally but they do when running on Concourse - e.g. FileTransferGatewayIntegrationTest. To ignore these failing tests run the command `make test-unit test-integration test-contract-consumer`. To configure them to run, refer to the section below.)
+	(Note that some of the integration tests will not pass without additional configuration when run locally but they do when running on Concourse - e.g. FileTransferGatewayIntegrationTest. To ignore these failing tests run the command `make test-unit test-integration`. To configure them to run, refer to the section below.)
 
 
 ## Setting up Githooks
