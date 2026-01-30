@@ -13,20 +13,21 @@
 
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
-        <spring-boot-dependencies.version>3.5.8</spring-boot-dependencies.version>
-        <spring-boot-maven-plugin.version>3.5.5</spring-boot-maven-plugin.version>
+        <spring-boot-dependencies.version>3.5.10</spring-boot-dependencies.version>
+        <spring-boot-maven-plugin.version>3.5.10</spring-boot-maven-plugin.version>
 
         <log4j2.version>2.25.3</log4j2.version>
-        <structured-logging.version>3.0.40</structured-logging.version>
-        <rest-service-common-library.version>2.0.7</rest-service-common-library.version>
         <environment-reader-library.version>3.0.3</environment-reader-library.version>
         <mapstruct.version>1.6.3</mapstruct.version>
         <surefire-plugin.version>3.5.4</surefire-plugin.version>
         <junit.jupiter.version>5.13.4</junit.jupiter.version>
         <jib-maven-plugin.version>3.4.6</jib-maven-plugin.version>
         <maven-compiler-plugin.version>3.14.0</maven-compiler-plugin.version>
-        <private-api-sdk-java.version>4.0.360</private-api-sdk-java.version>
-        <api-sdk-java.version>6.4.4</api-sdk-java.version>
+
+        <structured-logging.version>3.0.48</structured-logging.version>
+        <rest-service-common-library.version>2.0.9</rest-service-common-library.version>
+        <private-api-sdk-java.version>4.0.447</private-api-sdk-java.version>
+        <api-sdk-java.version>6.6.3</api-sdk-java.version>
 
         <tika-core.version>3.2.2</tika-core.version>
         <commons-io.version>2.20.0</commons-io.version>
