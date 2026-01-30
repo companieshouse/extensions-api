@@ -13,25 +13,24 @@
 
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
-        <spring-boot-dependencies.version>3.5.8</spring-boot-dependencies.version>
-        <spring-boot-maven-plugin.version>3.5.5</spring-boot-maven-plugin.version>
+        <spring-boot-dependencies.version>3.5.10</spring-boot-dependencies.version>
+        <spring-boot-maven-plugin.version>3.5.10</spring-boot-maven-plugin.version>
 
         <log4j2.version>2.25.3</log4j2.version>
-        <structured-logging.version>3.0.40</structured-logging.version>
-        <pact.version>3.6.7</pact.version>
-        <rest-service-common-library.version>2.0.7</rest-service-common-library.version>
         <environment-reader-library.version>3.0.3</environment-reader-library.version>
         <mapstruct.version>1.6.3</mapstruct.version>
         <surefire-plugin.version>3.5.4</surefire-plugin.version>
         <junit.jupiter.version>5.13.4</junit.jupiter.version>
         <jib-maven-plugin.version>3.4.6</jib-maven-plugin.version>
         <maven-compiler-plugin.version>3.14.0</maven-compiler-plugin.version>
-        <private-api-sdk-java.version>4.0.360</private-api-sdk-java.version>
-        <api-sdk-java.version>6.4.4</api-sdk-java.version>
+
+        <structured-logging.version>3.0.48</structured-logging.version>
+        <rest-service-common-library.version>2.0.9</rest-service-common-library.version>
+        <private-api-sdk-java.version>4.0.447</private-api-sdk-java.version>
+        <api-sdk-java.version>6.6.3</api-sdk-java.version>
 
         <tika-core.version>3.2.2</tika-core.version>
         <commons-io.version>2.20.0</commons-io.version>
-        <pact-jvm-provider-spring.version>4.0.10</pact-jvm-provider-spring.version>
         <commons-fileupload.version>1.6.0</commons-fileupload.version>
         <mongodb.version>5.3.1</mongodb.version>
         <snakeyaml.version>2.5</snakeyaml.version>
@@ -83,11 +82,12 @@
                 <scope>import</scope>
             </dependency>
 
-            <!-- need to override spring-core to fix  CVE-2025-41249(8.699999809265137) -->
+            <!-- override assertj-core to fix CVE-2026-24400 - transitive dependency from spring-boot-starter-test which depends on spring-boot-dependencies -->
             <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-core</artifactId>
-                <version>6.2.11</version>
+                <groupId>org.assertj</groupId>
+                <artifactId>assertj-core</artifactId>
+                <version>3.27.7</version>
+                <scope>test</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -188,30 +188,6 @@
             <groupId>org.mapstruct</groupId>
             <artifactId>mapstruct-processor</artifactId>
             <version>${mapstruct.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>au.com.dius</groupId>
-            <artifactId>pact-jvm-provider-spring</artifactId>
-            <version>${pact-jvm-provider-spring.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>io.gatling</groupId>
-                    <artifactId>jsonpath_2.12</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.apache.httpcomponents</groupId>
-                    <artifactId>httpclient</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>xerces</groupId>
-                    <artifactId>xercesImpl</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>io.github.classgraph</groupId>
-                    <artifactId>classgraph</artifactId>
-                </exclusion>
-            </exclusions>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>commons-fileupload</groupId>
