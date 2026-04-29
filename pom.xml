@@ -24,10 +24,11 @@
         <jib-maven-plugin.version>3.4.6</jib-maven-plugin.version>
         <maven-compiler-plugin.version>3.14.0</maven-compiler-plugin.version>
 
-        <structured-logging.version>3.0.48</structured-logging.version>
-        <rest-service-common-library.version>2.0.9</rest-service-common-library.version>
-        <private-api-sdk-java.version>4.0.447</private-api-sdk-java.version>
-        <api-sdk-java.version>6.6.3</api-sdk-java.version>
+        <!-- CH dependencies -->
+        <structured-logging.version>3.0.55</structured-logging.version>
+        <rest-service-common-library.version>2.0.11</rest-service-common-library.version>
+        <private-api-sdk-java.version>6.0.1</private-api-sdk-java.version>
+        <api-sdk-java.version>6.6.16</api-sdk-java.version>
 
         <tika-core.version>3.2.2</tika-core.version>
         <commons-io.version>2.20.0</commons-io.version>
@@ -82,13 +83,13 @@
                 <scope>import</scope>
             </dependency>
 
-            <!-- override assertj-core to fix CVE-2026-24400 - transitive dependency from spring-boot-starter-test which depends on spring-boot-dependencies -->
-            <dependency>
-                <groupId>org.assertj</groupId>
-                <artifactId>assertj-core</artifactId>
-                <version>3.27.7</version>
-                <scope>test</scope>
-            </dependency>
+<!--            &lt;!&ndash; override assertj-core to fix CVE-2026-24400 - transitive dependency from spring-boot-starter-test which depends on spring-boot-dependencies &ndash;&gt;-->
+<!--            <dependency>-->
+<!--                <groupId>org.assertj</groupId>-->
+<!--                <artifactId>assertj-core</artifactId>-->
+<!--                <version>3.27.7</version>-->
+<!--                <scope>test</scope>-->
+<!--            </dependency>-->
         </dependencies>
     </dependencyManagement>
 
@@ -284,4 +285,10 @@
             </plugin>
         </plugins>
     </build>
+
+    <!--
+        CVE-2025-41249 (HIGH, spring-core): No fixed version available as of 2026-04-29.
+        See: https://github.com/advisories/GHSA-jmp9-x22r-554x
+        If you use @EnableMethodSecurity or security annotations on methods in generic superclasses/interfaces, review your code and apply runtime mitigations as recommended by Spring.
+    -->
 </project>
