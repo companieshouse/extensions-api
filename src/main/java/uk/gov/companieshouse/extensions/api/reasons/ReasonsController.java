@@ -21,7 +21,7 @@ import uk.gov.companieshouse.service.ServiceResult;
 import java.net.URI;
 
 @RestController
-@RequestMapping("${api.endpoint.extensions}")
+@RequestMapping("/company/{companyNumber}/extensions/requests")
 public class ReasonsController {
 
     private final ReasonsService reasonsService;

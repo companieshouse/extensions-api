@@ -5,7 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
@@ -26,7 +26,7 @@ import uk.gov.companieshouse.service.rest.response.PluggableResponseEntityFactor
 @Tag("IntegrationTest")
 @WebMvcTest(value = {AttachmentsController.class})
 @TestPropertySource({"classpath:test.properties"})
-public class AuthorizationIntegrationTest {
+class AuthorizationIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -54,7 +54,7 @@ public class AuthorizationIntegrationTest {
     }
 
     @Test
-    public void willNotAllowUserToDownload() throws Exception {
+    void willNotAllowUserToDownload() throws Exception {
         RequestBuilder requestBuilder = MockMvcRequestBuilders
             .get("/company/00006400/extensions/requests/1/reasons/2/attachments/3/download")
             .accept(MediaType.APPLICATION_JSON);
@@ -64,7 +64,7 @@ public class AuthorizationIntegrationTest {
     }
 
     @Test
-    public void willAllowAdminToDownloadWithCorrectPermissions() throws Exception {
+    void willAllowAdminToDownloadWithCorrectPermissions() throws Exception {
         RequestBuilder requestBuilder = MockMvcRequestBuilders
             .get("/company/00006400/extensions/requests/1/reasons/2/attachments/3/download")
             .accept(MediaType.APPLICATION_JSON)
@@ -76,7 +76,7 @@ public class AuthorizationIntegrationTest {
     }
 
     @Test
-    public void willRejectAdminDownloadIfNoDownloadPermission() throws Exception {
+    void willRejectAdminDownloadIfNoDownloadPermission() throws Exception {
         RequestBuilder requestBuilder = MockMvcRequestBuilders
             .get("/company/00006400/extensions/requests/1/reasons/2/attachments/3/download")
             .accept(MediaType.APPLICATION_JSON)
@@ -88,7 +88,7 @@ public class AuthorizationIntegrationTest {
     }
 
     @Test
-    public void willRejectAdminToDelete() throws Exception {
+    void willRejectAdminToDelete() throws Exception {
         RequestBuilder requestBuilder = MockMvcRequestBuilders
             .delete("/company/00006400/extensions/requests/1/reasons/2/attachments/3")
             .accept(MediaType.APPLICATION_JSON)

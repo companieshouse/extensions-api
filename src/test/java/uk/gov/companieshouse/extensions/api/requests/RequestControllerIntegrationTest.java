@@ -8,11 +8,11 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
@@ -37,10 +37,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static uk.gov.companieshouse.extensions.api.Utils.Utils.COMPANY_NUMBER;
 
 @Tag("IntegrationTest")
-@ExtendWith(SpringExtension.class)
+@ExtendWith(MockitoExtension.class)
 @TestPropertySource(properties = {"EXTENSIONS_API_MONGODB_URL=mongodb://mongo-db1-toro1.development.aws.internal:27017", "server.port=8093",
     "api.endpoint.extensions=/company/{companyNumber}/extensions/requests",
-    "spring.data.mongodb.uri=mongodb://mongo-db1-toro1.development.aws.internal:27017/extension_requests",
+    "spring.mongodb.uri=mongodb://mongo-db1-toro1.development.aws.internal:27017/extension_requests",
     "FILE_TRANSFER_API_URL=http://localhost:8081/",
     "FILE_TRANSFER_API_KEY=12345",
     "MONGO_CONNECTION_POOL_MIN_SIZE=0",
@@ -49,7 +49,7 @@ import static uk.gov.companieshouse.extensions.api.Utils.Utils.COMPANY_NUMBER;
     "spring.servlet.multipart.max-file-size=100",
     "spring.servlet.multipart.max-request-size=200"})
 @SpringBootTest(classes = RequestsController.class)
-public class RequestControllerIntegrationTest {
+class RequestControllerIntegrationTest {
 
     private static final String ROOT_URL = "/company/00006400/extensions/requests";
     private static final String REQUEST_BY_ID_URL = "/company/00006400/extensions/requests/a1";
@@ -110,7 +110,7 @@ public class RequestControllerIntegrationTest {
     }
 
     @Test
-    public void testCreateExtensionRequestResource() throws Exception {
+    void testCreateExtensionRequestResource() throws Exception {
         String request = buildMockRequest();
 
         when(extensionRequestMapper.entityToDTO(
@@ -134,7 +134,7 @@ public class RequestControllerIntegrationTest {
     }
 
     @Test
-    public void testGetExtensionRequestsList() throws Exception {
+    void testGetExtensionRequestsList() throws Exception {
         RequestBuilder requestBuilder = MockMvcRequestBuilders
             .get(ROOT_URL)
             .accept(MediaType.APPLICATION_JSON);
@@ -154,7 +154,7 @@ public class RequestControllerIntegrationTest {
     }
 
     @Test
-    public void testGetSingleExtensionRequest() throws Exception {
+    void testGetSingleExtensionRequest() throws Exception {
         RequestBuilder requestBuilder = MockMvcRequestBuilders
             .get(REQUEST_BY_ID_URL)
             .accept(MediaType.APPLICATION_JSON);
@@ -170,7 +170,7 @@ public class RequestControllerIntegrationTest {
     }
 
     @Test
-    public void testDeleteExtensionRequest() throws Exception {
+    void testDeleteExtensionRequest() throws Exception {
         RequestBuilder requestBuilder = MockMvcRequestBuilders
             .delete(REQUEST_BY_ID_URL)
             .accept(MediaType.APPLICATION_JSON);

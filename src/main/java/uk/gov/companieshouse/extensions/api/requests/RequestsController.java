@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/")
+@RequestMapping("/company/{companyNumber}/extensions/requests")
 public class RequestsController {
 
     @Autowired
@@ -40,7 +40,7 @@ public class RequestsController {
     private ApiLogger logger;
 
     @LogMethodCall
-    @PostMapping("${api.endpoint.extensions}")
+    @PostMapping(path = {"", "/"})
     public ResponseEntity<ExtensionRequestFullDTO> createExtensionRequestResource(
         @RequestBody ExtensionCreateRequest extensionCreateRequest, HttpServletRequest request,
         @PathVariable String companyNumber) {
@@ -71,7 +71,7 @@ public class RequestsController {
     }
 
     @LogMethodCall
-    @GetMapping("${api.endpoint.extensions}")
+    @GetMapping(path = {"", "/"})
     public ResponseEntity<ListResponse<ExtensionRequestFullDTO>> getExtensionRequestsListByCompanyNumber(
         @PathVariable String companyNumber) {
 
@@ -85,14 +85,14 @@ public class RequestsController {
     }
 
     @LogMethodCall
-    @GetMapping("${api.endpoint.extensions}/{requestId}")
+    @GetMapping("/{requestId}")
     public ResponseEntity<ExtensionRequestFullEntity> getSingleExtensionRequestById(@PathVariable String requestId) {
         return requestsService.getExtensionsRequestById(requestId).map(ResponseEntity::ok)
             .orElse(ResponseEntity.notFound().build());
     }
 
     @LogMethodCall
-    @PatchMapping("${api.endpoint.extensions}/{requestId}")
+    @PatchMapping("/{requestId}")
     public ResponseEntity<ExtensionRequestFullEntity> patchRequest(@PathVariable String requestId,
                                                                    @RequestBody RequestStatus requestStatus) {
         try {
@@ -104,7 +104,7 @@ public class RequestsController {
     }
 
     @LogMethodCall
-    @DeleteMapping("${api.endpoint.extensions}/{requestId}")
+    @DeleteMapping("/{requestId}")
     public boolean deleteExtensionRequestById(@PathVariable String requestId) {
         return false;
     }

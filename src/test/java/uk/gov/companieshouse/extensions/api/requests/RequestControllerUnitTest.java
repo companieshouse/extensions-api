@@ -41,11 +41,10 @@ import static uk.gov.companieshouse.extensions.api.Utils.Utils.USER_ID;
 import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyRequestDTO;
 import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyRequestEntity;
 
-;
 
 @Tag("UnitTest")
 @ExtendWith(MockitoExtension.class)
-public class RequestControllerUnitTest {
+class RequestControllerUnitTest {
 
     @InjectMocks
     private RequestsController controller;
@@ -69,9 +68,8 @@ public class RequestControllerUnitTest {
     private ApiLogger logger;
 
     @Test
-    public void createsExtensionRequestResource() throws UnsupportedEncodingException {
+    void createsExtensionRequestResource() throws UnsupportedEncodingException {
         ExtensionCreateRequest createRequest = dummyRequest();
-        String requestUri = mockHttpServletRequest.getRequestURI();
         ExtensionRequestFullEntity entity = dummyRequestEntity();
         ExtensionRequestFullDTO entityRequestDTO = dummyRequestDTO();
 
@@ -94,7 +92,7 @@ public class RequestControllerUnitTest {
     }
 
     @Test
-    public void willGive500IfUnsupportedEncodingException() throws UnsupportedEncodingException {
+    void willGive500IfUnsupportedEncodingException() throws UnsupportedEncodingException {
         ExtensionCreateRequest createRequest = dummyRequest();
 
         when(mockEricHeaderParser.getForename(eq(mockHttpServletRequest)))
@@ -108,7 +106,7 @@ public class RequestControllerUnitTest {
     }
 
     @Test
-    public void canGetExtensionRequestList() {
+    void canGetExtensionRequestList() {
         ExtensionRequestFullEntity extensionRequestFullEntity = dummyRequestEntity();
         ExtensionRequestFullDTO extensionRequestFullDTO = dummyRequestDTO();
         List<ExtensionRequestFullEntity> extensionRequestFullEntityList = new ArrayList<>();
@@ -127,7 +125,7 @@ public class RequestControllerUnitTest {
     }
 
     @Test
-    public void canGetSingleExtensionRequest() {
+    void canGetSingleExtensionRequest() {
         ExtensionRequestFullEntity extensionRequestFullEntity = new ExtensionRequestFullEntity();
         extensionRequestFullEntity.setId("1234");
         ExtensionReasonEntity reasonEntity = new ExtensionReasonEntity();
@@ -145,7 +143,7 @@ public class RequestControllerUnitTest {
     }
 
     @Test
-    public void canGetSingleExtensionRequest_NotFound() {
+    void canGetSingleExtensionRequest_NotFound() {
         when(requestsService.getExtensionsRequestById("1234")).thenReturn(Optional.ofNullable(null));
         ResponseEntity<ExtensionRequestFullEntity> response = controller.getSingleExtensionRequestById("1234");
         Assertions.assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
@@ -153,7 +151,7 @@ public class RequestControllerUnitTest {
     }
 
     @Test
-    public void willReturn204WhenAPatchRequestIsSubmitted() throws ServiceException {
+    void willReturn204WhenAPatchRequestIsSubmitted() throws ServiceException {
         when(requestsService.patchRequest(anyString(), any(RequestStatus.class)))
             .thenReturn(new ExtensionRequestFullEntity());
 
@@ -164,7 +162,7 @@ public class RequestControllerUnitTest {
     }
 
     @Test
-    public void willReturn404WhenRequestNotFound() throws ServiceException {
+    void willReturn404WhenRequestNotFound() throws ServiceException {
         when(requestsService.patchRequest(anyString(), any(RequestStatus.class)))
             .thenThrow(new ServiceException("not found"));
 
@@ -175,7 +173,7 @@ public class RequestControllerUnitTest {
     }
 
     @Test
-    public void canDeleteExtensionRequest() {
+    void canDeleteExtensionRequest() {
         boolean response = controller.deleteExtensionRequestById("123");
         assertFalse(response);
     }
