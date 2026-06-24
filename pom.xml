@@ -16,7 +16,6 @@
         <spring-boot-dependencies.version>4.1.0</spring-boot-dependencies.version>
         <spring-boot-maven-plugin.version>4.1.0</spring-boot-maven-plugin.version>
 
-        <log4j2.version>2.25.4</log4j2.version>
         <environment-reader-library.version>3.0.3</environment-reader-library.version>
         <mapstruct.version>1.6.3</mapstruct.version>
         <surefire-plugin.version>3.5.5</surefire-plugin.version>
@@ -77,13 +76,6 @@
                 <version>${opentelemetry-semconv.version}</version>
             </dependency>
 
-            <dependency>
-                <groupId>org.apache.logging.log4j</groupId>
-                <artifactId>log4j-bom</artifactId>
-                <version>${log4j2.version}</version>
-                <scope>import</scope>
-                <type>pom</type>
-            </dependency>
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
