@@ -13,29 +13,30 @@
 
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
-        <spring-boot-dependencies.version>3.5.10</spring-boot-dependencies.version>
-        <spring-boot-maven-plugin.version>3.5.10</spring-boot-maven-plugin.version>
+        <spring-boot-dependencies.version>4.1.0</spring-boot-dependencies.version>
+        <spring-boot-maven-plugin.version>4.1.0</spring-boot-maven-plugin.version>
 
-        <log4j2.version>2.25.3</log4j2.version>
         <environment-reader-library.version>3.0.3</environment-reader-library.version>
         <mapstruct.version>1.6.3</mapstruct.version>
-        <surefire-plugin.version>3.5.4</surefire-plugin.version>
-        <junit.jupiter.version>5.13.4</junit.jupiter.version>
-        <jib-maven-plugin.version>3.4.6</jib-maven-plugin.version>
-        <maven-compiler-plugin.version>3.14.0</maven-compiler-plugin.version>
+        <surefire-plugin.version>3.5.5</surefire-plugin.version>
+        <junit.jupiter.version>5.14.4</junit.jupiter.version>
+        <jib-maven-plugin.version>3.5.1</jib-maven-plugin.version>
+        <maven-compiler-plugin.version>3.15.0</maven-compiler-plugin.version>
+        <opentelemetry-semconv.version>1.42.0</opentelemetry-semconv.version>
 
-        <structured-logging.version>3.0.48</structured-logging.version>
-        <rest-service-common-library.version>2.0.9</rest-service-common-library.version>
-        <private-api-sdk-java.version>4.0.447</private-api-sdk-java.version>
-        <api-sdk-java.version>6.6.3</api-sdk-java.version>
+        <!-- CH dependencies -->
+        <structured-logging.version>3.0.57</structured-logging.version>
+        <rest-service-common-library.version>2.0.14</rest-service-common-library.version>
+        <private-api-sdk-java.version>6.0.33</private-api-sdk-java.version>
+        <api-sdk-java.version>7.0.3</api-sdk-java.version>
 
-        <tika-core.version>3.2.2</tika-core.version>
-        <commons-io.version>2.20.0</commons-io.version>
+        <tika-core.version>3.3.0</tika-core.version>
+        <commons-io.version>2.22.0</commons-io.version>
         <commons-fileupload.version>1.6.0</commons-fileupload.version>
         <mongodb.version>5.3.1</mongodb.version>
         <snakeyaml.version>2.5</snakeyaml.version>
         <awaitility.version>4.3.0</awaitility.version>
-        <commons-lang3.version>3.18.0</commons-lang3.version>
+        <commons-lang3.version>3.20.0</commons-lang3.version>
 
         <!--  Sonar -->
         <sonar.projectName>extensions-api</sonar.projectName>
@@ -67,27 +68,20 @@
 
     <dependencyManagement>
         <dependencies>
+
+            <!--      fixes CVE-2026-41178(5.3)-->
             <dependency>
-                <groupId>org.apache.logging.log4j</groupId>
-                <artifactId>log4j-bom</artifactId>
-                <version>${log4j2.version}</version>
-                <scope>import</scope>
-                <type>pom</type>
+                <groupId>io.opentelemetry.semconv</groupId>
+                <artifactId>opentelemetry-semconv</artifactId>
+                <version>${opentelemetry-semconv.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
                 <version>${spring-boot-dependencies.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
-            </dependency>
-
-            <!-- override assertj-core to fix CVE-2026-24400 - transitive dependency from spring-boot-starter-test which depends on spring-boot-dependencies -->
-            <dependency>
-                <groupId>org.assertj</groupId>
-                <artifactId>assertj-core</artifactId>
-                <version>3.27.7</version>
-                <scope>test</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -105,6 +99,10 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-aspectj</artifactId>
         </dependency>
         <dependency>
             <groupId>org.mongodb</groupId>
@@ -140,7 +138,7 @@
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
+            <artifactId>spring-boot-starter-webmvc-test</artifactId>
             <exclusions>
                 <exclusion>
                     <groupId>org.junit.vintage</groupId>
@@ -151,11 +149,13 @@
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-mongodb</artifactId>
+            <artifactId>spring-boot-test-autoconfigure</artifactId>
+            <version>${spring-boot-dependencies.version}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-aop</artifactId>
+            <artifactId>spring-boot-starter-data-mongodb</artifactId>
         </dependency>
         <dependency>
             <groupId>uk.gov.companieshouse</groupId>
@@ -231,7 +231,6 @@
             <artifactId>commons-io</artifactId>
             <version>${commons-io.version}</version>
         </dependency>
-
     </dependencies>
 
     <build>

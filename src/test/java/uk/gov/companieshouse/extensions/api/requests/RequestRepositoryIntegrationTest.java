@@ -32,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @ExtendWith(SpringExtension.class)
 @TestPropertySource(properties = {"EXTENSIONS_API_MONGODB_URL=mongodb://mongo-db1-toro1.development.aws.internal:27017", "server.port=8093",
     "api.endpoint.extensions=/company/{companyNumber}/extensions/requests",
-    "spring.data.mongodb.uri=mongodb://mongo-db1-toro1.development.aws.internal:27017/extension_requests",
+    "spring.mongodb.uri=mongodb://mongo-db1-toro1.development.aws.internal:27017/extension_requests",
     "file.transfer.api.url=http://localhost:8081/",
     "internal.api.key=12345",
     "MONGO_CONNECTION_POOL_MIN_SIZE=0",
@@ -41,7 +41,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
     "spring.servlet.multipart.max-file-size=100",
     "spring.servlet.multipart.max-request-size=200"})
 @SpringBootTest
-public class RequestRepositoryIntegrationTest {
+class RequestRepositoryIntegrationTest {
 
     private static final String REQUEST_1 = "aaaaaaaaaaaaaaaaaaaaaaa1";
     private static final String REQUEST_2 = "aaaaaaaaaaaaaaaaaaaaaaa2";
@@ -51,7 +51,7 @@ public class RequestRepositoryIntegrationTest {
     private ExtensionRequestsRepository requestsRepository;
 
     @Test
-    public void canGetRequestFromDB() {
+    void canGetRequestFromDB() {
         Optional<ExtensionRequestFullEntity> dummyData = requestsRepository.findById(REQUEST_1);
 
         Assertions.assertTrue(dummyData.isPresent());
@@ -69,7 +69,7 @@ public class RequestRepositoryIntegrationTest {
     }
 
     @Test
-    public void canSaveRequestToDB() {
+    void canSaveRequestToDB() {
         ExtensionRequestFullEntity expectedEntity = Utils.dummyRequestEntity();
         expectedEntity.setId(UUID.randomUUID().toString());
 
@@ -85,7 +85,7 @@ public class RequestRepositoryIntegrationTest {
     }
 
     @Test
-    public void canUpdateRequestToSaveReason() throws Exception {
+    void canUpdateRequestToSaveReason() throws Exception {
         ExtensionRequestFullEntity expectedEntity =
             requestsRepository.findById(REQUEST_2)
                 .orElseThrow(() -> new Exception("Request not found in DB"));
@@ -107,7 +107,7 @@ public class RequestRepositoryIntegrationTest {
     }
 
     @Test
-    public void canSaveAttachmentToReason() throws Exception {
+    void canSaveAttachmentToReason() throws Exception {
         ExtensionRequestFullEntity entity =
             requestsRepository.findById(REQUEST_3)
                 .orElseThrow(() -> new Exception("Request not found in DB"));
@@ -141,7 +141,7 @@ public class RequestRepositoryIntegrationTest {
     }
 
     @Test
-    public void canGetMultipleRequestsFromDB() throws Exception {
+    void canGetMultipleRequestsFromDB() throws Exception {
         ExtensionRequestFullEntity dummyEntity = requestsRepository.findById(REQUEST_1)
             .orElseThrow(() -> new Exception("Request not found in DB"));
 
