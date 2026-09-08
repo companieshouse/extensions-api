@@ -27,7 +27,7 @@
         <opentelemetry.logback.appender.version>2.31.1-alpha</opentelemetry.logback.appender.version>
 
         <!-- CH dependencies -->
-        <structured-logging.version>3.0.57</structured-logging.version>
+        <structured-logging.version>4.0.4</structured-logging.version>
         <rest-service-common-library.version>2.0.14</rest-service-common-library.version>
         <private-api-sdk-java.version>6.0.33</private-api-sdk-java.version>
         <api-sdk-java.version>7.0.3</api-sdk-java.version>
