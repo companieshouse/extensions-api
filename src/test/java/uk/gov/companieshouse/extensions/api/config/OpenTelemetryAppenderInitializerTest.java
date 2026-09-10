@@ -6,8 +6,10 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
 import io.opentelemetry.api.OpenTelemetry;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
+@Tag("UnitTest")
 class OpenTelemetryAppenderInitializerTest {
 
     @Test
