@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
-class MongoDBConnectionPoolProperties {
+public class MongoDBConnectionPoolProperties {
 
     /**
      * Constructs the config using environment variables for
@@ -19,12 +19,6 @@ class MongoDBConnectionPoolProperties {
     @Value("${MONGO_CONNECTION_MAX_LIFE_TIME:0}")
     private Long maxConnectionLifeTimeMS;
 
-    /**
-     * Don't set a default here, we want the app to fail to start if mongo url is not supplied
-     */
-    @Value("${EXTENSIONS_API_MONGODB_URL}")
-    private String mongoDbConnectionString;
-
     Integer getMinSize() {
         return minSize;
     }
@@ -37,7 +31,4 @@ class MongoDBConnectionPoolProperties {
         return maxConnectionLifeTimeMS;
     }
 
-    String getMongoDbConnectionString() {
-        return mongoDbConnectionString;
-    }
 }

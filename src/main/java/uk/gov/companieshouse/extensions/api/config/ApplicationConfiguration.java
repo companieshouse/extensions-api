@@ -1,11 +1,9 @@
 package uk.gov.companieshouse.extensions.api.config;
 
-import com.mongodb.ConnectionString;
-import com.mongodb.MongoClientSettings;
 import java.time.LocalDateTime;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
+
 import org.apache.tika.Tika;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -18,22 +16,6 @@ import uk.gov.companieshouse.logging.LoggerFactory;
 
 @Configuration
 public class ApplicationConfiguration {
-
-    /**
-     * Set Mongo client settings
-     */
-    @Bean
-    public MongoClientSettings mongoClientSettings(MongoDBConnectionPoolProperties connectionPoolProperties) {
-        ConnectionString connectionString = new ConnectionString(connectionPoolProperties.getMongoDbConnectionString());
-
-        return MongoClientSettings.builder()
-            .applyConnectionString(connectionString)
-            .applyToConnectionPoolSettings(builder -> builder
-                .minSize(connectionPoolProperties.getMinSize())
-                .maxConnectionIdleTime(connectionPoolProperties.getMaxConnectionIdleTimeMS(), TimeUnit.MILLISECONDS)
-                .maxConnectionLifeTime(connectionPoolProperties.getMaxConnectionLifeTimeMS(), TimeUnit.MILLISECONDS))
-            .build();
-    }
 
     @Bean
     public Supplier<LocalDateTime> dateTimeNow() {

@@ -23,20 +23,6 @@ class OpenTelemetryAppenderInitializer implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() {
-        installAppender(this.openTelemetry);
-    }
-
-    /**
-     * Delegates to the static
-     * {@link OpenTelemetryAppender#install(OpenTelemetry)} call.
-     * Package-private and non-static so it can be stubbed out in a
-     * test spy, avoiding the need to mock a static method (and its
-     * global JVM logging side effect) directly.
-     *
-     * @param openTelemetry the configured OpenTelemetry instance to
-     *     install.
-     */
-    void installAppender(OpenTelemetry openTelemetry) {
         OpenTelemetryAppender.install(openTelemetry);
     }
 
