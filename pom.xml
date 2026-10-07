@@ -13,8 +13,8 @@
 
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
-        <spring-boot-dependencies.version>4.1.0</spring-boot-dependencies.version>
-        <spring-boot-maven-plugin.version>4.1.0</spring-boot-maven-plugin.version>
+        <spring-boot-dependencies.version>4.1.1</spring-boot-dependencies.version>
+        <spring-boot-maven-plugin.version>4.1.1</spring-boot-maven-plugin.version>
 
         <environment-reader-library.version>3.0.3</environment-reader-library.version>
         <mapstruct.version>1.6.3</mapstruct.version>
@@ -27,6 +27,7 @@
         <opentelemetry.logback.appender.version>2.31.1-alpha</opentelemetry.logback.appender.version>
 
         <!-- CH dependencies -->
+        <ch-boms.version>0.1.25</ch-boms.version>
         <structured-logging.version>4.0.4</structured-logging.version>
         <rest-service-common-library.version>2.0.14</rest-service-common-library.version>
         <private-api-sdk-java.version>6.0.33</private-api-sdk-java.version>
@@ -70,14 +71,21 @@
 
     <dependencyManagement>
         <dependencies>
-
-            <!--      fixes CVE-2026-41178(5.3)-->
+            <!-- Import CH BOM first so CH-approved versions (CVE overrides) take precedence -->
             <dependency>
-                <groupId>io.opentelemetry.semconv</groupId>
-                <artifactId>opentelemetry-semconv</artifactId>
-                <version>${opentelemetry-semconv.version}</version>
+                <groupId>uk.gov.companieshouse</groupId>
+                <artifactId>ch-dependency-bom</artifactId>
+                <version>${ch-boms.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
-
+            <dependency>
+                <groupId>uk.gov.companieshouse</groupId>
+                <artifactId>ch-test-bom</artifactId>
+                <version>${ch-boms.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
@@ -251,6 +259,30 @@
             <artifactId>commons-io</artifactId>
             <version>${commons-io.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-testcontainers</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers-junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers-mongodb</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.wiremock.integrations</groupId>
+            <artifactId>wiremock-spring-boot</artifactId>
+            <version>4.4.2</version>
+            <scope>test</scope>
+        </dependency>
+
+
     </dependencies>
 
     <build>
