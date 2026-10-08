@@ -36,7 +36,9 @@
         <tika-core.version>3.3.0</tika-core.version>
         <commons-io.version>2.22.0</commons-io.version>
         <commons-fileupload.version>1.6.0</commons-fileupload.version>
-        <mongodb.version>5.3.1</mongodb.version>
+        <!-- mongodb version set to override spring boot bom version for CVE-2026-18710(8.2), CVE-2026-88032(8.2), CVE-2026-88033(6.1) -->
+        <mongodb.version>5.12.0</mongodb.version>
+        <!-- remove when spring boot is upgraded to above this version -->
         <snakeyaml.version>2.5</snakeyaml.version>
         <awaitility.version>4.3.0</awaitility.version>
         <commons-lang3.version>3.20.0</commons-lang3.version>
@@ -123,21 +125,6 @@
             <artifactId>spring-boot-starter-aspectj</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.mongodb</groupId>
-            <artifactId>mongodb-driver-sync</artifactId>
-            <version>${mongodb.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.mongodb</groupId>
-            <artifactId>mongodb-driver-core</artifactId>
-            <version>${mongodb.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.mongodb</groupId>
-            <artifactId>bson</artifactId>
-            <version>${mongodb.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
@@ -157,12 +144,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-webmvc-test</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.junit.vintage</groupId>
-                    <artifactId>junit-vintage-engine</artifactId>
-                </exclusion>
-            </exclusions>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -248,11 +229,6 @@
             <groupId>uk.gov.companieshouse</groupId>
             <artifactId>private-api-sdk-java</artifactId>
             <version>${private-api-sdk-java.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.tika</groupId>
-            <artifactId>tika-core</artifactId>
-            <version>${tika-core.version}</version>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>
