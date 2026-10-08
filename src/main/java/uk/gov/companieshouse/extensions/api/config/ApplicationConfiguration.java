@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 import java.util.function.Supplier;
 
-import org.apache.tika.Tika;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -37,11 +36,6 @@ public class ApplicationConfiguration {
             internalApiClient.setBasePath(fileTransferApiUrl);
             return internalApiClient;
         };
-    }
-
-    @Bean
-    public Tika tika() {
-        return new Tika();
     }
 
     @Bean

@@ -6,7 +6,6 @@ import static org.mockserver.model.HttpResponse.response;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import org.apache.tika.Tika;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -43,33 +42,30 @@ import org.springframework.web.multipart.MultipartFile;
 @ExtendWith(MockServerExtension.class)
 @SpringBootTest
 @Disabled // Disabled as this test requires a running file-transfer-api instance
-public class FileTransferGatewayMockIntegrationTest {
+class FileTransferGatewayMockIntegrationTest {
 
     @Autowired
     private FileTransferServiceClient gateway;
 
     private static ClientAndServer mockServer;
 
-    @Autowired
-    private Tika tika;
-
     @BeforeAll
-    public static void startMockApiServer() {
+    static void startMockApiServer() {
         mockServer = ClientAndServer.startClientAndServer(8081);
     }
 
     @AfterAll
-    public static void stopMockApiServer() {
+    static void stopMockApiServer() {
         mockServer.stop();
     }
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         mockServer.reset();
     }
 
     @Test
-    public void willThrowHttpClientExceptionOnUnsupportedMediaType() throws IOException {
+    void willThrowHttpClientExceptionOnUnsupportedMediaType() {
         MultipartFile mockFile = new MockMultipartFile("file", "file.txt", "text/plain", "test".getBytes());
         mockServerExpectation("/", "POST")
             .respond(response()
@@ -78,7 +74,7 @@ public class FileTransferGatewayMockIntegrationTest {
     }
 
     @Test
-    public void willThrowHttpServerExceptionIf500Returned() throws IOException {
+    void willThrowHttpServerExceptionIf500Returned() throws IOException {
         File file = new File("src/test/resources/input/test.png");
         byte[] byteArray = new byte[(int) file.length()];
         try (FileInputStream inputStream = new FileInputStream(file)) {
@@ -92,8 +88,7 @@ public class FileTransferGatewayMockIntegrationTest {
 
     }
 
-    private ForwardChainExpectation mockServerExpectation(String path, String httpMethod)
-        throws IOException {
+    private ForwardChainExpectation mockServerExpectation(String path, String httpMethod) {
         return mockServer
             .when(request()
                 .withMethod(httpMethod)

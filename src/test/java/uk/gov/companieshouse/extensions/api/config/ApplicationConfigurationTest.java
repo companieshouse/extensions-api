@@ -7,7 +7,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.function.Supplier;
-import org.apache.tika.Tika;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -67,10 +66,4 @@ class ApplicationConfigurationTest {
         assertNotNull(uuidSupplier.get());
     }
 
-    @Test
-    void createTika() {
-        Tika tika = underTest.tika();
-
-        assertNotNull(tika);
-    }
 }

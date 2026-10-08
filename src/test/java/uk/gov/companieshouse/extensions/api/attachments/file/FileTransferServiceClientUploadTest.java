@@ -1,11 +1,5 @@
 package uk.gov.companieshouse.extensions.api.attachments.file;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-
-import java.io.IOException;
-import java.io.InputStream;
-import org.apache.tika.Tika;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
@@ -24,8 +18,6 @@ import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
 @ExtendWith(MockitoExtension.class)
 @Disabled
 class FileTransferServiceClientUploadTest {
-    @Mock
-    private Tika tika;
 
     @Mock
     private ApiLogger apiLogger;
@@ -36,16 +28,14 @@ class FileTransferServiceClientUploadTest {
     private FileTransferServiceClient fileTransferServiceClient;
 
     @Test
-    void testUpload_UnsupportedMediaTypeException() throws IOException {
+    void testUpload_UnsupportedMediaTypeException() {
         file = new MockMultipartFile("testFile", "testFile.rtf", "application/rtf", new byte[10]);
-        when(tika.detect(any(InputStream.class), any(String.class))).thenReturn("application/rtf");
         Assertions.assertThrows(HttpClientErrorException.class, () -> fileTransferServiceClient.upload(file));
     }
 
     @Test
-    void testUpload_TikaIOException() throws IOException {
+    void testUpload_TikaIOException() {
         file = new MockMultipartFile("testFile", "testFile.rtf", "application/rtf", new byte[10]);
-        when(tika.detect(any(InputStream.class), any(String.class))).thenThrow(IOException.class);
         FileTransferApiClientResponse fileTransferApiClientResponse = fileTransferServiceClient.upload(file);
         Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, fileTransferApiClientResponse.getHttpStatus());
     }
