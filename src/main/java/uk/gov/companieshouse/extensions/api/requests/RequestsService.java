@@ -21,9 +21,15 @@ public class RequestsService {
     @Autowired
     private ExtensionRequestsRepository extensionRequestsRepository;
 
+    // Not scoped by company: only for callers that do not yet enforce company/ownership checks (reasons)
     @LogMethodCall
     public Optional<ExtensionRequestFullEntity> getExtensionsRequestById(String id) {
         return extensionRequestsRepository.findById(id);
+    }
+
+    @LogMethodCall
+    public Optional<ExtensionRequestFullEntity> getExtensionsRequestById(String companyNumber, String id) {
+        return extensionRequestsRepository.findByIdAndCompanyNumber(id, companyNumber);
     }
 
     @LogMethodCall
@@ -32,8 +38,9 @@ public class RequestsService {
     }
 
     @LogMethodCall
-    public ExtensionRequestFullEntity patchRequest(String requestId, RequestStatus status) throws ServiceException {
-        ExtensionRequestFullEntity entity = extensionRequestsRepository.findById(requestId)
+    public ExtensionRequestFullEntity patchRequest(String companyNumber, String requestId, RequestStatus status)
+        throws ServiceException {
+        ExtensionRequestFullEntity entity = extensionRequestsRepository.findByIdAndCompanyNumber(requestId, companyNumber)
                 .orElseThrow(() -> new ServiceException(String.format("Request: %s cannot be found", requestId)));
 
         entity = PatchRequestMapper.INSTANCE.patchEntity(status, entity);
