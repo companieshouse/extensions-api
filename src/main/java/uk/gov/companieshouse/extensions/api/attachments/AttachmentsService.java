@@ -117,8 +117,6 @@ public class AttachmentsService {
             throw new ServiceException(format("Reason %s contains no attachment to delete: %s", reasonId, attachmentId));
         }
 
-        deleteAttachment(attachmentId);
-
         List<Attachment> updatedAttachments = reasonAttachments
                 .stream()
                 .filter(attachment -> !attachment.getId().equals(attachmentId))
@@ -127,6 +125,8 @@ public class AttachmentsService {
         if (updatedAttachments.size() == reasonAttachments.size()) {
             throw new ServiceException(format("Attachment %s does not exist in reason %s", attachmentId, reasonId));
         }
+
+        deleteAttachment(attachmentId);
 
         reason.setAttachments(updatedAttachments);
 

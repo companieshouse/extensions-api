@@ -298,9 +298,6 @@ class AttachmentsServiceUnitTest {
 
         assertFalse(entity.getReasons().getFirst().getAttachments().isEmpty());
 
-        HttpClientErrorException exception = new HttpClientErrorException(HttpStatus.NOT_FOUND);
-        when(fileTransferServiceClient.delete("12345ab")).thenThrow(exception);
-
         when(repo.findByIdAndCompanyNumber(entity.getId(), COMPANY_NUMBER))
             .thenReturn(Optional.of(entity));
 
@@ -314,8 +311,7 @@ class AttachmentsServiceUnitTest {
         }
 
         verify(repo, never()).save(entity);
-        verify(fileTransferServiceClient, times(1)).delete("12345ab");
-        verify(apiLogger).error("Unable to delete attachment 12345ab, status code 404 NOT_FOUND", exception);
+        verify(fileTransferServiceClient, never()).delete(anyString());
     }
 
     @Test
