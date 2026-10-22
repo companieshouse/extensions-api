@@ -36,6 +36,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.companieshouse.extensions.api.Utils.Utils.COMPANY_NUMBER;
 import static uk.gov.companieshouse.extensions.api.Utils.Utils.REQUEST_ID;
 import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyCreateReason;
 import static uk.gov.companieshouse.extensions.api.Utils.Utils.dummyReasonEntity;
@@ -79,14 +80,14 @@ class ReasonServiceUnitTest {
         ExtensionReasonEntity reason2 = dummyReasonEntity();
         reason2.setId("reason2");
         extensionRequestFullEntity.addReason(reason2);
-        when(requestsService.getExtensionsRequestById(REQUEST_ID)).thenReturn(Optional.of(extensionRequestFullEntity));
+        when(requestsService.getExtensionsRequestById(COMPANY_NUMBER, REQUEST_ID)).thenReturn(Optional.of(extensionRequestFullEntity));
         when(reasonMapper.entityToDTO(reason1))
             .thenReturn(mapper.entityToDTO(reason1));
         when(reasonMapper.entityToDTO(reason2))
             .thenReturn(mapper.entityToDTO(reason2));
 
         ServiceResult<ListResponse<ExtensionReasonDTO>> reasons =
-            reasonsService.getReasons(REQUEST_ID);
+            reasonsService.getReasons(COMPANY_NUMBER, REQUEST_ID);
 
         Assertions.assertEquals(2, reasons.getData().getItems().size());
         Assertions.assertEquals(2, reasons.getData().getTotalResults());
@@ -97,17 +98,17 @@ class ReasonServiceUnitTest {
 
     @Test
     void willThrowIfNoRequestExists() {
-        ServiceException serviceException = Assertions.assertThrows(ServiceException.class, () -> reasonsService.getReasons("123"));
+        ServiceException serviceException = Assertions.assertThrows(ServiceException.class, () -> reasonsService.getReasons(COMPANY_NUMBER, "123"));
         Assertions.assertEquals("Extension request 123 not found", serviceException.getMessage());
     }
 
     @Test
     void willReturnEmptyDataIfNoReasonsInRequest() throws ServiceException {
         ExtensionRequestFullEntity extensionRequestFullEntity = dummyRequestEntity();
-        when(requestsService.getExtensionsRequestById(REQUEST_ID)).thenReturn(Optional.of(extensionRequestFullEntity));
+        when(requestsService.getExtensionsRequestById(COMPANY_NUMBER, REQUEST_ID)).thenReturn(Optional.of(extensionRequestFullEntity));
 
         ServiceResult<ListResponse<ExtensionReasonDTO>> reasons =
-            reasonsService.getReasons(REQUEST_ID);
+            reasonsService.getReasons(COMPANY_NUMBER, REQUEST_ID);
 
         Assertions.assertNotNull(reasons.getData());
         Assertions.assertEquals(0, reasons.getData().getItems().size());
@@ -118,7 +119,7 @@ class ReasonServiceUnitTest {
     void testCorrectDataIsPassedToAddExtensionsReasonToRequest() throws ServiceException {
 
         ExtensionRequestFullEntity extensionRequestFullEntity = dummyRequestEntity();
-        when(requestsService.getExtensionsRequestById(REQUEST_ID)).thenReturn(Optional.of(extensionRequestFullEntity));
+        when(requestsService.getExtensionsRequestById(COMPANY_NUMBER, REQUEST_ID)).thenReturn(Optional.of(extensionRequestFullEntity));
         when(extensionRequestsRepository.save(any(ExtensionRequestFullEntity.class)))
             .thenReturn(extensionRequestFullEntity);
         when(mockRandomUUid.get())
@@ -130,7 +131,7 @@ class ReasonServiceUnitTest {
             new ExtensionReasonMapper(), mockRandomUUid, fileTransferServiceClient, logger);
         ServiceResult<ExtensionReasonDTO> result =
             service.addExtensionsReasonToRequest(dummyCreateReason,
-                REQUEST_ID, "dummyUri");
+                COMPANY_NUMBER, REQUEST_ID, "dummyUri");
         verify(extensionRequestsRepository).save(captor.capture());
         verify(mockRandomUUid).get();
         ExtensionRequestFullEntity extensionRequestResult = captor.getValue();
@@ -156,10 +157,10 @@ class ReasonServiceUnitTest {
 
     @Test
     void exceptionThrownIfNoRequestFound() {
-        when(requestsService.getExtensionsRequestById("123"))
+        when(requestsService.getExtensionsRequestById(COMPANY_NUMBER, "123"))
             .thenReturn(Optional.empty());
 
-        ServiceException serviceException = Assertions.assertThrows(ServiceException.class, () -> reasonsService.addExtensionsReasonToRequest(new ExtensionCreateReason(), "123", "url"));
+        ServiceException serviceException = Assertions.assertThrows(ServiceException.class, () -> reasonsService.addExtensionsReasonToRequest(new ExtensionCreateReason(), COMPANY_NUMBER, "123", "url"));
         Assertions.assertEquals("Request 123 not found", serviceException.getMessage());
     }
 
@@ -176,7 +177,7 @@ class ReasonServiceUnitTest {
         reason.setAttachments(Arrays.asList(attachment1, attachment2));
         extensionRequestFullEntity.addReason(reason);
 
-        when(requestsService.getExtensionsRequestById(extensionRequestFullEntity.getId())).thenReturn(Optional.of(extensionRequestFullEntity));
+        when(requestsService.getExtensionsRequestById(COMPANY_NUMBER, extensionRequestFullEntity.getId())).thenReturn(Optional.of(extensionRequestFullEntity));
         Assertions.assertEquals(1, extensionRequestFullEntity.getReasons().size());
 
         FileTransferApiClientResponse response = new FileTransferApiClientResponse();
@@ -187,7 +188,7 @@ class ReasonServiceUnitTest {
         when(extensionRequestsRepository.save(any(ExtensionRequestFullEntity.class))).thenReturn
             (extensionRequestFullEntity);
 
-        reasonsService.removeExtensionsReasonFromRequest(extensionRequestFullEntity.getId(),
+        reasonsService.removeExtensionsReasonFromRequest(COMPANY_NUMBER, extensionRequestFullEntity.getId(),
             extensionRequestFullEntity.getReasons().get(0).getId());
 
         verify(fileTransferServiceClient).delete("1234");
@@ -211,7 +212,7 @@ class ReasonServiceUnitTest {
         reason.setAttachments(Arrays.asList(attachment1, attachment2));
         extensionRequestFullEntity.addReason(reason);
 
-        when(requestsService.getExtensionsRequestById(extensionRequestFullEntity.getId())).thenReturn(Optional.of(extensionRequestFullEntity));
+        when(requestsService.getExtensionsRequestById(COMPANY_NUMBER, extensionRequestFullEntity.getId())).thenReturn(Optional.of(extensionRequestFullEntity));
         Assertions.assertEquals(1, extensionRequestFullEntity.getReasons().size());
         when(extensionRequestsRepository.save(any(ExtensionRequestFullEntity.class))).thenReturn
             (extensionRequestFullEntity);
@@ -221,7 +222,7 @@ class ReasonServiceUnitTest {
         when(fileTransferServiceClient.delete("1234")).thenThrow(clientException);
         when(fileTransferServiceClient.delete("5678")).thenThrow(clientException);
 
-        reasonsService.removeExtensionsReasonFromRequest(extensionRequestFullEntity.getId(),
+        reasonsService.removeExtensionsReasonFromRequest(COMPANY_NUMBER, extensionRequestFullEntity.getId(),
             extensionRequestFullEntity.getReasons().getFirst().getId());
 
         verify(fileTransferServiceClient).delete("1234");
@@ -248,7 +249,7 @@ class ReasonServiceUnitTest {
         reason.setAttachments(Arrays.asList(attachment1, attachment2));
         extensionRequestFullEntity.addReason(reason);
 
-        when(requestsService.getExtensionsRequestById(extensionRequestFullEntity.getId())).thenReturn(Optional.of(extensionRequestFullEntity));
+        when(requestsService.getExtensionsRequestById(COMPANY_NUMBER, extensionRequestFullEntity.getId())).thenReturn(Optional.of(extensionRequestFullEntity));
         Assertions.assertEquals(1, extensionRequestFullEntity.getReasons().size());
         when(extensionRequestsRepository.save(any(ExtensionRequestFullEntity.class))).thenReturn
             (extensionRequestFullEntity);
@@ -258,7 +259,7 @@ class ReasonServiceUnitTest {
         when(fileTransferServiceClient.delete("1234")).thenThrow(serverException);
         when(fileTransferServiceClient.delete("5678")).thenThrow(serverException);
 
-        reasonsService.removeExtensionsReasonFromRequest(extensionRequestFullEntity.getId(),
+        reasonsService.removeExtensionsReasonFromRequest(COMPANY_NUMBER, extensionRequestFullEntity.getId(),
             extensionRequestFullEntity.getReasons().getFirst().getId());
 
         verify(fileTransferServiceClient).delete("1234");
@@ -283,14 +284,14 @@ class ReasonServiceUnitTest {
         reason.setAttachments(List.of(attachment1));
         extensionRequestFullEntity.addReason(reason);
 
-        when(requestsService.getExtensionsRequestById(extensionRequestFullEntity.getId())).thenReturn(Optional.of(extensionRequestFullEntity));
+        when(requestsService.getExtensionsRequestById(COMPANY_NUMBER, extensionRequestFullEntity.getId())).thenReturn(Optional.of(extensionRequestFullEntity));
         Assertions.assertEquals(1, extensionRequestFullEntity.getReasons().size());
         when(extensionRequestsRepository.save(any(ExtensionRequestFullEntity.class))).thenReturn
             (extensionRequestFullEntity);
 
         when(fileTransferServiceClient.delete("1234")).thenReturn(null);
 
-        reasonsService.removeExtensionsReasonFromRequest(extensionRequestFullEntity.getId(),
+        reasonsService.removeExtensionsReasonFromRequest(COMPANY_NUMBER, extensionRequestFullEntity.getId(),
             extensionRequestFullEntity.getReasons().getFirst().getId());
 
         verify(fileTransferServiceClient).delete("1234");
@@ -313,7 +314,7 @@ class ReasonServiceUnitTest {
         reason.setAttachments(List.of(attachment1));
         extensionRequestFullEntity.addReason(reason);
 
-        when(requestsService.getExtensionsRequestById(extensionRequestFullEntity.getId())).thenReturn(Optional.of(extensionRequestFullEntity));
+        when(requestsService.getExtensionsRequestById(COMPANY_NUMBER, extensionRequestFullEntity.getId())).thenReturn(Optional.of(extensionRequestFullEntity));
         Assertions.assertEquals(1, extensionRequestFullEntity.getReasons().size());
         when(extensionRequestsRepository.save(any(ExtensionRequestFullEntity.class))).thenReturn
             (extensionRequestFullEntity);
@@ -321,7 +322,7 @@ class ReasonServiceUnitTest {
         FileTransferApiClientResponse response = new FileTransferApiClientResponse();
         when(fileTransferServiceClient.delete("1234")).thenReturn(response);
 
-        reasonsService.removeExtensionsReasonFromRequest(extensionRequestFullEntity.getId(),
+        reasonsService.removeExtensionsReasonFromRequest(COMPANY_NUMBER, extensionRequestFullEntity.getId(),
             extensionRequestFullEntity.getReasons().getFirst().getId());
 
         verify(fileTransferServiceClient).delete("1234");
@@ -344,7 +345,7 @@ class ReasonServiceUnitTest {
         reason.setAttachments(List.of(attachment1));
         extensionRequestFullEntity.addReason(reason);
 
-        when(requestsService.getExtensionsRequestById(extensionRequestFullEntity.getId())).thenReturn(Optional.of(extensionRequestFullEntity));
+        when(requestsService.getExtensionsRequestById(COMPANY_NUMBER, extensionRequestFullEntity.getId())).thenReturn(Optional.of(extensionRequestFullEntity));
         Assertions.assertEquals(1, extensionRequestFullEntity.getReasons().size());
         when(extensionRequestsRepository.save(any(ExtensionRequestFullEntity.class))).thenReturn
             (extensionRequestFullEntity);
@@ -353,7 +354,7 @@ class ReasonServiceUnitTest {
         response.httpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
         when(fileTransferServiceClient.delete("1234")).thenReturn(response);
 
-        reasonsService.removeExtensionsReasonFromRequest(extensionRequestFullEntity.getId(),
+        reasonsService.removeExtensionsReasonFromRequest(COMPANY_NUMBER, extensionRequestFullEntity.getId(),
             extensionRequestFullEntity.getReasons().getFirst().getId());
 
         verify(fileTransferServiceClient).delete("1234");
@@ -381,10 +382,10 @@ class ReasonServiceUnitTest {
 
         requestEntity.addReason(reasonEntity);
 
-        when(requestsService.getExtensionsRequestById("123"))
+        when(requestsService.getExtensionsRequestById(COMPANY_NUMBER, "123"))
             .thenReturn(Optional.of(requestEntity));
 
-        reasonsService.patchReason(reasonCreate, "123", "1234");
+        reasonsService.patchReason(reasonCreate, COMPANY_NUMBER, "123", "1234");
 
         Assertions.assertEquals(reasonCreate.getReasonInformation(), requestEntity.getReasons().get(0).getReasonInformation());
         verify(extensionRequestsRepository).save(requestEntity);
@@ -395,9 +396,9 @@ class ReasonServiceUnitTest {
         ExtensionRequestFullEntity requestEntity = new ExtensionRequestFullEntity();
         requestEntity.setId("123");
 
-        when(requestsService.getExtensionsRequestById("123"))
+        when(requestsService.getExtensionsRequestById(COMPANY_NUMBER, "123"))
             .thenReturn(Optional.of(requestEntity));
-        ServiceException serviceException = Assertions.assertThrows(ServiceException.class, () -> reasonsService.patchReason(new ExtensionCreateReason(), "123", "1234"));
+        ServiceException serviceException = Assertions.assertThrows(ServiceException.class, () -> reasonsService.patchReason(new ExtensionCreateReason(), COMPANY_NUMBER, "123", "1234"));
         Assertions.assertEquals("Reason id 1234 not found in Request 123", serviceException.getMessage());
 
     }

@@ -21,12 +21,6 @@ public class RequestsService {
     @Autowired
     private ExtensionRequestsRepository extensionRequestsRepository;
 
-    // Not scoped by company: only for callers that do not yet enforce company/ownership checks (reasons)
-    @LogMethodCall
-    public Optional<ExtensionRequestFullEntity> getExtensionsRequestById(String id) {
-        return extensionRequestsRepository.findById(id);
-    }
-
     @LogMethodCall
     public Optional<ExtensionRequestFullEntity> getExtensionsRequestById(String companyNumber, String id) {
         return extensionRequestsRepository.findByIdAndCompanyNumber(id, companyNumber);
