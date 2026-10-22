@@ -86,17 +86,19 @@ public class RequestsController {
 
     @LogMethodCall
     @GetMapping("/{requestId}")
-    public ResponseEntity<ExtensionRequestFullEntity> getSingleExtensionRequestById(@PathVariable String requestId) {
-        return requestsService.getExtensionsRequestById(requestId).map(ResponseEntity::ok)
+    public ResponseEntity<ExtensionRequestFullEntity> getSingleExtensionRequestById(@PathVariable String companyNumber,
+                                                                                    @PathVariable String requestId) {
+        return requestsService.getExtensionsRequestById(companyNumber, requestId).map(ResponseEntity::ok)
             .orElse(ResponseEntity.notFound().build());
     }
 
     @LogMethodCall
     @PatchMapping("/{requestId}")
-    public ResponseEntity<ExtensionRequestFullEntity> patchRequest(@PathVariable String requestId,
+    public ResponseEntity<ExtensionRequestFullEntity> patchRequest(@PathVariable String companyNumber,
+                                                                   @PathVariable String requestId,
                                                                    @RequestBody RequestStatus requestStatus) {
         try {
-            requestsService.patchRequest(requestId, requestStatus);
+            requestsService.patchRequest(companyNumber, requestId, requestStatus);
             return ResponseEntity.noContent().build();
         } catch (ServiceException e) {
             return ResponseEntity.notFound().build();
@@ -105,7 +107,8 @@ public class RequestsController {
 
     @LogMethodCall
     @DeleteMapping("/{requestId}")
-    public boolean deleteExtensionRequestById(@PathVariable String requestId) {
+    public boolean deleteExtensionRequestById(@PathVariable String companyNumber,
+                                              @PathVariable String requestId) {
         return false;
     }
 }

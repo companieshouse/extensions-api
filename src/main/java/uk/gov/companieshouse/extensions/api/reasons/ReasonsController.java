@@ -35,10 +35,11 @@ public class ReasonsController {
 
     @LogMethodCall
     @GetMapping("/{requestId}/reasons")
-    public ResponseEntity<ListResponse<ExtensionReasonDTO>> getReasons(@PathVariable String requestId) {
+    public ResponseEntity<ListResponse<ExtensionReasonDTO>> getReasons(@PathVariable String companyNumber,
+                                                                       @PathVariable String requestId) {
         try {
             ServiceResult<ListResponse<ExtensionReasonDTO>> reasons =
-                reasonsService.getReasons(requestId);
+                reasonsService.getReasons(companyNumber, requestId);
             return ResponseEntity.ok(reasons.getData());
         } catch (ServiceException ex) {
             logger.info(ex.getMessage());
@@ -49,11 +50,12 @@ public class ReasonsController {
     @LogMethodCall
     @PostMapping("/{requestId}/reasons")
     public ResponseEntity<ExtensionReasonDTO> addReasonToRequest(@RequestBody ExtensionCreateReason extensionCreateReason,
+                                                                 @PathVariable String companyNumber,
                                                                  @PathVariable String requestId,
                                                                  HttpServletRequest request) {
         try {
             ServiceResult<ExtensionReasonDTO> serviceResult
-                = reasonsService.addExtensionsReasonToRequest(extensionCreateReason, requestId, request.getRequestURI());
+                = reasonsService.addExtensionsReasonToRequest(extensionCreateReason, companyNumber, requestId, request.getRequestURI());
             return ResponseEntity.created(URI.create(serviceResult.getData().getLinks().getLink(ExtensionsLinkKeys.SELF)))
                 .body(serviceResult.getData());
         } catch (ServiceException e) {
@@ -64,9 +66,10 @@ public class ReasonsController {
 
     @LogMethodCall
     @DeleteMapping("/{requestId}/reasons/{reasonId}")
-    public ResponseEntity<ExtensionReasonDTO> deleteReasonFromRequest(@PathVariable String requestId,
+    public ResponseEntity<ExtensionReasonDTO> deleteReasonFromRequest(@PathVariable String companyNumber,
+                                                                      @PathVariable String requestId,
                                                                       @PathVariable String reasonId) {
-        reasonsService.removeExtensionsReasonFromRequest(requestId, reasonId);
+        reasonsService.removeExtensionsReasonFromRequest(companyNumber, requestId, reasonId);
 
         return ResponseEntity.noContent().build();
     }
@@ -74,11 +77,12 @@ public class ReasonsController {
     @LogMethodCall
     @PatchMapping("/{requestId}/reasons/{reasonId}")
     public ResponseEntity<ExtensionReasonDTO> patchReason(@RequestBody ExtensionCreateReason extensionCreateReason,
+                                                          @PathVariable String companyNumber,
                                                           @PathVariable String requestId,
                                                           @PathVariable String reasonId) {
         try {
             ExtensionReasonDTO serviceResult =
-                reasonsService.patchReason(extensionCreateReason, requestId, reasonId);
+                reasonsService.patchReason(extensionCreateReason, companyNumber, requestId, reasonId);
             return ResponseEntity.ok(serviceResult);
         } catch (ServiceException ex) {
             logger.info(ex.getMessage());

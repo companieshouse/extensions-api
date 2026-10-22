@@ -79,7 +79,7 @@ class ReasonsControllerIntegrationTest {
         Links links = new Links();
         links.setLink(ExtensionsLinkKeys.SELF, "url");
         dto.setLinks(links);
-        when(reasonsService.addExtensionsReasonToRequest(any(ExtensionCreateReason.class), any(String.class), any(String.class)))
+        when(reasonsService.addExtensionsReasonToRequest(any(ExtensionCreateReason.class), any(String.class), any(String.class), any(String.class)))
             .thenReturn(ServiceResult.created(dto));
         RequestBuilder requestBuilder = MockMvcRequestBuilders.post(
                 ROOT_URL)
@@ -98,7 +98,7 @@ class ReasonsControllerIntegrationTest {
         ExtensionRequestFullEntity dummyRequestEntity = dummyRequestEntity();
         dummyRequestEntity.addReason(dummyReasonEntity());
 
-        when(reasonsService.removeExtensionsReasonFromRequest(any(String.class), any
+        when(reasonsService.removeExtensionsReasonFromRequest(any(String.class), any(String.class), any
             (String.class))).thenReturn(dummyRequestEntity);
         RequestBuilder requestBuilder = MockMvcRequestBuilders.delete(
                 SPECIFIC_URL)
@@ -120,7 +120,7 @@ class ReasonsControllerIntegrationTest {
         links.setLink(ExtensionsLinkKeys.SELF, "url");
         ExtensionReasonDTO dto = new ExtensionReasonDTO();
         dto.setLinks(links);
-        when(reasonsService.patchReason(any(ExtensionCreateReason.class), any(String.class), any(String.class)))
+        when(reasonsService.patchReason(any(ExtensionCreateReason.class), any(String.class), any(String.class), any(String.class)))
             .thenReturn(dto);
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
         Assertions.assertEquals(200, result.getResponse().getStatus());
@@ -136,7 +136,7 @@ class ReasonsControllerIntegrationTest {
             ServiceResult.found(ListResponse.<ExtensionReasonDTO>builder()
                 .withItems(List.of(new ExtensionReasonDTO()))
                 .build());
-        when(reasonsService.getReasons(anyString()))
+        when(reasonsService.getReasons(anyString(), anyString()))
             .thenReturn(expectedResult);
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
         Assertions.assertEquals(200, result.getResponse().getStatus());

@@ -162,7 +162,7 @@ class RequestControllerIntegrationTest {
         ExtensionRequestFullEntity extensionRequestFullEntity = Utils.dummyRequestEntity();
         ExtensionRequestFullDTO extensionRequestFullDTO = Utils.dummyRequestDTO();
 
-        when(requestsService.getExtensionsRequestById("a1")).thenReturn(Optional.of(extensionRequestFullEntity));
+        when(requestsService.getExtensionsRequestById(COMPANY_NUMBER, "a1")).thenReturn(Optional.of(extensionRequestFullEntity));
         when(extensionRequestMapper.entityToDTO(extensionRequestFullEntity)).thenReturn(extensionRequestFullDTO);
 
         mockMvc.perform(requestBuilder)

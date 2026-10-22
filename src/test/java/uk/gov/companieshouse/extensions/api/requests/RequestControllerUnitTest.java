@@ -134,9 +134,9 @@ class RequestControllerUnitTest {
         attachment.setId("attachment1");
         reasonEntity.addAttachment(attachment);
         extensionRequestFullEntity.addReason(reasonEntity);
-        when(requestsService.getExtensionsRequestById("1234")).thenReturn(Optional.of(extensionRequestFullEntity));
+        when(requestsService.getExtensionsRequestById(COMPANY_NUMBER, "1234")).thenReturn(Optional.of(extensionRequestFullEntity));
 
-        ResponseEntity<ExtensionRequestFullEntity> response = controller.getSingleExtensionRequestById("1234");
+        ResponseEntity<ExtensionRequestFullEntity> response = controller.getSingleExtensionRequestById(COMPANY_NUMBER, "1234");
 
         Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
         Assertions.assertEquals(extensionRequestFullEntity, response.getBody());
@@ -144,37 +144,37 @@ class RequestControllerUnitTest {
 
     @Test
     void canGetSingleExtensionRequest_NotFound() {
-        when(requestsService.getExtensionsRequestById("1234")).thenReturn(Optional.ofNullable(null));
-        ResponseEntity<ExtensionRequestFullEntity> response = controller.getSingleExtensionRequestById("1234");
+        when(requestsService.getExtensionsRequestById(COMPANY_NUMBER, "1234")).thenReturn(Optional.ofNullable(null));
+        ResponseEntity<ExtensionRequestFullEntity> response = controller.getSingleExtensionRequestById(COMPANY_NUMBER, "1234");
         Assertions.assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         assertNull(response.getBody());
     }
 
     @Test
     void willReturn204WhenAPatchRequestIsSubmitted() throws ServiceException {
-        when(requestsService.patchRequest(anyString(), any(RequestStatus.class)))
+        when(requestsService.patchRequest(anyString(), anyString(), any(RequestStatus.class)))
             .thenReturn(new ExtensionRequestFullEntity());
 
         RequestStatus status = new RequestStatus();
         status.setStatus(Status.SUBMITTED);
-        ResponseEntity<ExtensionRequestFullEntity> response = controller.patchRequest("123", status);
+        ResponseEntity<ExtensionRequestFullEntity> response = controller.patchRequest(COMPANY_NUMBER, "123", status);
         Assertions.assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
     }
 
     @Test
     void willReturn404WhenRequestNotFound() throws ServiceException {
-        when(requestsService.patchRequest(anyString(), any(RequestStatus.class)))
+        when(requestsService.patchRequest(anyString(), anyString(), any(RequestStatus.class)))
             .thenThrow(new ServiceException("not found"));
 
         RequestStatus status = new RequestStatus();
         status.setStatus(Status.SUBMITTED);
-        ResponseEntity<ExtensionRequestFullEntity> response = controller.patchRequest("123", status);
+        ResponseEntity<ExtensionRequestFullEntity> response = controller.patchRequest(COMPANY_NUMBER, "123", status);
         Assertions.assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
 
     @Test
     void canDeleteExtensionRequest() {
-        boolean response = controller.deleteExtensionRequestById("123");
+        boolean response = controller.deleteExtensionRequestById(COMPANY_NUMBER, "123");
         assertFalse(response);
     }
 

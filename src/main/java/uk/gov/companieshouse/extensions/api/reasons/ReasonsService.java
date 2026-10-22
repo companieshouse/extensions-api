@@ -50,8 +50,9 @@ public class ReasonsService {
     }
 
     @LogMethodCall
-    public ServiceResult<ListResponse<ExtensionReasonDTO>> getReasons(String requestId) throws ServiceException {
-        return requestsService.getExtensionsRequestById(requestId)
+    public ServiceResult<ListResponse<ExtensionReasonDTO>> getReasons(String companyNumber, String requestId)
+        throws ServiceException {
+        return requestsService.getExtensionsRequestById(companyNumber, requestId)
             .map(ExtensionRequestFullEntity::getReasons)
             .map(reasons -> reasons.stream()
                 .map(reasonMapper::entityToDTO)
@@ -66,9 +67,9 @@ public class ReasonsService {
 
     @LogMethodCall
     public ServiceResult<ExtensionReasonDTO> addExtensionsReasonToRequest(ExtensionCreateReason extensionCreateReason,
-                                          String requestId, String requestURI) throws ServiceException {
+                                          String companyNumber, String requestId, String requestURI) throws ServiceException {
 
-        ExtensionRequestFullEntity extensionRequestFullEntity = getRequest(requestId);
+        ExtensionRequestFullEntity extensionRequestFullEntity = getRequest(companyNumber, requestId);
         String uuid = randomUUid.get();
 
         ExtensionReasonEntityBuilder extensionReasonEntityBuilder =
@@ -115,10 +116,10 @@ public class ReasonsService {
     }
 
     @LogMethodCall
-    public ExtensionRequestFullEntity removeExtensionsReasonFromRequest(String requestId, String
+    public ExtensionRequestFullEntity removeExtensionsReasonFromRequest(String companyNumber, String requestId, String
         reasonId) {
 
-        ExtensionRequestFullEntity extensionRequestFullEntity = requestsService.getExtensionsRequestById(requestId)
+        ExtensionRequestFullEntity extensionRequestFullEntity = requestsService.getExtensionsRequestById(companyNumber, requestId)
             .orElse(null);
 
         if (extensionRequestFullEntity != null && !extensionRequestFullEntity.getReasons().isEmpty()) {
@@ -167,9 +168,10 @@ public class ReasonsService {
 
     @LogMethodCall
     public ExtensionReasonDTO patchReason(ExtensionCreateReason createReason,
+                                                         String companyNumber,
                                                          String requestId,
                                                          String reasonId) throws ServiceException {
-        ExtensionRequestFullEntity extensionRequestFullEntity = getRequest(requestId);
+        ExtensionRequestFullEntity extensionRequestFullEntity = getRequest(companyNumber, requestId);
 
         ExtensionReasonEntity reasonEntity =
             filterReasonToStream(extensionRequestFullEntity, reasonId)
@@ -195,8 +197,8 @@ public class ReasonsService {
             .filter(reason -> reason.getId().equals(reasonId));
     }
 
-    private ExtensionRequestFullEntity getRequest(String requestId) throws ServiceException {
-        return requestsService.getExtensionsRequestById(requestId)
+    private ExtensionRequestFullEntity getRequest(String companyNumber, String requestId) throws ServiceException {
+        return requestsService.getExtensionsRequestById(companyNumber, requestId)
             .orElseThrow(() ->
                 new ServiceException(String.format("Request %s not found", requestId)));
     }

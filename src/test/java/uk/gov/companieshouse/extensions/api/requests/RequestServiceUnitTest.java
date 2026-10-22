@@ -48,9 +48,9 @@ class RequestServiceUnitTest {
     void testGetSingleRequest() {
         ExtensionRequestFullEntity entity = dummyRequestEntity();
 
-        when(extensionRequestsRepository.findById(REQUEST_ID)).thenReturn(Optional.of(entity));
+        when(extensionRequestsRepository.findByIdAndCompanyNumber(REQUEST_ID, COMPANY_NUMBER)).thenReturn(Optional.of(entity));
 
-        Optional<ExtensionRequestFullEntity> request = requestsService.getExtensionsRequestById(REQUEST_ID);
+        Optional<ExtensionRequestFullEntity> request = requestsService.getExtensionsRequestById(COMPANY_NUMBER, REQUEST_ID);
         Assertions.assertEquals("id 1234 Acc period start: 2018-12-12  Acc period end: 2019-12-12", request.get().toString());
     }
 
@@ -86,7 +86,7 @@ class RequestServiceUnitTest {
     void willPatchFullRequestEntity() throws ServiceException {
         ExtensionRequestFullEntity extensionRequestFullEntity = new ExtensionRequestFullEntity();
         extensionRequestFullEntity.setStatus(Status.OPEN);
-        when(extensionRequestsRepository.findById(anyString()))
+        when(extensionRequestsRepository.findByIdAndCompanyNumber(anyString(), anyString()))
             .thenReturn(Optional.of(extensionRequestFullEntity));
 
         when(extensionRequestsRepository.save(any(ExtensionRequestFullEntity.class)))
@@ -94,9 +94,9 @@ class RequestServiceUnitTest {
 
         RequestStatus status = new RequestStatus();
         status.setStatus(Status.SUBMITTED);
-        ExtensionRequestFullEntity entity = requestsService.patchRequest("request", status);
+        ExtensionRequestFullEntity entity = requestsService.patchRequest(COMPANY_NUMBER, "request", status);
 
-        verify(extensionRequestsRepository).findById("request");
+        verify(extensionRequestsRepository).findByIdAndCompanyNumber("request", COMPANY_NUMBER);
         verify(extensionRequestsRepository).save(extensionRequestFullEntity);
         Assertions.assertEquals(Status.SUBMITTED, entity.getStatus());
     }
@@ -105,7 +105,7 @@ class RequestServiceUnitTest {
     void willCorrectlyPatchFullRequestEntityWhenExtensionRequestIsRejected() throws ServiceException {
         ExtensionRequestFullEntity extensionRequestFullEntity = new ExtensionRequestFullEntity();
         extensionRequestFullEntity.setStatus(Status.OPEN);
-        when(extensionRequestsRepository.findById(anyString()))
+        when(extensionRequestsRepository.findByIdAndCompanyNumber(anyString(), anyString()))
             .thenReturn(Optional.of(extensionRequestFullEntity));
 
         when(extensionRequestsRepository.save(any(ExtensionRequestFullEntity.class)))
@@ -113,9 +113,9 @@ class RequestServiceUnitTest {
 
         RequestStatus status = new RequestStatus();
         status.setStatus(Status.REJECTED_MAX_EXT_LENGTH_EXCEEDED);
-        ExtensionRequestFullEntity entity = requestsService.patchRequest("request", status);
+        ExtensionRequestFullEntity entity = requestsService.patchRequest(COMPANY_NUMBER, "request", status);
 
-        verify(extensionRequestsRepository).findById("request");
+        verify(extensionRequestsRepository).findByIdAndCompanyNumber("request", COMPANY_NUMBER);
         verify(extensionRequestsRepository).save(extensionRequestFullEntity);
         Assertions.assertEquals(Status.REJECTED_MAX_EXT_LENGTH_EXCEEDED, entity.getStatus());
     }
@@ -124,12 +124,12 @@ class RequestServiceUnitTest {
     void willThrowServiceExceptionIfNoRequest() {
         ExtensionRequestFullEntity extensionRequestFullEntity = new ExtensionRequestFullEntity();
         extensionRequestFullEntity.setStatus(Status.OPEN);
-        when(extensionRequestsRepository.findById(anyString()))
+        when(extensionRequestsRepository.findByIdAndCompanyNumber(anyString(), anyString()))
             .thenReturn(Optional.empty());
 
         RequestStatus status = new RequestStatus();
         status.setStatus(Status.SUBMITTED);
 
-        assertThrows(ServiceException.class, () -> requestsService.patchRequest("request1", status));
+        assertThrows(ServiceException.class, () -> requestsService.patchRequest(COMPANY_NUMBER, "request1", status));
     }
 }
