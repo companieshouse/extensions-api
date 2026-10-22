@@ -44,12 +44,12 @@ public class AttachmentsService {
 
     @LogMethodCall
     public ServiceResult<AttachmentDTO> addAttachment(@NotNull MultipartFile file,
-        String attachmentsUri, String requestId, String reasonId) throws ServiceException {
+        String attachmentsUri, String companyNumber, String requestId, String reasonId) throws ServiceException {
 
         String attachmentId = uploadFile(file);
         Attachment attachment = createAttachment(file, attachmentId);
 
-        ExtensionRequestFullEntity extension = requestsRepo.findById(requestId)
+        ExtensionRequestFullEntity extension = requestsRepo.findByIdAndCompanyNumber(requestId, companyNumber)
             .orElseThrow(missingRequest(requestId));
 
         extension.mapToReason(reasonId)
@@ -103,10 +103,10 @@ public class AttachmentsService {
     }
 
     @LogMethodCall
-    public ServiceResult<Void> removeAttachment(String requestId, String reasonId, String attachmentId)
+    public ServiceResult<Void> removeAttachment(String companyNumber, String requestId, String reasonId, String attachmentId)
         throws ServiceException {
 
-        ExtensionRequestFullEntity extension = requestsRepo.findById(requestId)
+        ExtensionRequestFullEntity extension = requestsRepo.findByIdAndCompanyNumber(requestId, companyNumber)
             .orElseThrow(missingRequest(requestId));
 
         ExtensionReasonEntity reason = extension.mapToReason(reasonId)
@@ -162,7 +162,19 @@ public class AttachmentsService {
         return () -> new ServiceException(format("Reason %s not found in Request %s", reasonId, requestId));
     }
 
-    public void downloadAttachment(String attachmentId, HttpServletResponse httpServletResponse) {
+    public void downloadAttachment(String companyNumber, String requestId, String reasonId, String attachmentId,
+                                   HttpServletResponse httpServletResponse) throws ServiceException {
+        ExtensionRequestFullEntity extension = requestsRepo.findByIdAndCompanyNumber(requestId, companyNumber)
+            .orElseThrow(missingRequest(requestId));
+
+        boolean attachmentExists = extension.mapToReason(reasonId)
+            .orElseThrow(missingReason(requestId, reasonId))
+            .getAttachments().stream()
+            .anyMatch(attachment -> attachmentId.equals(attachment.getId()));
+        if (!attachmentExists) {
+            throw new ServiceException(format("Attachment %s does not exist in reason %s", attachmentId, reasonId));
+        }
+
         fileTransferServiceClient.download(attachmentId, httpServletResponse);
     }
 }

@@ -28,9 +28,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static uk.gov.companieshouse.extensions.api.Utils.Utils.COMPANY_NUMBER;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
@@ -71,13 +73,13 @@ class AttachmentsServiceUnitTest {
         reasonEntity.setId(REASON_ID);
         reasonEntity.setReason("illness");
         entity.setReasons(List.of(reasonEntity));
-        when(repo.findById(anyString())).thenReturn(Optional.of(entity));
+        when(repo.findByIdAndCompanyNumber(anyString(), anyString())).thenReturn(Optional.of(entity));
 
         when(fileTransferServiceClient.upload(any(MultipartFile.class))).thenReturn(getSuccessfulUploadResponse());
 
         ServiceResult<AttachmentDTO> result =
             service.addAttachment(Utils.mockMultipartFile(),
-                ACCESS_URL, REQUEST_ID, REASON_ID);
+                ACCESS_URL, COMPANY_NUMBER, REQUEST_ID, REASON_ID);
 
         assertEquals("text/plain", result.getData().getContentType());
         assertNotNull(result.getData().getId());
@@ -97,7 +99,7 @@ class AttachmentsServiceUnitTest {
         assertNotNull(entityAttachment.get().getId());
 
         verify(repo).save(entity);
-        verify(repo).findById(REQUEST_ID);
+        verify(repo).findByIdAndCompanyNumber(REQUEST_ID, COMPANY_NUMBER);
     }
 
     @Test
@@ -116,12 +118,12 @@ class AttachmentsServiceUnitTest {
         attachmentsList.add(attachment);
         reasonEntity.setAttachments(attachmentsList);
         entity.setReasons(List.of(reasonEntity));
-        when(repo.findById(anyString())).thenReturn(Optional.of(entity));
+        when(repo.findByIdAndCompanyNumber(anyString(), anyString())).thenReturn(Optional.of(entity));
 
         when(fileTransferServiceClient.upload(any(MultipartFile.class))).thenReturn(getSuccessfulUploadResponse());
 
         service.addAttachment(Utils.mockMultipartFile(),
-            ACCESS_URL, REQUEST_ID, REASON_ID);
+            ACCESS_URL, COMPANY_NUMBER, REQUEST_ID, REASON_ID);
 
         List<Attachment> entityAttachments = entity.getReasons()
             .stream()
@@ -137,12 +139,12 @@ class AttachmentsServiceUnitTest {
     void willThrowServiceExceptionIfAttachmentAddedWithNoReason() throws Exception {
         ExtensionRequestFullEntity entity = new ExtensionRequestFullEntity();
         entity.setId(REQUEST_ID);
-        when(repo.findById(anyString())).thenReturn(Optional.of(entity));
+        when(repo.findByIdAndCompanyNumber(anyString(), anyString())).thenReturn(Optional.of(entity));
         when(fileTransferServiceClient.upload(any(MultipartFile.class))).thenReturn(getSuccessfulUploadResponse());
 
         try {
             service.addAttachment(Utils.mockMultipartFile(),
-                ACCESS_URL, REQUEST_ID, REASON_ID);
+                ACCESS_URL, COMPANY_NUMBER, REQUEST_ID, REASON_ID);
             fail();
         } catch (ServiceException e) {
             assertEquals(String.format("Reason %s not found in " +
@@ -152,12 +154,12 @@ class AttachmentsServiceUnitTest {
 
     @Test
     void willThrowServiceExceptionIfNoReason() throws Exception {
-        when(repo.findById(anyString())).thenReturn(Optional.empty());
+        when(repo.findByIdAndCompanyNumber(anyString(), anyString())).thenReturn(Optional.empty());
         when(fileTransferServiceClient.upload(any(MultipartFile.class))).thenReturn(getSuccessfulUploadResponse());
 
         try {
             service.addAttachment(Utils.mockMultipartFile(),
-                ACCESS_URL, REQUEST_ID, REASON_ID);
+                ACCESS_URL, COMPANY_NUMBER, REQUEST_ID, REASON_ID);
             fail();
         } catch (ServiceException e) {
             assertEquals(String.format("No request found with request id %s", REQUEST_ID), e.getMessage());
@@ -170,7 +172,7 @@ class AttachmentsServiceUnitTest {
 
         try {
             service.addAttachment(Utils.mockMultipartFile(),
-                ACCESS_URL, REQUEST_ID, REASON_ID);
+                ACCESS_URL, COMPANY_NUMBER, REQUEST_ID, REASON_ID);
             fail();
         } catch (ServiceException e) {
             assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.toString(), e.getMessage());
@@ -183,7 +185,7 @@ class AttachmentsServiceUnitTest {
             .thenThrow(new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR));
         try {
             service.addAttachment(Utils.mockMultipartFile(),
-                ACCESS_URL, REQUEST_ID, REASON_ID);
+                ACCESS_URL, COMPANY_NUMBER, REQUEST_ID, REASON_ID);
             fail();
         } catch (HttpServerErrorException e) {
             assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.toString(), e.getMessage());
@@ -196,7 +198,7 @@ class AttachmentsServiceUnitTest {
             .thenThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST));
         try {
             service.addAttachment(Utils.mockMultipartFile(),
-                ACCESS_URL, REQUEST_ID, REASON_ID);
+                ACCESS_URL, COMPANY_NUMBER, REQUEST_ID, REASON_ID);
             fail();
         } catch (HttpClientErrorException e) {
             assertEquals(HttpStatus.BAD_REQUEST.toString(), e.getMessage());
@@ -211,7 +213,7 @@ class AttachmentsServiceUnitTest {
 
         try {
             service.addAttachment(Utils.mockMultipartFile(),
-                ACCESS_URL, REQUEST_ID, REASON_ID);
+                ACCESS_URL, COMPANY_NUMBER, REQUEST_ID, REASON_ID);
             fail();
         } catch (ServiceException e) {
             assertEquals(NO_FILE_ID_MESSAGE, e.getMessage());
@@ -233,14 +235,14 @@ class AttachmentsServiceUnitTest {
         assertFalse(entity.getReasons().getFirst().getAttachments().isEmpty());
         assertEquals(2, entity.getReasons().getFirst().getAttachments().size());
 
-        when(repo.findById(entity.getId()))
+        when(repo.findByIdAndCompanyNumber(entity.getId(), COMPANY_NUMBER))
             .thenReturn(Optional.of(entity));
 
         FileTransferApiClientResponse apiClientResponse = new FileTransferApiClientResponse();
         apiClientResponse.httpStatus(HttpStatus.NO_CONTENT);
         when(fileTransferServiceClient.delete("12345")).thenReturn(apiClientResponse);
 
-        service.removeAttachment(entity.getId(),
+        service.removeAttachment(COMPANY_NUMBER, entity.getId(),
             entity.getReasons().stream().findAny().get().getId(), "12345");
 
         assertFalse(entity.getReasons().isEmpty());
@@ -267,11 +269,11 @@ class AttachmentsServiceUnitTest {
 
         assertTrue(entity.getReasons().getFirst().getAttachments().isEmpty());
 
-        when(repo.findById(entity.getId()))
+        when(repo.findByIdAndCompanyNumber(entity.getId(), COMPANY_NUMBER))
             .thenReturn(Optional.of(entity));
 
         try {
-            service.removeAttachment(entity.getId(),
+            service.removeAttachment(COMPANY_NUMBER, entity.getId(),
                 entity.getReasons().stream().findAny().get().getId(), "12345");
             fail();
         } catch (ServiceException e) {
@@ -299,11 +301,11 @@ class AttachmentsServiceUnitTest {
         HttpClientErrorException exception = new HttpClientErrorException(HttpStatus.NOT_FOUND);
         when(fileTransferServiceClient.delete("12345ab")).thenThrow(exception);
 
-        when(repo.findById(entity.getId()))
+        when(repo.findByIdAndCompanyNumber(entity.getId(), COMPANY_NUMBER))
             .thenReturn(Optional.of(entity));
 
         try {
-            service.removeAttachment(entity.getId(),
+            service.removeAttachment(COMPANY_NUMBER, entity.getId(),
                 entity.getReasons().stream().findAny().get().getId(), "12345ab");
             fail();
         } catch (ServiceException e) {
@@ -334,10 +336,10 @@ class AttachmentsServiceUnitTest {
         HttpClientErrorException exception = new HttpClientErrorException(HttpStatus.NOT_FOUND);
         when(fileTransferServiceClient.delete("12345")).thenThrow(exception);
 
-        when(repo.findById(entity.getId()))
+        when(repo.findByIdAndCompanyNumber(entity.getId(), COMPANY_NUMBER))
             .thenReturn(Optional.of(entity));
 
-        service.removeAttachment(entity.getId(),
+        service.removeAttachment(COMPANY_NUMBER, entity.getId(),
             entity.getReasons().stream().findAny().get().getId(), "12345");
 
         verify(repo).save(entity);
@@ -363,10 +365,10 @@ class AttachmentsServiceUnitTest {
         HttpServerErrorException exception = new HttpServerErrorException(HttpStatus.BAD_GATEWAY);
         when(fileTransferServiceClient.delete("12345")).thenThrow(exception);
 
-        when(repo.findById(entity.getId()))
+        when(repo.findByIdAndCompanyNumber(entity.getId(), COMPANY_NUMBER))
             .thenReturn(Optional.of(entity));
 
-        service.removeAttachment(entity.getId(),
+        service.removeAttachment(COMPANY_NUMBER, entity.getId(),
             entity.getReasons().stream().findAny().get().getId(), "12345");
 
         verify(repo).save(entity);
@@ -391,10 +393,10 @@ class AttachmentsServiceUnitTest {
 
         when(fileTransferServiceClient.delete("12345")).thenReturn(null);
 
-        when(repo.findById(entity.getId()))
+        when(repo.findByIdAndCompanyNumber(entity.getId(), COMPANY_NUMBER))
             .thenReturn(Optional.of(entity));
 
-        service.removeAttachment(entity.getId(),
+        service.removeAttachment(COMPANY_NUMBER, entity.getId(),
             entity.getReasons().stream().findAny().get().getId(), "12345");
 
         verify(repo).save(entity);
@@ -421,10 +423,10 @@ class AttachmentsServiceUnitTest {
         response.httpStatus(null);
         when(fileTransferServiceClient.delete("12345")).thenReturn(response);
 
-        when(repo.findById(entity.getId()))
+        when(repo.findByIdAndCompanyNumber(entity.getId(), COMPANY_NUMBER))
             .thenReturn(Optional.of(entity));
 
-        service.removeAttachment(entity.getId(),
+        service.removeAttachment(COMPANY_NUMBER, entity.getId(),
             entity.getReasons().stream().findAny().get().getId(), "12345");
 
         verify(repo).save(entity);
@@ -433,16 +435,51 @@ class AttachmentsServiceUnitTest {
     }
 
     @Test
-    void willCallFileTransferGatewayForDownload() {
+    void willCallFileTransferGatewayForDownload() throws ServiceException {
         String attachmentId = "1234";
+        ExtensionRequestFullEntity entity = new ExtensionRequestFullEntity();
+        entity.setId(REQUEST_ID);
+        ExtensionReasonEntity reason = new ExtensionReasonEntity();
+        reason.setId(REASON_ID);
+        addAttachmentToReason(reason, attachmentId);
+        entity.setReasons(List.of(reason));
+        when(repo.findByIdAndCompanyNumber(REQUEST_ID, COMPANY_NUMBER)).thenReturn(Optional.of(entity));
         HttpServletResponse httpServletResponse = new MockHttpServletResponse();
 
-        service.downloadAttachment(attachmentId, httpServletResponse);
+        service.downloadAttachment(COMPANY_NUMBER, REQUEST_ID, REASON_ID, attachmentId, httpServletResponse);
 
         verify(fileTransferServiceClient, only()).download(attachmentId, httpServletResponse);
         verify(fileTransferServiceClient, times(1)).download(attachmentId, httpServletResponse);
 
         assertEquals(200, httpServletResponse.getStatus());
+    }
+
+    @Test
+    void willNotDownloadWhenRequestNotFoundForCompany() {
+        when(repo.findByIdAndCompanyNumber(REQUEST_ID, COMPANY_NUMBER)).thenReturn(Optional.empty());
+        HttpServletResponse httpServletResponse = new MockHttpServletResponse();
+
+        assertThrows(ServiceException.class, () -> service.downloadAttachment(COMPANY_NUMBER, REQUEST_ID,
+            REASON_ID, "1234", httpServletResponse));
+
+        verify(fileTransferServiceClient, never()).download(anyString(), any());
+    }
+
+    @Test
+    void willNotDownloadWhenAttachmentNotInReason() {
+        ExtensionRequestFullEntity entity = new ExtensionRequestFullEntity();
+        entity.setId(REQUEST_ID);
+        ExtensionReasonEntity reason = new ExtensionReasonEntity();
+        reason.setId(REASON_ID);
+        addAttachmentToReason(reason, "other");
+        entity.setReasons(List.of(reason));
+        when(repo.findByIdAndCompanyNumber(REQUEST_ID, COMPANY_NUMBER)).thenReturn(Optional.of(entity));
+        HttpServletResponse httpServletResponse = new MockHttpServletResponse();
+
+        assertThrows(ServiceException.class, () -> service.downloadAttachment(COMPANY_NUMBER, REQUEST_ID,
+            REASON_ID, "1234", httpServletResponse));
+
+        verify(fileTransferServiceClient, never()).download(anyString(), any());
     }
 
     private void addAttachmentToReason(ExtensionReasonEntity reason, String attachmentId) {

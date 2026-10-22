@@ -1,10 +1,12 @@
 package uk.gov.companieshouse.extensions.api.attachments;
 
+import static uk.gov.companieshouse.extensions.api.Utils.Utils.COMPANY_NUMBER;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -50,14 +52,14 @@ public class AttachmentsControllerUnitTest {
     @Test
     public void willReturn404IfInvalidRequestSuppliedPostRequest() throws Exception {
         when(servletRequest.getRequestURI()).thenReturn("url");
-        when(attachmentsService.addAttachment(any(MultipartFile.class), anyString(), anyString(), anyString()))
+        when(attachmentsService.addAttachment(any(MultipartFile.class), anyString(), anyString(), anyString(), anyString()))
             .thenThrow(serviceException);
 
         AttachmentsController controller = new AttachmentsController(
             PluggableResponseEntityFactory.buildWithStandardFactories(), attachmentsService, logger);
 
         ResponseEntity<ChResponseBody<AttachmentDTO>> entity = controller.uploadAttachmentToRequest(
-            Utils.mockMultipartFile(), "123", "1234", servletRequest);
+            Utils.mockMultipartFile(), COMPANY_NUMBER, "123", "1234", servletRequest);
 
         verify(logger).error(serviceException);
 
@@ -66,12 +68,12 @@ public class AttachmentsControllerUnitTest {
 
     @Test
     public void willReturn404IfInvalidRequestSuppliedDeleteRequest() throws Exception {
-        when(attachmentsService.removeAttachment(anyString(), anyString(), anyString())).thenThrow(serviceException);
+        when(attachmentsService.removeAttachment(anyString(), anyString(), anyString(), anyString())).thenThrow(serviceException);
 
         AttachmentsController controller = new AttachmentsController(
             PluggableResponseEntityFactory.buildWithStandardFactories(), attachmentsService, logger);
 
-        ResponseEntity entity = controller.deleteAttachmentFromRequest("123", "1234", "12345");
+        ResponseEntity entity = controller.deleteAttachmentFromRequest(COMPANY_NUMBER, "123", "1234", "12345");
 
         verify(logger).info(serviceException.getMessage());
         assertEquals(HttpStatus.NOT_FOUND, entity.getStatusCode());
@@ -84,10 +86,24 @@ public class AttachmentsControllerUnitTest {
         AttachmentsController controller = new AttachmentsController(
             PluggableResponseEntityFactory.buildWithStandardFactories(), attachmentsService, logger);
 
-        controller.downloadAttachmentFromRequest(ATTACHMENT_ID, response);
+        controller.downloadAttachmentFromRequest(COMPANY_NUMBER, "123", "1234", ATTACHMENT_ID, response);
 
         assertEquals(HttpStatus.OK.value(), response.getStatus());
         assertTrue(response.getHeaderNames().isEmpty());
+    }
+
+    @Test
+    public void willReturn404FromDownloadWhenAttachmentNotFound() throws ServiceException {
+        HttpServletResponse response = new MockHttpServletResponse();
+        doThrow(serviceException).when(attachmentsService)
+            .downloadAttachment(COMPANY_NUMBER, "123", "1234", ATTACHMENT_ID, response);
+
+        AttachmentsController controller = new AttachmentsController(
+            PluggableResponseEntityFactory.buildWithStandardFactories(), attachmentsService, logger);
+
+        controller.downloadAttachmentFromRequest(COMPANY_NUMBER, "123", "1234", ATTACHMENT_ID, response);
+
+        assertEquals(HttpStatus.NOT_FOUND.value(), response.getStatus());
     }
 
     @Test
@@ -96,14 +112,14 @@ public class AttachmentsControllerUnitTest {
             new HttpClientErrorException(HttpStatus.UNSUPPORTED_MEDIA_TYPE);
         when(servletRequest.getRequestURI()).thenReturn("url");
         when(attachmentsService.addAttachment(any(MultipartFile.class), anyString(), anyString(),
-            anyString())).thenThrow(expectedException);
+            anyString(), anyString())).thenThrow(expectedException);
 
         AttachmentsController controller =
             new AttachmentsController(PluggableResponseEntityFactory.buildWithStandardFactories(),
                 attachmentsService, logger);
 
         ResponseEntity entity = controller.uploadAttachmentToRequest(Utils.mockMultipartFile(),
-            "123", "1234", servletRequest);
+            COMPANY_NUMBER, "123", "1234", servletRequest);
 
         verify(logger).error(anyString(), eq(expectedException));
         assertEquals(HttpStatus.UNSUPPORTED_MEDIA_TYPE, entity.getStatusCode());
@@ -115,14 +131,14 @@ public class AttachmentsControllerUnitTest {
             new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR);
         when(servletRequest.getRequestURI()).thenReturn("url");
         when(attachmentsService.addAttachment(any(MultipartFile.class), anyString(), anyString(),
-            anyString())).thenThrow(expectedException);
+            anyString(), anyString())).thenThrow(expectedException);
 
         AttachmentsController controller =
             new AttachmentsController(PluggableResponseEntityFactory.buildWithStandardFactories(),
                 attachmentsService, logger);
 
         ResponseEntity entity = controller.uploadAttachmentToRequest(Utils.mockMultipartFile(),
-            "123", "1234", servletRequest);
+            COMPANY_NUMBER, "123", "1234", servletRequest);
 
         verify(logger).error(anyString(), eq(expectedException));
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, entity.getStatusCode());

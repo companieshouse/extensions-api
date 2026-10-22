@@ -3,6 +3,7 @@ package uk.gov.companieshouse.extensions.api.attachments;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,11 +41,12 @@ public class AttachmentsController {
     @LogMethodCall
     @PostMapping("/{requestId}/reasons/{reasonId}/attachments")
     public ResponseEntity<ChResponseBody<AttachmentDTO>> uploadAttachmentToRequest(
-        @RequestParam("file") MultipartFile file, @PathVariable String requestId, @PathVariable String reasonId,
+        @RequestParam("file") MultipartFile file, @PathVariable String companyNumber,
+        @PathVariable String requestId, @PathVariable String reasonId,
         HttpServletRequest servletRequest) {
         try {
             ServiceResult<AttachmentDTO> result = attachmentsService.addAttachment(file,
-                servletRequest.getRequestURI(), requestId, reasonId);
+                servletRequest.getRequestURI(), companyNumber, requestId, reasonId);
             return responseEntityFactory.createResponse(result);
 
         } catch(ServiceException e) {
@@ -61,9 +63,10 @@ public class AttachmentsController {
     @LogMethodCall
     @DeleteMapping("/{requestId}/reasons/{reasonId}/attachments/{attachmentId}")
     public ResponseEntity<ChResponseBody<Void>> deleteAttachmentFromRequest(
-        @PathVariable String requestId, @PathVariable String reasonId, @PathVariable String attachmentId) {
+        @PathVariable String companyNumber, @PathVariable String requestId, @PathVariable String reasonId,
+        @PathVariable String attachmentId) {
       try {
-          ServiceResult<Void> result = attachmentsService.removeAttachment(requestId, reasonId, attachmentId);
+          ServiceResult<Void> result = attachmentsService.removeAttachment(companyNumber, requestId, reasonId, attachmentId);
           return responseEntityFactory.createResponse(result);
 
       } catch(ServiceException e) {
@@ -74,7 +77,14 @@ public class AttachmentsController {
 
     @LogMethodCall
     @GetMapping("/{requestId}/reasons/{reasonId}/attachments/{attachmentId}/download")
-    public void downloadAttachmentFromRequest(@PathVariable String attachmentId, HttpServletResponse response) {
-        attachmentsService.downloadAttachment(attachmentId, response);
+    public void downloadAttachmentFromRequest(@PathVariable String companyNumber, @PathVariable String requestId,
+                                              @PathVariable String reasonId, @PathVariable String attachmentId,
+                                              HttpServletResponse response) {
+        try {
+            attachmentsService.downloadAttachment(companyNumber, requestId, reasonId, attachmentId, response);
+        } catch (ServiceException e) {
+            logger.info(e.getMessage());
+            response.setStatus(HttpStatus.NOT_FOUND.value());
+        }
     }
 }

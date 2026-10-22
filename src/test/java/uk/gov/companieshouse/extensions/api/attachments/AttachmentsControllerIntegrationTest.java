@@ -72,7 +72,7 @@ class AttachmentsControllerIntegrationTest {
             .build();
 
         when(attachmentsService.addAttachment(any(MultipartFile.class),
-            anyString(), anyString(), anyString()))
+            anyString(), anyString(), anyString(), anyString()))
             .thenReturn(ServiceResult.accepted(expectedDto));
         ServiceResult<AttachmentDTO> resultDTO = ServiceResult.accepted(expectedDto);
         when(responseEntityFactory.createResponse(any())).thenReturn(createResponseEntityForFile(resultDTO));
@@ -91,7 +91,7 @@ class AttachmentsControllerIntegrationTest {
 
     @Test
     void testDeleteAttachmentFromRequest() throws Exception {
-        when(attachmentsService.removeAttachment(anyString(), anyString(), anyString()))
+        when(attachmentsService.removeAttachment(anyString(), anyString(), anyString(), anyString()))
             .thenReturn(ServiceResult.deleted());
         RequestBuilder requestBuilder = MockMvcRequestBuilders
             .delete(SPECIFIC_URL)
