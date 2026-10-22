@@ -46,15 +46,15 @@ public class AttachmentsService {
     public ServiceResult<AttachmentDTO> addAttachment(@NotNull MultipartFile file,
         String attachmentsUri, String companyNumber, String requestId, String reasonId) throws ServiceException {
 
-        String attachmentId = uploadFile(file);
-        Attachment attachment = createAttachment(file, attachmentId);
-
         ExtensionRequestFullEntity extension = requestsRepo.findByIdAndCompanyNumber(requestId, companyNumber)
             .orElseThrow(missingRequest(requestId));
 
-        extension.mapToReason(reasonId)
-            .orElseThrow(missingReason(requestId, reasonId))
-            .addAttachment(attachment);
+        ExtensionReasonEntity reason = extension.mapToReason(reasonId)
+            .orElseThrow(missingReason(requestId, reasonId));
+
+        String attachmentId = uploadFile(file);
+        Attachment attachment = createAttachment(file, attachmentId);
+        reason.addAttachment(attachment);
 
         Links links = createLinks(attachmentsUri, attachmentId);
         attachment.setLinks(links);

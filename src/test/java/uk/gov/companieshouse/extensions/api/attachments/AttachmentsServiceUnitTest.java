@@ -140,7 +140,6 @@ class AttachmentsServiceUnitTest {
         ExtensionRequestFullEntity entity = new ExtensionRequestFullEntity();
         entity.setId(REQUEST_ID);
         when(repo.findByIdAndCompanyNumber(anyString(), anyString())).thenReturn(Optional.of(entity));
-        when(fileTransferServiceClient.upload(any(MultipartFile.class))).thenReturn(getSuccessfulUploadResponse());
 
         try {
             service.addAttachment(Utils.mockMultipartFile(),
@@ -150,12 +149,12 @@ class AttachmentsServiceUnitTest {
             assertEquals(String.format("Reason %s not found in " +
                 "Request %s", REASON_ID, REQUEST_ID), e.getMessage());
         }
+        verify(fileTransferServiceClient, never()).upload(any(MultipartFile.class));
     }
 
     @Test
     void willThrowServiceExceptionIfNoReason() throws Exception {
         when(repo.findByIdAndCompanyNumber(anyString(), anyString())).thenReturn(Optional.empty());
-        when(fileTransferServiceClient.upload(any(MultipartFile.class))).thenReturn(getSuccessfulUploadResponse());
 
         try {
             service.addAttachment(Utils.mockMultipartFile(),
@@ -164,10 +163,12 @@ class AttachmentsServiceUnitTest {
         } catch (ServiceException e) {
             assertEquals(String.format("No request found with request id %s", REQUEST_ID), e.getMessage());
         }
+        verify(fileTransferServiceClient, never()).upload(any(MultipartFile.class));
     }
 
     @Test
     void willThrowServiceExceptionIfUploadErrors() throws Exception {
+        when(repo.findByIdAndCompanyNumber(anyString(), anyString())).thenReturn(Optional.of(requestWithReason()));
         when(fileTransferServiceClient.upload(any(MultipartFile.class))).thenReturn(getUnsuccessfulUploadResponse());
 
         try {
@@ -181,6 +182,7 @@ class AttachmentsServiceUnitTest {
 
     @Test
     void willPropagateServerRuntimeExceptions() throws Exception {
+        when(repo.findByIdAndCompanyNumber(anyString(), anyString())).thenReturn(Optional.of(requestWithReason()));
         when(fileTransferServiceClient.upload(any(MultipartFile.class)))
             .thenThrow(new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR));
         try {
@@ -194,6 +196,7 @@ class AttachmentsServiceUnitTest {
 
     @Test
     void willPropagateClientRuntimeExceptions() throws Exception {
+        when(repo.findByIdAndCompanyNumber(anyString(), anyString())).thenReturn(Optional.of(requestWithReason()));
         when(fileTransferServiceClient.upload(any(MultipartFile.class)))
             .thenThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST));
         try {
@@ -207,6 +210,7 @@ class AttachmentsServiceUnitTest {
 
     @Test
     void willThrowServiceExceptionIfNoFileIdReturned() throws Exception {
+        when(repo.findByIdAndCompanyNumber(anyString(), anyString())).thenReturn(Optional.of(requestWithReason()));
         FileTransferApiClientResponse response = getSuccessfulUploadResponse();
         response.fileId(null);
         when(fileTransferServiceClient.upload(any(MultipartFile.class))).thenReturn(response);
@@ -476,6 +480,15 @@ class AttachmentsServiceUnitTest {
             REASON_ID, "1234", httpServletResponse));
 
         verify(fileTransferServiceClient, never()).download(anyString(), any());
+    }
+
+    private ExtensionRequestFullEntity requestWithReason() {
+        ExtensionRequestFullEntity entity = new ExtensionRequestFullEntity();
+        entity.setId(REQUEST_ID);
+        ExtensionReasonEntity reason = new ExtensionReasonEntity();
+        reason.setId(REASON_ID);
+        entity.setReasons(List.of(reason));
+        return entity;
     }
 
     private void addAttachmentToReason(ExtensionReasonEntity reason, String attachmentId) {
