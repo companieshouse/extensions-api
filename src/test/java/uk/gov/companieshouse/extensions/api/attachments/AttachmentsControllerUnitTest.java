@@ -32,11 +32,9 @@ import uk.gov.companieshouse.service.rest.response.PluggableResponseEntityFactor
 
 @Tag("UnitTest")
 @ExtendWith(MockitoExtension.class)
-public class AttachmentsControllerUnitTest {
+class AttachmentsControllerUnitTest {
 
     private static final String ATTACHMENT_ID = "123";
-    private static final String REQUEST_ID = "ABC";
-    private static final String REASON_ID = "MNB";
 
     @Mock
     private AttachmentsService attachmentsService;
@@ -49,8 +47,8 @@ public class AttachmentsControllerUnitTest {
 
     private final ServiceException serviceException = new ServiceException("exception error");
 
-    @Test
-    public void willReturn404IfInvalidRequestSuppliedPostRequest() throws Exception {
+  @Test
+  void willReturn404IfInvalidRequestSuppliedPostRequest() throws Exception {
         when(servletRequest.getRequestURI()).thenReturn("url");
         when(attachmentsService.addAttachment(any(MultipartFile.class), anyString(), anyString(), anyString(), anyString()))
             .thenThrow(serviceException);
@@ -66,8 +64,8 @@ public class AttachmentsControllerUnitTest {
         assertEquals(HttpStatus.NOT_FOUND, entity.getStatusCode());
     }
 
-    @Test
-    public void willReturn404IfInvalidRequestSuppliedDeleteRequest() throws Exception {
+  @Test
+  void willReturn404IfInvalidRequestSuppliedDeleteRequest() throws Exception {
         when(attachmentsService.removeAttachment(anyString(), anyString(), anyString(), anyString())).thenThrow(serviceException);
 
         AttachmentsController controller = new AttachmentsController(
@@ -79,8 +77,8 @@ public class AttachmentsControllerUnitTest {
         assertEquals(HttpStatus.NOT_FOUND, entity.getStatusCode());
     }
 
-    @Test
-    public void willReturnStatusFromDownload() {
+  @Test
+  void willReturnStatusFromDownload() {
         HttpServletResponse response = new MockHttpServletResponse();
 
         AttachmentsController controller = new AttachmentsController(
@@ -92,8 +90,8 @@ public class AttachmentsControllerUnitTest {
         assertTrue(response.getHeaderNames().isEmpty());
     }
 
-    @Test
-    public void willReturn404FromDownloadWhenAttachmentNotFound() throws ServiceException {
+  @Test
+  void willReturn404FromDownloadWhenAttachmentNotFound() throws ServiceException {
         HttpServletResponse response = new MockHttpServletResponse();
         doThrow(serviceException).when(attachmentsService)
             .downloadAttachment(COMPANY_NUMBER, "123", "1234", ATTACHMENT_ID, response);
@@ -106,8 +104,8 @@ public class AttachmentsControllerUnitTest {
         assertEquals(HttpStatus.NOT_FOUND.value(), response.getStatus());
     }
 
-    @Test
-    public void willReturn415FromInvalidUpload() throws ServiceException, IOException {
+  @Test
+  void willReturn415FromInvalidUpload() throws ServiceException, IOException {
         HttpClientErrorException expectedException =
             new HttpClientErrorException(HttpStatus.UNSUPPORTED_MEDIA_TYPE);
         when(servletRequest.getRequestURI()).thenReturn("url");
@@ -125,8 +123,8 @@ public class AttachmentsControllerUnitTest {
         assertEquals(HttpStatus.UNSUPPORTED_MEDIA_TYPE, entity.getStatusCode());
     }
 
-    @Test
-    public void willReturn500FromFileTransferServerError() throws ServiceException, IOException {
+  @Test
+  void willReturn500FromFileTransferServerError() throws ServiceException, IOException {
         HttpServerErrorException expectedException =
             new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR);
         when(servletRequest.getRequestURI()).thenReturn("url");
