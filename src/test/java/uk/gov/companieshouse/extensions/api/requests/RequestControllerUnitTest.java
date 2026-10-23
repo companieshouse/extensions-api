@@ -117,7 +117,7 @@ class RequestControllerUnitTest {
         when(mockExtensionRequestMapper.entityToDTO(extensionRequestFullEntity)).thenReturn(extensionRequestFullDTO);
 
         ResponseEntity<ListResponse<ExtensionRequestFullDTO>> response = controller
-            .getExtensionRequestsListByCompanyNumber(COMPANY_NUMBER);
+            .getExtensionRequestsListByCompanyNumber(COMPANY_NUMBER, mockHttpServletRequest);
 
         Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
         Assertions.assertEquals(1, response.getBody().getItems().size());

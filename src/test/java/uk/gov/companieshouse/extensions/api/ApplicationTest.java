@@ -68,6 +68,8 @@ class ApplicationTest {
         RestTestClientResponse postResponse = RestTestClientResponse.from(
             restTestClient.post().uri("/company/12345678/extensions/requests")
                 .header("Content-Type", "application/json")
+                .header("ERIC-Identity", "user-1")
+                .header("ERIC-Identity-Type", "oauth2")
                 .body(request)
                 .exchange());
         assertThat(postResponse).hasStatus(HttpStatus.CREATED);
@@ -75,6 +77,8 @@ class ApplicationTest {
         // Then
         RestTestClientResponse getResponse = RestTestClientResponse.from(restTestClient.get().uri("/company/12345678/extensions/requests")
             .header("Content-Type", "application/json")
+            .header("ERIC-Identity", "user-1")
+            .header("ERIC-Identity-Type", "oauth2")
             .exchange());
 
         assertThat(getResponse)

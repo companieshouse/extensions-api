@@ -21,6 +21,7 @@ import uk.gov.companieshouse.extensions.api.attachments.file.FileTransferApiClie
 import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
 import uk.gov.companieshouse.extensions.api.requests.ERICHeaderParser;
 import uk.gov.companieshouse.extensions.api.requests.ExtensionRequestMapper;
+import uk.gov.companieshouse.extensions.api.requests.RequestsService;
 import uk.gov.companieshouse.service.rest.response.PluggableResponseEntityFactory;
 
 @Tag("IntegrationTest")
@@ -33,6 +34,9 @@ class AuthorizationIntegrationTest {
 
     @MockitoBean
     private AttachmentsService attachmentsService;
+
+    @MockitoBean
+    private RequestsService requestsService;
 
     @MockitoBean
     private ERICHeaderParser headerParser;
@@ -57,10 +61,12 @@ class AuthorizationIntegrationTest {
     void willNotAllowUserToDownload() throws Exception {
         RequestBuilder requestBuilder = MockMvcRequestBuilders
             .get("/company/00006400/extensions/requests/1/reasons/2/attachments/3/download")
-            .accept(MediaType.APPLICATION_JSON);
+            .accept(MediaType.APPLICATION_JSON)
+            .header("ERIC-Identity", "user-1")
+            .header("ERIC-Identity-Type", "oauth2");
 
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
-        Assertions.assertEquals(HttpStatus.UNAUTHORIZED.value(), result.getResponse().getStatus());
+        Assertions.assertEquals(HttpStatus.FORBIDDEN.value(), result.getResponse().getStatus());
     }
 
     @Test
@@ -68,6 +74,8 @@ class AuthorizationIntegrationTest {
         RequestBuilder requestBuilder = MockMvcRequestBuilders
             .get("/company/00006400/extensions/requests/1/reasons/2/attachments/3/download")
             .accept(MediaType.APPLICATION_JSON)
+            .header("ERIC-Identity", "admin-1")
+            .header("ERIC-Identity-Type", "oauth2")
             .header("ERIC-Authorised-Scope", "")
             .header("ERIC-Authorised-Roles", "/admin/extensions-download /admin/extensions-view");
 
@@ -80,10 +88,19 @@ class AuthorizationIntegrationTest {
         RequestBuilder requestBuilder = MockMvcRequestBuilders
             .get("/company/00006400/extensions/requests/1/reasons/2/attachments/3/download")
             .accept(MediaType.APPLICATION_JSON)
+            .header("ERIC-Identity", "admin-1")
+            .header("ERIC-Identity-Type", "oauth2")
             .header("ERIC-Authorised-Scope", "")
             .header("ERIC-Authorised-Roles", "/admin/extensions-view");
 
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+        Assertions.assertEquals(HttpStatus.FORBIDDEN.value(), result.getResponse().getStatus());
+    }
+
+    @Test
+    void willRejectMissingIdentity() throws Exception {
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders
+            .get("/company/00006400/extensions/requests/1/reasons/2/attachments/3/download")).andReturn();
         Assertions.assertEquals(HttpStatus.UNAUTHORIZED.value(), result.getResponse().getStatus());
     }
 
@@ -92,9 +109,11 @@ class AuthorizationIntegrationTest {
         RequestBuilder requestBuilder = MockMvcRequestBuilders
             .delete("/company/00006400/extensions/requests/1/reasons/2/attachments/3")
             .accept(MediaType.APPLICATION_JSON)
+            .header("ERIC-Identity", "admin-1")
+            .header("ERIC-Identity-Type", "oauth2")
             .header("ERIC-Authorised-Roles", "/admin/extensions-download /admin/extensions-view");
 
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
-        Assertions.assertEquals(HttpStatus.UNAUTHORIZED.value(), result.getResponse().getStatus());
+        Assertions.assertEquals(HttpStatus.FORBIDDEN.value(), result.getResponse().getStatus());
     }
 }

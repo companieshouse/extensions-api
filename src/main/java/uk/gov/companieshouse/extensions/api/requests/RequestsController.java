@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import uk.gov.companieshouse.extensions.api.authorization.CompanyAuthorizationInterceptor;
 import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
 import uk.gov.companieshouse.extensions.api.logger.LogMethodCall;
 import uk.gov.companieshouse.extensions.api.response.ListResponse;
@@ -73,10 +74,14 @@ public class RequestsController {
     @LogMethodCall
     @GetMapping(path = {"", "/"})
     public ResponseEntity<ListResponse<ExtensionRequestFullDTO>> getExtensionRequestsListByCompanyNumber(
-        @PathVariable String companyNumber) {
+        @PathVariable String companyNumber, HttpServletRequest request) {
+
+        Object ownerId = request.getAttribute(CompanyAuthorizationInterceptor.OWNER_FILTER_ATTRIBUTE);
 
         List<ExtensionRequestFullDTO> requestFullDTOList = requestsService
             .getExtensionsRequestListByCompanyNumber(companyNumber).stream()
+            .filter(entity -> ownerId == null
+                || (entity.getCreatedBy() != null && ownerId.equals(entity.getCreatedBy().getId())))
             .map(extensionRequestMapper::entityToDTO).collect(Collectors.toList());
 
         ListResponse<ExtensionRequestFullDTO> extensionRequestList = ListResponse.<ExtensionRequestFullDTO>builder()
