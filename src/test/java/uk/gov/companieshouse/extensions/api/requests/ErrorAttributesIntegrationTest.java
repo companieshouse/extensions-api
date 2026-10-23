@@ -36,6 +36,9 @@ class ErrorAttributesIntegrationTest {
     private RequestsController requestsController;
 
     @MockitoBean
+    private RequestsService requestsService;
+
+    @MockitoBean
     private RestTemplate restTemplate;
 
     @MockitoBean
