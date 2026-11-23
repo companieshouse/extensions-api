@@ -11,6 +11,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import uk.gov.companieshouse.extensions.api.attachments.Attachment;
+import uk.gov.companieshouse.extensions.api.authorization.CompanyAuthorizationInterceptor;
 import uk.gov.companieshouse.extensions.api.logger.ApiLogger;
 import uk.gov.companieshouse.extensions.api.reasons.ExtensionReasonEntity;
 import uk.gov.companieshouse.extensions.api.response.ListResponse;
@@ -31,6 +32,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.companieshouse.extensions.api.Utils.Utils.BASE_URL;
 import static uk.gov.companieshouse.extensions.api.Utils.Utils.COMPANY_NUMBER;
@@ -157,7 +159,7 @@ class RequestControllerUnitTest {
 
         RequestStatus status = new RequestStatus();
         status.setStatus(Status.SUBMITTED);
-        ResponseEntity<ExtensionRequestFullEntity> response = controller.patchRequest(COMPANY_NUMBER, "123", status);
+        ResponseEntity<ExtensionRequestFullEntity> response = controller.patchRequest(COMPANY_NUMBER, "123", status, mockHttpServletRequest);
         Assertions.assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
     }
 
@@ -168,8 +170,46 @@ class RequestControllerUnitTest {
 
         RequestStatus status = new RequestStatus();
         status.setStatus(Status.SUBMITTED);
-        ResponseEntity<ExtensionRequestFullEntity> response = controller.patchRequest(COMPANY_NUMBER, "123", status);
+        ResponseEntity<ExtensionRequestFullEntity> response = controller.patchRequest(COMPANY_NUMBER, "123", status, mockHttpServletRequest);
         Assertions.assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    }
+
+    @Test
+    void restrictedOwnerCanPatchToMaxExtLengthExceeded() throws ServiceException {
+        when(mockHttpServletRequest.getAttribute(CompanyAuthorizationInterceptor.RESTRICTED_STATUS_UPDATE_ATTRIBUTE))
+            .thenReturn(Boolean.TRUE);
+        when(requestsService.patchRequest(anyString(), anyString(), any(RequestStatus.class)))
+            .thenReturn(new ExtensionRequestFullEntity());
+
+        RequestStatus status = new RequestStatus();
+        status.setStatus(Status.REJECTED_MAX_EXT_LENGTH_EXCEEDED);
+        ResponseEntity<ExtensionRequestFullEntity> response = controller.patchRequest(COMPANY_NUMBER, "123", status, mockHttpServletRequest);
+        Assertions.assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+    }
+
+    @Test
+    void restrictedOwnerCannotSubmit() {
+        when(mockHttpServletRequest.getAttribute(CompanyAuthorizationInterceptor.RESTRICTED_STATUS_UPDATE_ATTRIBUTE))
+            .thenReturn(Boolean.TRUE);
+
+        RequestStatus status = new RequestStatus();
+        status.setStatus(Status.SUBMITTED);
+        ResponseEntity<ExtensionRequestFullEntity> response = controller.patchRequest(COMPANY_NUMBER, "123", status, mockHttpServletRequest);
+        Assertions.assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
+        verifyNoInteractions(requestsService);
+    }
+
+    @Test
+    void restrictedOwnerCannotSetAutoAccepted() {
+        when(mockHttpServletRequest.getAttribute(CompanyAuthorizationInterceptor.RESTRICTED_STATUS_UPDATE_ATTRIBUTE))
+            .thenReturn(Boolean.TRUE);
+
+        RequestStatus status = new RequestStatus();
+        status.setStatus(Status.REJECTED_MAX_EXT_LENGTH_EXCEEDED);
+        status.setIsAutoAccepted(true);
+        ResponseEntity<ExtensionRequestFullEntity> response = controller.patchRequest(COMPANY_NUMBER, "123", status, mockHttpServletRequest);
+        Assertions.assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
+        verifyNoInteractions(requestsService);
     }
 
     @Test

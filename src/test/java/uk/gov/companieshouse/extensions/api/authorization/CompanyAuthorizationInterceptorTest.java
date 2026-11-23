@@ -134,10 +134,38 @@ class CompanyAuthorizationInterceptorTest {
     }
 
     @Test
-    void onlyKeyCanPatchStatus() {
+    void keyCanPatchStatus() {
         Assertions.assertTrue(handle("PATCH", BASE + "/1", "k", "key", null));
-        Assertions.assertFalse(handle("PATCH", BASE + "/1", OWNER, "oauth2", null));
-        Assertions.assertFalse(handle("PATCH", BASE + "/1/", OWNER, "oauth2", null));
+    }
+
+    @Test
+    void ownerStatusPatchIsAllowedButRestricted() {
+        MockHttpServletRequest request = new MockHttpServletRequest("PATCH", BASE + "/1");
+        request.setRequestURI(BASE + "/1");
+        request.addHeader("ERIC-Identity", OWNER);
+        request.addHeader("ERIC-Identity-Type", "oauth2");
+        Assertions.assertTrue(interceptor.preHandle(request, response, null));
+        Assertions.assertEquals(Boolean.TRUE,
+            request.getAttribute(CompanyAuthorizationInterceptor.RESTRICTED_STATUS_UPDATE_ATTRIBUTE));
+        Assertions.assertTrue(handle("PATCH", BASE + "/1/", OWNER, "oauth2", null));
+    }
+
+    @Test
+    void keyStatusPatchIsNotRestricted() {
+        MockHttpServletRequest request = new MockHttpServletRequest("PATCH", BASE + "/1");
+        request.setRequestURI(BASE + "/1");
+        request.addHeader("ERIC-Identity", "k");
+        request.addHeader("ERIC-Identity-Type", "key");
+        Assertions.assertTrue(interceptor.preHandle(request, response, null));
+        Assertions.assertNull(request.getAttribute(CompanyAuthorizationInterceptor.RESTRICTED_STATUS_UPDATE_ATTRIBUTE));
+    }
+
+    @Test
+    void nonOwnerCannotPatchStatus() {
+        Assertions.assertFalse(handle("PATCH", BASE + "/1", "other", "oauth2", null));
+        Assertions.assertEquals(403, response.getStatus());
+        Assertions.assertFalse(handle("PATCH", BASE + "/1", OWNER, null, null));
+        Assertions.assertEquals(403, response.getStatus());
     }
 
     @Test
