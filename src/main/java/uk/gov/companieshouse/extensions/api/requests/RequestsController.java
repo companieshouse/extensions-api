@@ -101,13 +101,25 @@ public class RequestsController {
     @PatchMapping("/{requestId}")
     public ResponseEntity<ExtensionRequestFullEntity> patchRequest(@PathVariable String companyNumber,
                                                                    @PathVariable String requestId,
-                                                                   @RequestBody RequestStatus requestStatus) {
+                                                                   @RequestBody RequestStatus requestStatus,
+                                                                   HttpServletRequest request) {
+        if (Boolean.TRUE.equals(request.getAttribute(CompanyAuthorizationInterceptor.RESTRICTED_STATUS_UPDATE_ATTRIBUTE))
+            && !isPermittedOwnerStatusUpdate(requestStatus)) {
+            logger.debug("Owner status update rejected: only REJECTED_MAX_EXT_LENGTH_EXCEEDED is permitted", request);
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
         try {
             requestsService.patchRequest(companyNumber, requestId, requestStatus);
             return ResponseEntity.noContent().build();
         } catch (ServiceException e) {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    private boolean isPermittedOwnerStatusUpdate(RequestStatus requestStatus) {
+        return requestStatus != null
+            && requestStatus.getStatus() == Status.REJECTED_MAX_EXT_LENGTH_EXCEEDED
+            && !requestStatus.getIsAutoAccepted();
     }
 
     @LogMethodCall

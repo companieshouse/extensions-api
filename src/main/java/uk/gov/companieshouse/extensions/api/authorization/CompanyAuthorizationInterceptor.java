@@ -20,12 +20,15 @@ import java.util.regex.Pattern;
  * <ul>
  *   <li>admins (roles present) can only download attachments;</li>
  *   <li>oauth2 users can create requests and read/write their own, but cannot download;</li>
- *   <li>key identities can list/read requests and update a request status.</li>
+ *   <li>key identities can list/read requests and update a request status;</li>
+ *   <li>oauth2 owners may only update their own request status to REJECTED_MAX_EXT_LENGTH_EXCEEDED
+ *       (enforced in the controller via {@link #RESTRICTED_STATUS_UPDATE_ATTRIBUTE}).</li>
  * </ul>
  */
 public class CompanyAuthorizationInterceptor implements HandlerInterceptor {
 
     public static final String OWNER_FILTER_ATTRIBUTE = "extensions.ownerFilter";
+    public static final String RESTRICTED_STATUS_UPDATE_ATTRIBUTE = "extensions.restrictedStatusUpdate";
 
     private static final String ERIC_IDENTITY = "ERIC-Identity";
     private static final String ERIC_IDENTITY_TYPE = "ERIC-Identity-Type";
@@ -103,9 +106,14 @@ public class CompanyAuthorizationInterceptor implements HandlerInterceptor {
         boolean statusUpdate = HttpMethod.PATCH.matches(request.getMethod())
             && (uri.group(3) == null || "/".equals(uri.group(3)));
         if (statusUpdate) {
-            return KEY.equals(identityType)
-                ? allow(request, "Key identity status update permitted")
-                : deny(request, response, HttpStatus.FORBIDDEN, "Status update requires a key identity");
+            if (KEY.equals(identityType)) {
+                return allow(request, "Key identity status update permitted");
+            }
+            if (OAUTH2.equals(identityType) && isOwner(extensionRequest.get(), identity)) {
+                request.setAttribute(RESTRICTED_STATUS_UPDATE_ATTRIBUTE, Boolean.TRUE);
+                return allow(request, "Owner restricted status update permitted");
+            }
+            return deny(request, response, HttpStatus.FORBIDDEN, "Status update not permitted");
         }
 
         if (OAUTH2.equals(identityType) && isOwner(extensionRequest.get(), identity)) {
